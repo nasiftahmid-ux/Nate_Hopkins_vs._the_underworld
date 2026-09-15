@@ -1,0 +1,46 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/death_panel.gd" id="1_death"]
+
+[node name="DeathPanel" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_death")
+
+[node name="Shade" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="Center/VBox"]
+theme_override_font_sizes/font_size = 42
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+text = "YOU DIED"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/VBox"]
+custom_minimum_size = Vector2(0, 10)
+
+[node name="RestartLevelButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(280, 52)
+text = "RESTART LEVEL"
+
+[node name="RestartGameButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(280, 52)
+text = "START OVER"
+
+[node name="Hint" type="Label" parent="Center/VBox"]
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+text = "RESTART LEVEL = replay this level from the start|START OVER = back to the main menu"
+horizontal_alignment = 1

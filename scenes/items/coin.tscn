@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/items/coin.gd" id="1_coin"]
+
+[sub_resource type="CircleShape2D" id="coin_shape"]
+radius = 9.0
+
+[node name="Coin" type="Area2D"]
+script = ExtResource("1_coin")
+
+[node name="Vis" type="ColorRect" parent="."]
+offset_left = -7.0
+offset_top = -7.0
+offset_right = 7.0
+offset_bottom = 7.0
+color = Color(1, 0.85, 0.2, 1)
+
+[node name="Col" type="CollisionShape2D" parent="."]
+shape = SubResource("coin_shape")
+
+[node name="Label" type="Label" parent="."]
+offset_left = -12.0
+offset_top = -24.0
+offset_right = 12.0
+offset_bottom = -8.0
+theme_override_font_sizes/font_size = 10
+text = "$"
+horizontal_alignment = 1

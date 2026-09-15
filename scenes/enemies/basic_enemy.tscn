@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/enemies/basic_enemy.gd" id="1_enemy"]
+
+[sub_resource type="RectangleShape2D" id="body_shape"]
+size = Vector2(32, 52)
+
+[sub_resource type="RectangleShape2D" id="hitbox_shape"]
+size = Vector2(28, 44)
+
+[node name="BasicEnemy" type="CharacterBody2D"]
+script = ExtResource("1_enemy")
+collision_layer = 1
+collision_mask = 1
+
+[node name="Body" type="ColorRect" parent="."]
+offset_left = -16.0
+offset_top = -52.0
+offset_right = 16.0
+offset_bottom = 0.0
+color = Color(0.85, 0.2, 0.25, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hitbox_shape")
+position = Vector2(0, -26)

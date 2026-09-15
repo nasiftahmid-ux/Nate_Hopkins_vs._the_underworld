@@ -1,0 +1,31 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scenes/enemies/sorrow_knight.gd" id="1_knight"]
+
+[sub_resource type="RectangleShape2D" id="body_shape"]
+size = Vector2(50, 92)
+
+[sub_resource type="RectangleShape2D" id="hitbox_shape"]
+size = Vector2(44, 84)
+
+[node name="SorrowKnight" type="CharacterBody2D"]
+script = ExtResource("1_knight")
+collision_layer = 1
+collision_mask = 1
+
+[node name="Body" type="ColorRect" parent="."]
+offset_left = -25.0
+offset_top = -92.0
+offset_right = 25.0
+offset_bottom = 0.0
+color = Color(0.55, 0.3, 0.65, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hitbox_shape")
+position = Vector2(0, -46)
