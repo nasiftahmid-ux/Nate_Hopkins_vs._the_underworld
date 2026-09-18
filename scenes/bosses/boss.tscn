@@ -30,6 +30,14 @@ monitoring = false
 shape = SubResource("hitbox_shape")
 position = Vector2(0, -42)
 
+[node name="Telegraph" type="ColorRect" parent="."]
+offset_left = -8.0
+offset_top = -12.0
+offset_right = 8.0
+offset_bottom = -6.0
+visible = false
+color = Color(1, 0.2, 0.35, 0.8)
+
 [node name="NameLabel" type="Label" parent="."]
 offset_left = -120.0
 offset_top = -112.0

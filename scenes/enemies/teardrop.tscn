@@ -1,20 +1,19 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene format=3 uid="uid://cd1hc6xpuxexs"]
 
-[ext_resource type="Script" path="res://scenes/enemies/teardrop.gd" id="1_tear"]
+[ext_resource type="Script" uid="uid://devt042k8ec52" path="res://scenes/enemies/teardrop.gd" id="1_tear"]
 
 [sub_resource type="CircleShape2D" id="tear_shape"]
 radius = 7.0
 
-[node name="Teardrop" type="Area2D"]
+[node name="Teardrop" type="Area2D" unique_id=1427754427]
 script = ExtResource("1_tear")
-collision_mask = 1
 
-[node name="Vis" type="ColorRect" parent="."]
+[node name="Vis" type="ColorRect" parent="." unique_id=988264781]
 offset_left = -5.0
 offset_top = -8.0
 offset_right = 5.0
 offset_bottom = 8.0
 color = Color(0.35, 0.9, 1, 0.95)
 
-[node name="Col" type="CollisionShape2D" parent="."]
+[node name="Col" type="CollisionShape2D" parent="." unique_id=317079983]
 shape = SubResource("tear_shape")

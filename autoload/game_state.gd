@@ -15,6 +15,11 @@ var defeated_exes := 0
 var dialogue_lines: Array[Dictionary] = []
 var scene_after_dialogue := ""
 
+var rhythm_window := 0.5
+var rhythm_notes := 24
+var rhythm_followup_lines: Array[Dictionary] = []
+var rhythm_followup_scene := ""
+
 
 func new_game() -> void:
 	player_health = player_max_hp
@@ -22,6 +27,10 @@ func new_game() -> void:
 	exp = 0
 	level = 1
 	defeated_exes = 0
+	dialogue_lines = []
+	scene_after_dialogue = ""
+	rhythm_followup_lines = []
+	rhythm_followup_scene = ""
 
 
 func add_money(value: int) -> void:

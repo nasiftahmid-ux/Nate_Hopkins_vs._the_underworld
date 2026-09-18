@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/basic_enemy.tscn" id="2_soul"]
+[ext_resource type="PackedScene" path="res://scenes/levels/hint_zone.tscn" id="3_hint"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4_hud"]
 [ext_resource type="Script" path="res://scenes/levels/door.gd" id="5_door"]
 [ext_resource type="Script" path="res://scenes/levels/level1.gd" id="6_level"]
@@ -12,6 +13,9 @@ size = Vector2(450, 60)
 
 [sub_resource type="RectangleShape2D" id="floor_shape2"]
 size = Vector2(700, 60)
+
+[sub_resource type="RectangleShape2D" id="floor_shape3"]
+size = Vector2(800, 60)
 
 [sub_resource type="RectangleShape2D" id="wall_shape"]
 size = Vector2(40, 800)
@@ -40,7 +44,7 @@ script = ExtResource("6_level")
 [node name="BG" type="ColorRect" parent="."]
 offset_left = -300.0
 offset_top = -600.0
-offset_right = 3500.0
+offset_right = 5100.0
 offset_bottom = 540.0
 color = Color(0.08, 0.05, 0.14, 1)
 
@@ -74,17 +78,17 @@ color = Color(0.18, 0.14, 0.26, 1)
 position = Vector2(1950, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorC"]
-shape = SubResource("floor_shape2")
+shape = SubResource("floor_shape3")
 
 [node name="Vis" type="ColorRect" parent="FloorC"]
-offset_left = -350
+offset_left = -400
 offset_top = -30.0
-offset_right = 350
+offset_right = 400
 offset_bottom = 30.0
 color = Color(0.18, 0.14, 0.26, 1)
 
 [node name="FloorD" type="StaticBody2D" parent="."]
-position = Vector2(2850, 470)
+position = Vector2(2700, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorD"]
 shape = SubResource("floor_shape2")
@@ -93,6 +97,32 @@ shape = SubResource("floor_shape2")
 offset_left = -350
 offset_top = -30.0
 offset_right = 350
+offset_bottom = 30.0
+color = Color(0.18, 0.14, 0.26, 1)
+
+[node name="FloorE" type="StaticBody2D" parent="."]
+position = Vector2(3700, 470)
+
+[node name="Col" type="CollisionShape2D" parent="FloorE"]
+shape = SubResource("floor_shape3")
+
+[node name="Vis" type="ColorRect" parent="FloorE"]
+offset_left = -400
+offset_top = -30.0
+offset_right = 400
+offset_bottom = 30.0
+color = Color(0.18, 0.14, 0.26, 1)
+
+[node name="FloorF" type="StaticBody2D" parent="."]
+position = Vector2(4500, 470)
+
+[node name="Col" type="CollisionShape2D" parent="FloorF"]
+shape = SubResource("floor_shape3")
+
+[node name="Vis" type="ColorRect" parent="FloorF"]
+offset_left = -400
+offset_top = -30.0
+offset_right = 400
 offset_bottom = 30.0
 color = Color(0.18, 0.14, 0.26, 1)
 
@@ -110,7 +140,7 @@ offset_bottom = 400.0
 color = Color(0.22, 0.16, 0.32, 1)
 
 [node name="WallR" type="StaticBody2D" parent="."]
-position = Vector2(3220, 0)
+position = Vector2(4920, 0)
 
 [node name="Col" type="CollisionShape2D" parent="WallR"]
 shape = SubResource("wall_shape")
@@ -122,8 +152,34 @@ offset_right = 20.0
 offset_bottom = 400.0
 color = Color(0.22, 0.16, 0.32, 1)
 
+[node name="GapStone1" type="StaticBody2D" parent="."]
+position = Vector2(1475, 520)
+
+[node name="Col" type="CollisionShape2D" parent="GapStone1"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="GapStone1"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="GapStone2" type="StaticBody2D" parent="."]
+position = Vector2(3175, 520)
+
+[node name="Col" type="CollisionShape2D" parent="GapStone2"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="GapStone2"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
 [node name="PlatA" type="StaticBody2D" parent="."]
-position = Vector2(300, 340)
+position = Vector2(300, 320)
 
 [node name="Col" type="CollisionShape2D" parent="PlatA"]
 shape = SubResource("platform_shape4")
@@ -136,7 +192,7 @@ offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
 [node name="PlatB" type="StaticBody2D" parent="."]
-position = Vector2(520, 240)
+position = Vector2(480, 190)
 
 [node name="Col" type="CollisionShape2D" parent="PlatB"]
 shape = SubResource("platform_shape2")
@@ -149,7 +205,7 @@ offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
 [node name="PlatC" type="StaticBody2D" parent="."]
-position = Vector2(775, 330)
+position = Vector2(660, 300)
 
 [node name="Col" type="CollisionShape2D" parent="PlatC"]
 shape = SubResource("platform_shape")
@@ -162,7 +218,7 @@ offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
 [node name="PlatD" type="StaticBody2D" parent="."]
-position = Vector2(1150, 240)
+position = Vector2(840, 170)
 
 [node name="Col" type="CollisionShape2D" parent="PlatD"]
 shape = SubResource("platform_shape4")
@@ -175,46 +231,46 @@ offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
 [node name="PlatE" type="StaticBody2D" parent="."]
-position = Vector2(1400, 340)
+position = Vector2(1020, 290)
 
 [node name="Col" type="CollisionShape2D" parent="PlatE"]
-shape = SubResource("platform_shape4")
+shape = SubResource("platform_shape")
 
 [node name="Vis" type="ColorRect" parent="PlatE"]
+offset_left = -85
+offset_top = -12.0
+offset_right = 85
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatF" type="StaticBody2D" parent="."]
+position = Vector2(1200, 160)
+
+[node name="Col" type="CollisionShape2D" parent="PlatF"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatF"]
 offset_left = -120
 offset_top = -12.0
 offset_right = 120
 offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
-[node name="PlatF" type="StaticBody2D" parent="."]
-position = Vector2(1500, 250)
-
-[node name="Col" type="CollisionShape2D" parent="PlatF"]
-shape = SubResource("platform_shape3")
-
-[node name="Vis" type="ColorRect" parent="PlatF"]
-offset_left = -110
-offset_top = -12.0
-offset_right = 110
-offset_bottom = 12.0
-color = Color(0.26, 0.2, 0.38, 1)
-
 [node name="PlatG" type="StaticBody2D" parent="."]
-position = Vector2(1630, 150)
+position = Vector2(1380, 300)
 
 [node name="Col" type="CollisionShape2D" parent="PlatG"]
-shape = SubResource("platform_shape2")
+shape = SubResource("platform_shape")
 
 [node name="Vis" type="ColorRect" parent="PlatG"]
-offset_left = -100
+offset_left = -85
 offset_top = -12.0
-offset_right = 100
+offset_right = 85
 offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
 [node name="PlatH" type="StaticBody2D" parent="."]
-position = Vector2(1700, 320)
+position = Vector2(1560, 150)
 
 [node name="Col" type="CollisionShape2D" parent="PlatH"]
 shape = SubResource("platform_shape4")
@@ -227,51 +283,233 @@ offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
 [node name="PlatI" type="StaticBody2D" parent="."]
-position = Vector2(1950, 220)
+position = Vector2(1740, 290)
 
 [node name="Col" type="CollisionShape2D" parent="PlatI"]
-shape = SubResource("platform_shape4")
+shape = SubResource("platform_shape")
 
 [node name="Vis" type="ColorRect" parent="PlatI"]
+offset_left = -85
+offset_top = -12.0
+offset_right = 85
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatJ" type="StaticBody2D" parent="."]
+position = Vector2(1920, 170)
+
+[node name="Col" type="CollisionShape2D" parent="PlatJ"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatJ"]
 offset_left = -120
 offset_top = -12.0
 offset_right = 120
 offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
-[node name="PlatJ" type="StaticBody2D" parent="."]
-position = Vector2(2400, 300)
+[node name="PlatK" type="StaticBody2D" parent="."]
+position = Vector2(2100, 310)
 
-[node name="Col" type="CollisionShape2D" parent="PlatJ"]
+[node name="Col" type="CollisionShape2D" parent="PlatK"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="PlatK"]
+offset_left = -85
+offset_top = -12.0
+offset_right = 85
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatL" type="StaticBody2D" parent="."]
+position = Vector2(2220, 230)
+
+[node name="Col" type="CollisionShape2D" parent="PlatL"]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="PlatJ"]
+[node name="Vis" type="ColorRect" parent="PlatL"]
 offset_left = -100
 offset_top = -12.0
 offset_right = 100
 offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
-[node name="PlatK" type="StaticBody2D" parent="."]
-position = Vector2(2620, 140)
+[node name="PlatM" type="StaticBody2D" parent="."]
+position = Vector2(2360, 150)
 
-[node name="Col" type="CollisionShape2D" parent="PlatK"]
-shape = SubResource("platform_shape3")
+[node name="Col" type="CollisionShape2D" parent="PlatM"]
+shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="PlatK"]
-offset_left = -110
+[node name="Vis" type="ColorRect" parent="PlatM"]
+offset_left = -100
 offset_top = -12.0
-offset_right = 110
+offset_right = 100
 offset_bottom = 12.0
 color = Color(0.26, 0.2, 0.38, 1)
 
-[node name="PlatL" type="StaticBody2D" parent="."]
-position = Vector2(3050, 130)
+[node name="PlatN" type="StaticBody2D" parent="."]
+position = Vector2(2500, 80)
 
-[node name="Col" type="CollisionShape2D" parent="PlatL"]
+[node name="Col" type="CollisionShape2D" parent="PlatN"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="PlatN"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatO" type="StaticBody2D" parent="."]
+position = Vector2(2640, 20)
+
+[node name="Col" type="CollisionShape2D" parent="PlatO"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="PlatO"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatP" type="StaticBody2D" parent="."]
+position = Vector2(2820, 200)
+
+[node name="Col" type="CollisionShape2D" parent="PlatP"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatP"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatQ" type="StaticBody2D" parent="."]
+position = Vector2(3000, 110)
+
+[node name="Col" type="CollisionShape2D" parent="PlatQ"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatQ"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatR" type="StaticBody2D" parent="."]
+position = Vector2(3180, 250)
+
+[node name="Col" type="CollisionShape2D" parent="PlatR"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="PlatR"]
+offset_left = -85
+offset_top = -12.0
+offset_right = 85
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatS" type="StaticBody2D" parent="."]
+position = Vector2(3360, 130)
+
+[node name="Col" type="CollisionShape2D" parent="PlatS"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatS"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatT" type="StaticBody2D" parent="."]
+position = Vector2(3540, 270)
+
+[node name="Col" type="CollisionShape2D" parent="PlatT"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="PlatT"]
+offset_left = -85
+offset_top = -12.0
+offset_right = 85
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatU" type="StaticBody2D" parent="."]
+position = Vector2(3720, 160)
+
+[node name="Col" type="CollisionShape2D" parent="PlatU"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatU"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatV" type="StaticBody2D" parent="."]
+position = Vector2(3850, 90)
+
+[node name="Col" type="CollisionShape2D" parent="PlatV"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatV"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatW" type="StaticBody2D" parent="."]
+position = Vector2(3980, 30)
+
+[node name="Col" type="CollisionShape2D" parent="PlatW"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatW"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatX" type="StaticBody2D" parent="."]
+position = Vector2(4160, 200)
+
+[node name="Col" type="CollisionShape2D" parent="PlatX"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatX"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatY" type="StaticBody2D" parent="."]
+position = Vector2(4340, 120)
+
+[node name="Col" type="CollisionShape2D" parent="PlatY"]
+shape = SubResource("platform_shape4")
+
+[node name="Vis" type="ColorRect" parent="PlatY"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.26, 0.2, 0.38, 1)
+
+[node name="PlatDoor" type="StaticBody2D" parent="."]
+position = Vector2(4620, 90)
+
+[node name="Col" type="CollisionShape2D" parent="PlatDoor"]
 shape = SubResource("platform_shape5")
 
-[node name="Vis" type="ColorRect" parent="PlatL"]
+[node name="Vis" type="ColorRect" parent="PlatDoor"]
 offset_left = -130
 offset_top = -12.0
 offset_right = 130
@@ -282,41 +520,65 @@ color = Color(0.26, 0.2, 0.38, 1)
 position = Vector2(250, 442)
 
 [node name="Soul2" parent="." instance=ExtResource("2_soul")]
-position = Vector2(1000, 442)
+position = Vector2(500, 442)
 
 [node name="Soul3" parent="." instance=ExtResource("2_soul")]
-position = Vector2(1750, 442)
+position = Vector2(660, 288)
 
 [node name="Soul4" parent="." instance=ExtResource("2_soul")]
-position = Vector2(2150, 442)
+position = Vector2(900, 442)
 
 [node name="Soul5" parent="." instance=ExtResource("2_soul")]
-position = Vector2(2650, 442)
+position = Vector2(1200, 148)
 
 [node name="Soul6" parent="." instance=ExtResource("2_soul")]
-position = Vector2(775, 318)
+position = Vector2(1500, 442)
 
 [node name="Soul7" parent="." instance=ExtResource("2_soul")]
-position = Vector2(1500, 238)
+position = Vector2(1740, 278)
 
 [node name="Soul8" parent="." instance=ExtResource("2_soul")]
-position = Vector2(2400, 288)
+position = Vector2(2000, 442)
+
+[node name="Soul9" parent="." instance=ExtResource("2_soul")]
+position = Vector2(2360, 138)
+
+[node name="Soul10" parent="." instance=ExtResource("2_soul")]
+position = Vector2(2500, 68)
+
+[node name="Soul11" parent="." instance=ExtResource("2_soul")]
+position = Vector2(3450, 442)
+
+[node name="Soul12" parent="." instance=ExtResource("2_soul")]
+position = Vector2(3650, 442)
+
+[node name="Soul13" parent="." instance=ExtResource("2_soul")]
+position = Vector2(3950, 442)
+
+[node name="Soul14" parent="." instance=ExtResource("2_soul")]
+position = Vector2(4250, 442)
+
+[node name="Soul15" parent="." instance=ExtResource("2_soul")]
+position = Vector2(4650, 442)
 
 [node name="Spike1" parent="." instance=ExtResource("8_spike")]
-position = Vector2(1200, 442)
+position = Vector2(900, 442)
 
 [node name="Spike2" parent="." instance=ExtResource("8_spike")]
-position = Vector2(2100, 442)
+position = Vector2(1950, 442)
 
 [node name="Spike3" parent="." instance=ExtResource("8_spike")]
-position = Vector2(2550, 442)
+position = Vector2(2900, 442)
+
+[node name="Spike4" parent="." instance=ExtResource("8_spike")]
+position = Vector2(3750, 442)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 position = Vector2(160, 400)
 
 [node name="Door" type="Area2D" parent="."]
 script = ExtResource("5_door")
-position = Vector2(3050, 86)
+position = Vector2(4650, 86)
 next_scene = "res://scenes/levels/level2.tscn"
 
 [node name="Col" type="CollisionShape2D" parent="Door"]
@@ -339,7 +601,63 @@ theme_override_colors/font_color = Color(0.95, 0.85, 0.2, 1)
 text = "EXIT"
 horizontal_alignment = 1
 
+[node name="HintStart" parent="." instance=ExtResource("3_hint")]
+position = Vector2(180, 400)
+hint = "TIP: Move with A/D. Press W or Space to jump!"
+
+[node name="HintSoul" parent="." instance=ExtResource("3_hint")]
+position = Vector2(380, 440)
+hint = "TIP: A Soul! They hop platforms and gaps to chase you. Press J (or Z) to attack."
+
+[node name="HintCoins" parent="." instance=ExtResource("3_hint")]
+position = Vector2(600, 400)
+hint = "TIP: The platforms zigzag UP and DOWN! Hop the stairs to cross the gaps."
+
+[node name="HintSpike" parent="." instance=ExtResource("3_hint")]
+position = Vector2(760, 440)
+hint = "TIP: Spikes deal 15 damage. Jump over them!"
+
+[node name="HintHeavy" parent="." instance=ExtResource("3_hint")]
+position = Vector2(900, 440)
+hint = "TIP: K (or X) is your heavy attack - slower, but hits much harder."
+
+[node name="HintSpecial" parent="." instance=ExtResource("3_hint")]
+position = Vector2(1150, 440)
+hint = "TIP: L (or C) is your special attack. Strong, but on a cooldown."
+
+[node name="HintJump" parent="." instance=ExtResource("3_hint")]
+position = Vector2(1420, 380)
+hint = "TIP: A BIG gap ahead - run from the edge, or bounce up through the maze above!"
+
+[node name="HintExit" parent="." instance=ExtResource("3_hint")]
+position = Vector2(3350, 330)
+hint = "TIP: Climb the high stairs, drop back down, beat the 5 guards, then take the last stairs to the EXIT."
+
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
+
+[node name="HintLayer" type="CanvasLayer" parent="."]
+
+[node name="HintPanel" type="ColorRect" parent="HintLayer"]
+offset_left = 140.0
+offset_top = 640.0
+offset_right = 1140.0
+offset_bottom = 706.0
+visible = false
+color = Color(0.1, 0.08, 0.2, 0.88)
+
+[node name="HintLabel" type="Label" parent="HintLayer"]
+offset_left = 160.0
+offset_top = 656.0
+offset_right = 1120.0
+offset_bottom = 690.0
+theme_override_colors/font_color = Color(0.95, 0.85, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintTimer" type="Timer" parent="HintLayer"]
+wait_time = 4.0
+one_shot = true
 
 [node name="Title" type="Label" parent="."]
 offset_left = 1320.0
@@ -348,5 +666,5 @@ offset_right = 1880.0
 offset_bottom = 60.0
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.95, 0.85, 0.2, 1)
-text = "UNDERWORLD ENTRANCE - smash your way in"
+text = "UNDERWORLD ENTRANCE - ZIGZAG, STAIRS AND CHASING SOULS"
 horizontal_alignment = 1

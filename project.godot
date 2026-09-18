@@ -22,6 +22,7 @@ config/features=PackedStringArray("4.7")
 
 GameState="*res://autoload/game_state.gd"
 InputSetup="*res://autoload/input_setup.gd"
+PauseMenu="*res://scenes/ui/pause_panel.tscn"
 
 [display]
 

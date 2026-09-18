@@ -29,3 +29,6 @@ monitoring = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("hitbox_shape")
 position = Vector2(0, -26)
+
+[node name="FloorAhead" type="RayCast2D" parent="."]
+target_position = Vector2(0, 24)
