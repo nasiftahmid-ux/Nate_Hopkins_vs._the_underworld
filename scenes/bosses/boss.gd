@@ -489,7 +489,7 @@ func die() -> void:
 	if GameState.defeated_exes >= 2:
 		GameState.dialogue_lines = [
 			{"speaker": "Aphrodite", "text": "Impressive, mortal. Two broken hearts, both beaten to a pulp..."},
-			{"speaker": "Aphrodite", "text": "But love is never won with fists. Love is a SONG, Nate Jacobs."},
+			{"speaker": "Aphrodite", "text": "But love is never won with fists. Love is a SONG, Nate Hopkins."},
 			{"speaker": "???", "text": "Proof you deserve another chance... must be sung beautifully."},
 			{"speaker": "Nate", "text": "Seriously? A dating game taught me how to fight. Now I have to learn to sing too?"},
 			{"speaker": "Aphrodite", "text": "Sing, and the Underworld will set you free. Miss the beat, and you begin again."},
@@ -506,7 +506,7 @@ func die() -> void:
 		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
 	else:
 		GameState.dialogue_lines = [
-			{"speaker": "Aphrodite", "text": "One heart down, one to go. But don't celebrate yet, Nate Jacobs."},
+			{"speaker": "Aphrodite", "text": "One heart down, one to go. But don't celebrate yet, Nate Hopkins."},
 			{"speaker": "???", "text": "You really don't remember me? My heart was yours first. And you broke it first."},
 			{"speaker": "???", "text": "You've learned to fight. Now prove you can keep a beat."},
 			{"speaker": "Nate", "text": "A rhythm game? In the Underworld? Who designed this place?"},

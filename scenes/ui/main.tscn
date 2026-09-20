@@ -35,7 +35,7 @@ theme_override_constants/separation = 20
 [node name="Title" type="Label" parent="Center/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 44
-text = "NATE JACOBS\nVS THE CURSE OF APHRODITE"
+text = "NATE HOPKINS\nVS THE UNDERWORLD"
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="Center/VBox"]
