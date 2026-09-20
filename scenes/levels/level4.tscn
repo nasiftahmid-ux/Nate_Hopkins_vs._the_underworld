@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/basic_enemy.tscn" id="2_soul"]
@@ -6,18 +6,19 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4_hud"]
 [ext_resource type="Script" path="res://scenes/levels/door.gd" id="5_door"]
 [ext_resource type="Script" path="res://scenes/levels/level4.gd" id="6_level"]
+[ext_resource type="PackedScene" path="res://scenes/levels/hint_zone.tscn" id="7_hint"]
 [ext_resource type="PackedScene" path="res://scenes/items/spikes.tscn" id="8_spike"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/cinder_imp.tscn" id="9_imp"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/sorrow_knight.tscn" id="10_knight"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
-size = Vector2(300, 60)
+size = Vector2(1300, 60)
 
 [sub_resource type="RectangleShape2D" id="floor_shape2"]
-size = Vector2(500, 60)
+size = Vector2(1500, 60)
 
 [sub_resource type="RectangleShape2D" id="floor_shape3"]
-size = Vector2(700, 60)
+size = Vector2(1900, 60)
 
 [sub_resource type="RectangleShape2D" id="wall_shape"]
 size = Vector2(40, 800)
@@ -35,6 +36,9 @@ size = Vector2(240, 24)
 size = Vector2(260, 24)
 
 [sub_resource type="RectangleShape2D" id="platform_shape5"]
+size = Vector2(280, 24)
+
+[sub_resource type="RectangleShape2D" id="platform_shape6"]
 size = Vector2(300, 24)
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
@@ -46,72 +50,124 @@ script = ExtResource("6_level")
 [node name="BG" type="ColorRect" parent="."]
 offset_left = -300.0
 offset_top = -600.0
-offset_right = 3500.0
+offset_right = 15450.0
 offset_bottom = 540.0
 color = Color(0.15, 0.03, 0.05, 1)
 
 [node name="FloorA" type="StaticBody2D" parent="."]
-position = Vector2(350, 470)
+position = Vector2(700, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorA"]
-shape = SubResource("floor_shape3")
+shape = SubResource("floor_shape")
 
 [node name="Vis" type="ColorRect" parent="FloorA"]
-offset_left = -350
+offset_left = -650
 offset_top = -30.0
-offset_right = 350
+offset_right = 650
 offset_bottom = 30.0
 color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorB" type="StaticBody2D" parent="."]
-position = Vector2(1050, 470)
+position = Vector2(2200, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorB"]
 shape = SubResource("floor_shape2")
 
 [node name="Vis" type="ColorRect" parent="FloorB"]
-offset_left = -250
+offset_left = -750
 offset_top = -30.0
-offset_right = 250
+offset_right = 750
 offset_bottom = 30.0
 color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorC" type="StaticBody2D" parent="."]
-position = Vector2(1750, 470)
+position = Vector2(4200, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorC"]
-shape = SubResource("floor_shape3")
+shape = SubResource("floor_shape")
 
 [node name="Vis" type="ColorRect" parent="FloorC"]
-offset_left = -350
+offset_left = -650
 offset_top = -30.0
-offset_right = 350
+offset_right = 650
 offset_bottom = 30.0
 color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorD" type="StaticBody2D" parent="."]
-position = Vector2(2550, 470)
+position = Vector2(5700, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorD"]
-shape = SubResource("floor_shape3")
+shape = SubResource("floor_shape2")
 
 [node name="Vis" type="ColorRect" parent="FloorD"]
-offset_left = -350
+offset_left = -750
 offset_top = -30.0
-offset_right = 350
+offset_right = 750
 offset_bottom = 30.0
 color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorE" type="StaticBody2D" parent="."]
-position = Vector2(3050, 470)
+position = Vector2(7300, 470)
 
 [node name="Col" type="CollisionShape2D" parent="FloorE"]
-shape = SubResource("floor_shape")
+shape = SubResource("floor_shape2")
 
 [node name="Vis" type="ColorRect" parent="FloorE"]
-offset_left = -150
+offset_left = -750
 offset_top = -30.0
-offset_right = 150
+offset_right = 750
+offset_bottom = 30.0
+color = Color(0.38, 0.1, 0.14, 1)
+
+[node name="FloorF" type="StaticBody2D" parent="."]
+position = Vector2(9300, 470)
+
+[node name="Col" type="CollisionShape2D" parent="FloorF"]
+shape = SubResource("floor_shape")
+
+[node name="Vis" type="ColorRect" parent="FloorF"]
+offset_left = -650
+offset_top = -30.0
+offset_right = 650
+offset_bottom = 30.0
+color = Color(0.38, 0.1, 0.14, 1)
+
+[node name="FloorG" type="StaticBody2D" parent="."]
+position = Vector2(11000, 470)
+
+[node name="Col" type="CollisionShape2D" parent="FloorG"]
+shape = SubResource("floor_shape2")
+
+[node name="Vis" type="ColorRect" parent="FloorG"]
+offset_left = -750
+offset_top = -30.0
+offset_right = 750
+offset_bottom = 30.0
+color = Color(0.38, 0.1, 0.14, 1)
+
+[node name="FloorH" type="StaticBody2D" parent="."]
+position = Vector2(12600, 470)
+
+[node name="Col" type="CollisionShape2D" parent="FloorH"]
+shape = SubResource("floor_shape2")
+
+[node name="Vis" type="ColorRect" parent="FloorH"]
+offset_left = -750
+offset_top = -30.0
+offset_right = 750
+offset_bottom = 30.0
+color = Color(0.38, 0.1, 0.14, 1)
+
+[node name="FloorI" type="StaticBody2D" parent="."]
+position = Vector2(14350, 470)
+
+[node name="Col" type="CollisionShape2D" parent="FloorI"]
+shape = SubResource("floor_shape3")
+
+[node name="Vis" type="ColorRect" parent="FloorI"]
+offset_left = -950
+offset_top = -30.0
+offset_right = 950
 offset_bottom = 30.0
 color = Color(0.38, 0.1, 0.14, 1)
 
@@ -129,7 +185,7 @@ offset_bottom = 400.0
 color = Color(0.44, 0.12, 0.18, 1)
 
 [node name="WallR" type="StaticBody2D" parent="."]
-position = Vector2(3220, 0)
+position = Vector2(15300, 0)
 
 [node name="Col" type="CollisionShape2D" parent="WallR"]
 shape = SubResource("wall_shape")
@@ -141,162 +197,1078 @@ offset_right = 20.0
 offset_bottom = 400.0
 color = Color(0.44, 0.12, 0.18, 1)
 
-[node name="PlatA" type="StaticBody2D" parent="."]
-position = Vector2(550, 330)
+[node name="GStone1" type="StaticBody2D" parent="."]
+position = Vector2(3150, 540)
 
-[node name="Col" type="CollisionShape2D" parent="PlatA"]
+[node name="Col" type="CollisionShape2D" parent="GStone1"]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="PlatA"]
+[node name="Vis" type="ColorRect" parent="GStone1"]
 offset_left = -110
 offset_top = -12.0
 offset_right = 110
 offset_bottom = 12.0
-color = Color(0.5, 0.16, 0.22, 1)
+color = Color(0.42, 0.18, 0.3, 1)
 
-[node name="PlatB" type="StaticBody2D" parent="."]
-position = Vector2(1450, 280)
+[node name="GStone2" type="StaticBody2D" parent="."]
+position = Vector2(3400, 560)
 
-[node name="Col" type="CollisionShape2D" parent="PlatB"]
-shape = SubResource("platform_shape5")
+[node name="Col" type="CollisionShape2D" parent="GStone2"]
+shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="PlatB"]
-offset_left = -150
+[node name="Vis" type="ColorRect" parent="GStone2"]
+offset_left = -110
 offset_top = -12.0
-offset_right = 150
+offset_right = 110
 offset_bottom = 12.0
-color = Color(0.5, 0.16, 0.22, 1)
+color = Color(0.42, 0.18, 0.3, 1)
 
-[node name="PlatC" type="StaticBody2D" parent="."]
-position = Vector2(1700, 180)
+[node name="GStone3" type="StaticBody2D" parent="."]
+position = Vector2(8250, 540)
 
-[node name="Col" type="CollisionShape2D" parent="PlatC"]
+[node name="Col" type="CollisionShape2D" parent="GStone3"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="GStone3"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.42, 0.18, 0.3, 1)
+
+[node name="GStone4" type="StaticBody2D" parent="."]
+position = Vector2(8450, 560)
+
+[node name="Col" type="CollisionShape2D" parent="GStone4"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="GStone4"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.42, 0.18, 0.3, 1)
+
+[node name="GStone5" type="StaticBody2D" parent="."]
+position = Vector2(10080, 540)
+
+[node name="Col" type="CollisionShape2D" parent="GStone5"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="GStone5"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.42, 0.18, 0.3, 1)
+
+[node name="P11" type="StaticBody2D" parent="."]
+position = Vector2(300, 350)
+
+[node name="Col" type="CollisionShape2D" parent="P11"]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="ColorRect" parent="PlatC"]
+[node name="Vis" type="ColorRect" parent="P11"]
 offset_left = -100
 offset_top = -12.0
 offset_right = 100
 offset_bottom = 12.0
 color = Color(0.5, 0.16, 0.22, 1)
 
-[node name="PlatD" type="StaticBody2D" parent="."]
-position = Vector2(2200, 320)
+[node name="P12" type="StaticBody2D" parent="."]
+position = Vector2(450, 260)
 
-[node name="Col" type="CollisionShape2D" parent="PlatD"]
-shape = SubResource("platform_shape5")
+[node name="Col" type="CollisionShape2D" parent="P12"]
+shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="PlatD"]
-offset_left = -150
+[node name="Vis" type="ColorRect" parent="P12"]
+offset_left = -110
 offset_top = -12.0
-offset_right = 150
+offset_right = 110
 offset_bottom = 12.0
 color = Color(0.5, 0.16, 0.22, 1)
 
-[node name="PlatE" type="StaticBody2D" parent="."]
-position = Vector2(2700, 220)
+[node name="P13" type="StaticBody2D" parent="."]
+position = Vector2(600, 170)
 
-[node name="Col" type="CollisionShape2D" parent="PlatE"]
+[node name="Col" type="CollisionShape2D" parent="P13"]
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="PlatE"]
+[node name="Vis" type="ColorRect" parent="P13"]
 offset_left = -120
 offset_top = -12.0
 offset_right = 120
 offset_bottom = 12.0
 color = Color(0.5, 0.16, 0.22, 1)
 
-[node name="PlatF" type="StaticBody2D" parent="."]
-position = Vector2(3100, 140)
+[node name="P14" type="StaticBody2D" parent="."]
+position = Vector2(800, 290)
 
-[node name="Col" type="CollisionShape2D" parent="PlatF"]
+[node name="Col" type="CollisionShape2D" parent="P14"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P14"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P15" type="StaticBody2D" parent="."]
+position = Vector2(1000, 380)
+
+[node name="Col" type="CollisionShape2D" parent="P15"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P15"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P21" type="StaticBody2D" parent="."]
+position = Vector2(1650, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P21"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P21"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P22" type="StaticBody2D" parent="."]
+position = Vector2(1800, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P22"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P22"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P23" type="StaticBody2D" parent="."]
+position = Vector2(1950, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P23"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P23"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P24" type="StaticBody2D" parent="."]
+position = Vector2(2150, 280)
+
+[node name="Col" type="CollisionShape2D" parent="P24"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P24"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P25" type="StaticBody2D" parent="."]
+position = Vector2(2350, 180)
+
+[node name="Col" type="CollisionShape2D" parent="P25"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P25"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P26" type="StaticBody2D" parent="."]
+position = Vector2(2550, 100)
+
+[node name="Col" type="CollisionShape2D" parent="P26"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P26"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P27" type="StaticBody2D" parent="."]
+position = Vector2(2750, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P27"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P27"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P31" type="StaticBody2D" parent="."]
+position = Vector2(2900, 260)
+
+[node name="Col" type="CollisionShape2D" parent="P31"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P31"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P32" type="StaticBody2D" parent="."]
+position = Vector2(3060, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P32"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P32"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P33" type="StaticBody2D" parent="."]
+position = Vector2(3230, 90)
+
+[node name="Col" type="CollisionShape2D" parent="P33"]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="PlatF"]
+[node name="Vis" type="ColorRect" parent="P33"]
 offset_left = -130
 offset_top = -12.0
 offset_right = 130
 offset_bottom = 12.0
 color = Color(0.5, 0.16, 0.22, 1)
 
+[node name="P34" type="StaticBody2D" parent="."]
+position = Vector2(3520, 260)
+
+[node name="Col" type="CollisionShape2D" parent="P34"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P34"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P35" type="StaticBody2D" parent="."]
+position = Vector2(3720, 270)
+
+[node name="Col" type="CollisionShape2D" parent="P35"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P35"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P36" type="StaticBody2D" parent="."]
+position = Vector2(3940, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P36"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P36"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P37" type="StaticBody2D" parent="."]
+position = Vector2(4100, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P37"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P37"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P38" type="StaticBody2D" parent="."]
+position = Vector2(4350, 300)
+
+[node name="Col" type="CollisionShape2D" parent="P38"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P38"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P39" type="StaticBody2D" parent="."]
+position = Vector2(4550, 380)
+
+[node name="Col" type="CollisionShape2D" parent="P39"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P39"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P41" type="StaticBody2D" parent="."]
+position = Vector2(5100, 350)
+
+[node name="Col" type="CollisionShape2D" parent="P41"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P41"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P42" type="StaticBody2D" parent="."]
+position = Vector2(5250, 260)
+
+[node name="Col" type="CollisionShape2D" parent="P42"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P42"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P43" type="StaticBody2D" parent="."]
+position = Vector2(5400, 170)
+
+[node name="Col" type="CollisionShape2D" parent="P43"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P43"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P44" type="StaticBody2D" parent="."]
+position = Vector2(5650, 330)
+
+[node name="Col" type="CollisionShape2D" parent="P44"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P44"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P45" type="StaticBody2D" parent="."]
+position = Vector2(5900, 240)
+
+[node name="Col" type="CollisionShape2D" parent="P45"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P45"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P46" type="StaticBody2D" parent="."]
+position = Vector2(6150, 150)
+
+[node name="Col" type="CollisionShape2D" parent="P46"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P46"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P47" type="StaticBody2D" parent="."]
+position = Vector2(6350, 300)
+
+[node name="Col" type="CollisionShape2D" parent="P47"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P47"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P51" type="StaticBody2D" parent="."]
+position = Vector2(6700, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P51"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P51"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P52" type="StaticBody2D" parent="."]
+position = Vector2(6850, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P52"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P52"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P53" type="StaticBody2D" parent="."]
+position = Vector2(7000, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P53"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P53"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P54" type="StaticBody2D" parent="."]
+position = Vector2(7300, 330)
+
+[node name="Col" type="CollisionShape2D" parent="P54"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P54"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P55" type="StaticBody2D" parent="."]
+position = Vector2(7500, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P55"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P55"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P56" type="StaticBody2D" parent="."]
+position = Vector2(7700, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P56"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P56"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P57" type="StaticBody2D" parent="."]
+position = Vector2(7950, 270)
+
+[node name="Col" type="CollisionShape2D" parent="P57"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P57"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P61" type="StaticBody2D" parent="."]
+position = Vector2(8150, 220)
+
+[node name="Col" type="CollisionShape2D" parent="P61"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P61"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P62" type="StaticBody2D" parent="."]
+position = Vector2(8400, 130)
+
+[node name="Col" type="CollisionShape2D" parent="P62"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P62"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P63" type="StaticBody2D" parent="."]
+position = Vector2(8600, 260)
+
+[node name="Col" type="CollisionShape2D" parent="P63"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P63"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P64" type="StaticBody2D" parent="."]
+position = Vector2(8850, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P64"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P64"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P65" type="StaticBody2D" parent="."]
+position = Vector2(9000, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P65"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P65"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P66" type="StaticBody2D" parent="."]
+position = Vector2(9200, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P66"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P66"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P67" type="StaticBody2D" parent="."]
+position = Vector2(9500, 330)
+
+[node name="Col" type="CollisionShape2D" parent="P67"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P67"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P68" type="StaticBody2D" parent="."]
+position = Vector2(9600, 380)
+
+[node name="Col" type="CollisionShape2D" parent="P68"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P68"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P71" type="StaticBody2D" parent="."]
+position = Vector2(10400, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P71"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P71"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P72" type="StaticBody2D" parent="."]
+position = Vector2(10550, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P72"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P72"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P73" type="StaticBody2D" parent="."]
+position = Vector2(10700, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P73"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P73"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P74" type="StaticBody2D" parent="."]
+position = Vector2(11000, 330)
+
+[node name="Col" type="CollisionShape2D" parent="P74"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P74"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P75" type="StaticBody2D" parent="."]
+position = Vector2(11250, 240)
+
+[node name="Col" type="CollisionShape2D" parent="P75"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P75"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P76" type="StaticBody2D" parent="."]
+position = Vector2(11400, 320)
+
+[node name="Col" type="CollisionShape2D" parent="P76"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P76"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P81" type="StaticBody2D" parent="."]
+position = Vector2(12000, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P81"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P81"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P82" type="StaticBody2D" parent="."]
+position = Vector2(12150, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P82"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P82"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P83" type="StaticBody2D" parent="."]
+position = Vector2(12300, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P83"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P83"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P84" type="StaticBody2D" parent="."]
+position = Vector2(12600, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P84"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P84"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P85" type="StaticBody2D" parent="."]
+position = Vector2(12850, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P85"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P85"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P86" type="StaticBody2D" parent="."]
+position = Vector2(13000, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P86"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P86"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P87" type="StaticBody2D" parent="."]
+position = Vector2(13150, 300)
+
+[node name="Col" type="CollisionShape2D" parent="P87"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P87"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P91" type="StaticBody2D" parent="."]
+position = Vector2(13600, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P91"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P91"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P92" type="StaticBody2D" parent="."]
+position = Vector2(13750, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P92"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P92"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P93" type="StaticBody2D" parent="."]
+position = Vector2(13900, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P93"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P93"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P94" type="StaticBody2D" parent="."]
+position = Vector2(14200, 330)
+
+[node name="Col" type="CollisionShape2D" parent="P94"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P94"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P95" type="StaticBody2D" parent="."]
+position = Vector2(14450, 240)
+
+[node name="Col" type="CollisionShape2D" parent="P95"]
+shape = SubResource("platform_shape3")
+
+[node name="Vis" type="ColorRect" parent="P95"]
+offset_left = -120
+offset_top = -12.0
+offset_right = 120
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P96" type="StaticBody2D" parent="."]
+position = Vector2(14700, 340)
+
+[node name="Col" type="CollisionShape2D" parent="P96"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P96"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P97" type="StaticBody2D" parent="."]
+position = Vector2(14950, 250)
+
+[node name="Col" type="CollisionShape2D" parent="P97"]
+shape = SubResource("platform_shape2")
+
+[node name="Vis" type="ColorRect" parent="P97"]
+offset_left = -110
+offset_top = -12.0
+offset_right = 110
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="P98" type="StaticBody2D" parent="."]
+position = Vector2(15050, 160)
+
+[node name="Col" type="CollisionShape2D" parent="P98"]
+shape = SubResource("platform_shape")
+
+[node name="Vis" type="ColorRect" parent="P98"]
+offset_left = -100
+offset_top = -12.0
+offset_right = 100
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
+[node name="PlatDoor" type="StaticBody2D" parent="."]
+position = Vector2(15180, 120)
+
+[node name="Col" type="CollisionShape2D" parent="PlatDoor"]
+shape = SubResource("platform_shape6")
+
+[node name="Vis" type="ColorRect" parent="PlatDoor"]
+offset_left = -150
+offset_top = -12.0
+offset_right = 150
+offset_bottom = 12.0
+color = Color(0.5, 0.16, 0.22, 1)
+
 [node name="Shooter1" parent="." instance=ExtResource("3_shooter")]
-position = Vector2(550, 318)
+position = Vector2(600, 158)
 
 [node name="Shooter2" parent="." instance=ExtResource("3_shooter")]
-position = Vector2(1450, 268)
+position = Vector2(1950, 148)
 
 [node name="Shooter3" parent="." instance=ExtResource("3_shooter")]
-position = Vector2(2200, 308)
+position = Vector2(4100, 148)
 
-[node name="Knight1" parent="." instance=ExtResource("10_knight")]
-position = Vector2(900, 440)
+[node name="Shooter4" parent="." instance=ExtResource("3_shooter")]
+position = Vector2(5400, 158)
 
-[node name="Knight2" parent="." instance=ExtResource("10_knight")]
-position = Vector2(1600, 440)
+[node name="Shooter5" parent="." instance=ExtResource("3_shooter")]
+position = Vector2(7000, 148)
 
-[node name="Knight3" parent="." instance=ExtResource("10_knight")]
-position = Vector2(2300, 440)
+[node name="Shooter6" parent="." instance=ExtResource("3_shooter")]
+position = Vector2(9200, 148)
 
-[node name="Knight4" parent="." instance=ExtResource("10_knight")]
-position = Vector2(2900, 440)
+[node name="Shooter7" parent="." instance=ExtResource("3_shooter")]
+position = Vector2(10700, 148)
+
+[node name="Shooter8" parent="." instance=ExtResource("3_shooter")]
+position = Vector2(12300, 148)
+
+[node name="Shooter9" parent="." instance=ExtResource("3_shooter")]
+position = Vector2(13900, 148)
 
 [node name="Imp1" parent="." instance=ExtResource("9_imp")]
-position = Vector2(300, 442)
+position = Vector2(350, 442)
 
 [node name="Imp2" parent="." instance=ExtResource("9_imp")]
-position = Vector2(1100, 442)
+position = Vector2(700, 442)
 
 [node name="Imp3" parent="." instance=ExtResource("9_imp")]
-position = Vector2(1450, 442)
+position = Vector2(1700, 442)
 
 [node name="Imp4" parent="." instance=ExtResource("9_imp")]
-position = Vector2(2000, 442)
+position = Vector2(4200, 442)
 
 [node name="Imp5" parent="." instance=ExtResource("9_imp")]
-position = Vector2(2600, 442)
+position = Vector2(5100, 442)
 
 [node name="Imp6" parent="." instance=ExtResource("9_imp")]
-position = Vector2(3150, 442)
+position = Vector2(5800, 442)
+
+[node name="Imp7" parent="." instance=ExtResource("9_imp")]
+position = Vector2(6800, 442)
+
+[node name="Imp8" parent="." instance=ExtResource("9_imp")]
+position = Vector2(8800, 442)
+
+[node name="Imp9" parent="." instance=ExtResource("9_imp")]
+position = Vector2(9400, 442)
+
+[node name="Imp10" parent="." instance=ExtResource("9_imp")]
+position = Vector2(10700, 442)
+
+[node name="Imp11" parent="." instance=ExtResource("9_imp")]
+position = Vector2(12300, 442)
+
+[node name="Imp12" parent="." instance=ExtResource("9_imp")]
+position = Vector2(12900, 442)
+
+[node name="Imp13" parent="." instance=ExtResource("9_imp")]
+position = Vector2(13700, 442)
 
 [node name="Soul1" parent="." instance=ExtResource("2_soul")]
-position = Vector2(500, 442)
+position = Vector2(900, 442)
 
 [node name="Soul2" parent="." instance=ExtResource("2_soul")]
-position = Vector2(1200, 442)
+position = Vector2(2100, 442)
 
 [node name="Soul3" parent="." instance=ExtResource("2_soul")]
-position = Vector2(1800, 442)
+position = Vector2(2550, 90)
 
 [node name="Soul4" parent="." instance=ExtResource("2_soul")]
-position = Vector2(2400, 442)
+position = Vector2(4500, 442)
 
 [node name="Soul5" parent="." instance=ExtResource("2_soul")]
-position = Vector2(2750, 442)
+position = Vector2(6200, 442)
 
 [node name="Soul6" parent="." instance=ExtResource("2_soul")]
-position = Vector2(3050, 442)
+position = Vector2(7100, 442)
+
+[node name="Soul7" parent="." instance=ExtResource("2_soul")]
+position = Vector2(7800, 442)
+
+[node name="Soul8" parent="." instance=ExtResource("2_soul")]
+position = Vector2(9650, 442)
+
+[node name="Soul9" parent="." instance=ExtResource("2_soul")]
+position = Vector2(11000, 442)
+
+[node name="Soul10" parent="." instance=ExtResource("2_soul")]
+position = Vector2(12000, 442)
+
+[node name="Soul11" parent="." instance=ExtResource("2_soul")]
+position = Vector2(14200, 442)
+
+[node name="Soul12" parent="." instance=ExtResource("2_soul")]
+position = Vector2(14700, 442)
+
+[node name="Knight1" parent="." instance=ExtResource("10_knight")]
+position = Vector2(1150, 440)
+
+[node name="Knight2" parent="." instance=ExtResource("10_knight")]
+position = Vector2(2600, 440)
+
+[node name="Knight3" parent="." instance=ExtResource("10_knight")]
+position = Vector2(3850, 440)
+
+[node name="Knight4" parent="." instance=ExtResource("10_knight")]
+position = Vector2(4700, 440)
+
+[node name="Knight5" parent="." instance=ExtResource("10_knight")]
+position = Vector2(5400, 440)
+
+[node name="Knight6" parent="." instance=ExtResource("10_knight")]
+position = Vector2(7500, 440)
+
+[node name="Knight7" parent="." instance=ExtResource("10_knight")]
+position = Vector2(9000, 440)
+
+[node name="Knight8" parent="." instance=ExtResource("10_knight")]
+position = Vector2(10500, 440)
+
+[node name="Knight9" parent="." instance=ExtResource("10_knight")]
+position = Vector2(11300, 440)
+
+[node name="Knight10" parent="." instance=ExtResource("10_knight")]
+position = Vector2(12600, 440)
+
+[node name="Knight11" parent="." instance=ExtResource("10_knight")]
+position = Vector2(13900, 440)
 
 [node name="Spike1" parent="." instance=ExtResource("8_spike")]
 position = Vector2(950, 442)
 
 [node name="Spike2" parent="." instance=ExtResource("8_spike")]
-position = Vector2(1300, 442)
+position = Vector2(2900, 442)
 
 [node name="Spike3" parent="." instance=ExtResource("8_spike")]
-position = Vector2(1650, 442)
+position = Vector2(5000, 442)
 
 [node name="Spike4" parent="." instance=ExtResource("8_spike")]
-position = Vector2(2350, 442)
+position = Vector2(7500, 442)
 
 [node name="Spike5" parent="." instance=ExtResource("8_spike")]
-position = Vector2(3000, 442)
+position = Vector2(9900, 442)
+
+[node name="Spike6" parent="." instance=ExtResource("8_spike")]
+position = Vector2(12000, 442)
+
+[node name="Spike7" parent="." instance=ExtResource("8_spike")]
+position = Vector2(14600, 442)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
 position = Vector2(160, 400)
 
 [node name="Door" type="Area2D" parent="."]
 script = ExtResource("5_door")
-position = Vector2(3100, 96)
+position = Vector2(15180, 86)
 next_scene = "res://scenes/bosses/boss_arena.tscn"
 
 [node name="Col" type="CollisionShape2D" parent="Door"]
@@ -319,14 +1291,172 @@ theme_override_colors/font_color = Color(0.95, 0.85, 0.2, 1)
 text = "EXIT"
 horizontal_alignment = 1
 
+[node name="HintStart" parent="." instance=ExtResource("7_hint")]
+position = Vector2(180, 400)
+hint = "TIP: Move with A/D. Press W or Space to jump! Level 4 has 9 parts - every gate is guarded."
+
+[node name="HintKnight" parent="." instance=ExtResource("7_hint")]
+position = Vector2(1150, 440)
+hint = "TIP: A Sorrow Knight! Big and slow, but hits hard. Dodge and strike."
+
+[node name="HintShooter" parent="." instance=ExtResource("7_hint")]
+position = Vector2(600, 440)
+hint = "TIP: Tear throwers fire at you from platforms. Jump or attack them."
+
+[node name="HintPart2" parent="." instance=ExtResource("7_hint")]
+position = Vector2(2200, 440)
+hint = "PART 2 - THE SECOND GATE: climb the stairs past souls and imps."
+
+[node name="HintPart3" parent="." instance=ExtResource("7_hint")]
+position = Vector2(4000, 440)
+hint = "PART 3 - THE THIRD GATE: leap the chasm towers with the guards on your tail!"
+
+[node name="HintPart4" parent="." instance=ExtResource("7_hint")]
+position = Vector2(5700, 440)
+hint = "PART 4 - THE FOURTH GATE: zigzag the courts beneath the throwers."
+
+[node name="HintPart5" parent="." instance=ExtResource("7_hint")]
+position = Vector2(7300, 440)
+hint = "PART 5 - THE FIFTH GATE: drop across the terraces to the far side."
+
+[node name="HintPart6" parent="." instance=ExtResource("7_hint")]
+position = Vector2(9200, 440)
+hint = "PART 6 - THE SIXTH GATE: cross the second chasm, then leap the 300 gap!"
+
+[node name="HintPart7" parent="." instance=ExtResource("7_hint")]
+position = Vector2(11000, 440)
+hint = "PART 7 - THE SEVENTH GATE: knights flank the road ahead."
+
+[node name="HintPart8" parent="." instance=ExtResource("7_hint")]
+position = Vector2(12600, 440)
+hint = "PART 8 - THE EIGHTH GATE: high platforms, low patience. Steady climbs only."
+
+[node name="HintPart9" parent="." instance=ExtResource("7_hint")]
+position = Vector2(14200, 440)
+hint = "PART 9 - THE NINTH GATE: the final climb to the doors of judgment!"
+
+[node name="Part1Label" type="Label" parent="."]
+offset_left = 490.0
+offset_top = 20.0
+offset_right = 910.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 1 - THE FIRST GATE"
+horizontal_alignment = 1
+
+[node name="Part2Label" type="Label" parent="."]
+offset_left = 1990.0
+offset_top = 20.0
+offset_right = 2410.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 2 - THE SECOND GATE"
+horizontal_alignment = 1
+
+[node name="Part3Label" type="Label" parent="."]
+offset_left = 3990.0
+offset_top = 20.0
+offset_right = 4410.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 3 - THE THIRD GATE"
+horizontal_alignment = 1
+
+[node name="Part4Label" type="Label" parent="."]
+offset_left = 5490.0
+offset_top = 20.0
+offset_right = 5910.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 4 - THE FOURTH GATE"
+horizontal_alignment = 1
+
+[node name="Part5Label" type="Label" parent="."]
+offset_left = 7090.0
+offset_top = 20.0
+offset_right = 7510.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 5 - THE FIFTH GATE"
+horizontal_alignment = 1
+
+[node name="Part6Label" type="Label" parent="."]
+offset_left = 9090.0
+offset_top = 20.0
+offset_right = 9510.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 6 - THE SIXTH GATE"
+horizontal_alignment = 1
+
+[node name="Part7Label" type="Label" parent="."]
+offset_left = 10790.0
+offset_top = 20.0
+offset_right = 11210.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 7 - THE SEVENTH GATE"
+horizontal_alignment = 1
+
+[node name="Part8Label" type="Label" parent="."]
+offset_left = 12390.0
+offset_top = 20.0
+offset_right = 12810.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 8 - THE EIGHTH GATE"
+horizontal_alignment = 1
+
+[node name="Part9Label" type="Label" parent="."]
+offset_left = 14140.0
+offset_top = 20.0
+offset_right = 14560.0
+offset_bottom = 50.0
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.6, 0.6, 0.9)
+text = "PART 9 - THE NINTH GATE"
+horizontal_alignment = 1
+
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
 
+[node name="HintLayer" type="CanvasLayer" parent="."]
+
+[node name="HintPanel" type="ColorRect" parent="HintLayer"]
+offset_left = 140.0
+offset_top = 640.0
+offset_right = 1140.0
+offset_bottom = 706.0
+visible = false
+color = Color(0.1, 0.08, 0.2, 0.88)
+
+[node name="HintLabel" type="Label" parent="HintLayer"]
+offset_left = 160.0
+offset_top = 656.0
+offset_right = 1120.0
+offset_bottom = 690.0
+theme_override_colors/font_color = Color(0.95, 0.85, 0.45, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HintTimer" type="Timer" parent="HintLayer"]
+wait_time = 4.0
+one_shot = true
+
 [node name="Title" type="Label" parent="."]
-offset_left = 1320.0
+offset_left = 6900.0
 offset_top = 30.0
-offset_right = 1880.0
+offset_right = 8400.0
 offset_bottom = 60.0
 theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(1, 0.6, 0.6, 1)
-text = "GATES OF JUDGMENT - judgment comes for all"
+text = "GATES OF JUDGMENT - NINE PARTS, 45 ENEMIES, ONE VERDICT"
 horizontal_alignment = 1
