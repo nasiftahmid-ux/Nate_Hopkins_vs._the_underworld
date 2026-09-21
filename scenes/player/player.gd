@@ -177,15 +177,20 @@ func die() -> void:
 	if not is_physics_processing():
 		return
 	set_physics_process(false)
+	get_tree().paused = true
+	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
 	sprite.modulate = Color.WHITE
 	is_attacking = false
 	hitbox.monitoring = false
 	var fall_delay := 0.0
 	if sprite.sprite_frames.has_animation("death"):
 		sprite.play("death")
-		fall_delay = sprite.sprite_frames.get_animation_length("death")
+		if not sprite.sprite_frames.get_animation_loop("death"):
+			await sprite.animation_finished
+		else:
+			fall_delay = sprite.sprite_frames.get_animation_length("death")
+			await get_tree().create_timer(fall_delay + 0.6, true).timeout
 	else:
-		fall_delay = 0.5
-	await get_tree().create_timer(fall_delay + 0.6).timeout
+		await get_tree().create_timer(1.1, true).timeout
 	var death_panel := preload("res://scenes/ui/death_panel.tscn").instantiate()
 	get_tree().current_scene.add_child(death_panel)
