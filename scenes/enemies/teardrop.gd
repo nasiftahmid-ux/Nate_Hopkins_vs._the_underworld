@@ -1,7 +1,7 @@
 extends Area2D
 
 var vel := Vector2.ZERO
-var ttl := 3.0
+var ttl := 3.5
 const DAMAGE := 6.0
 
 

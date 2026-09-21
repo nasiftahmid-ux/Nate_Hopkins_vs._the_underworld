@@ -1,12 +1,12 @@
 extends CharacterBody2D
 
 const GRAVITY := 1600.0
-const MIN_RANGE := 130.0
-const FIRE_RANGE := 300.0
+const MIN_RANGE := 260.0
+const FIRE_RANGE := 620.0
 const FAKE_COIN := 8
 
 var hp := 24.0
-var speed := 55.0
+var speed := 70.0
 var fire_timer := 2.0
 var alive := true
 
@@ -30,13 +30,13 @@ func _physics_process(delta: float) -> void:
 		if dir != 0.0:
 			body.scale.x = dir
 		var dist := global_position.distance_to(player.global_position)
-		if absf(dx) > MIN_RANGE:
-			vx = dir * speed
-		elif dist < MIN_RANGE and absf(dx) > 30.0:
+		if absf(dx) < MIN_RANGE:
 			vx = -dir * speed
+		elif dist > FIRE_RANGE + 40.0:
+			vx = dir * speed
 		fire_timer -= delta
-		if fire_timer <= 0.0 and dist < FIRE_RANGE:
-			fire_timer = 2.0
+		if fire_timer <= 0.0 and dist <= FIRE_RANGE:
+			fire_timer = 1.6
 			_fire(player)
 	velocity.x = move_toward(velocity.x, vx, 400.0 * delta)
 	move_and_slide()

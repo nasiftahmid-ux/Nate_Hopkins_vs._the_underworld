@@ -7,6 +7,10 @@ var speed := 42.0
 var damage := 12.0
 var alive := true
 var attack_cooldown := 0.0
+var blocking := false
+var block_timer := 0.0
+
+const BLOCK_RANGE := 84.0
 
 @onready var body: ColorRect = $Body
 
@@ -25,11 +29,22 @@ func _physics_process(delta: float) -> void:
 	var vx := 0.0
 	if player:
 		var dir := signf(player.global_position.x - global_position.x)
-		if absf(player.global_position.x - global_position.x) > 48.0:
+		var dist := global_position.distance_to(player.global_position)
+		if blocking:
+			block_timer -= delta
+			if block_timer <= 0.0:
+				blocking = false
+				body.color = Color(0.55, 0.3, 0.65, 1)
+		elif dist < BLOCK_RANGE and player.get("is_attacking") == true:
+			blocking = true
+			block_timer = 0.7
+			velocity.x = 0.0
+			body.color = Color(0.35, 0.8, 0.55, 1)
+		if absf(player.global_position.x - global_position.x) > 48.0 and not blocking:
 			vx = dir * speed
 		if dir != 0.0:
 			body.scale.x = dir
-		if global_position.distance_to(player.global_position) < 56.0 and attack_cooldown <= 0.0:
+		if dist < 56.0 and attack_cooldown <= 0.0 and not blocking:
 			attack_cooldown = 2.0
 			if player.has_method("take_damage"):
 				player.take_damage(damage)
@@ -40,6 +55,14 @@ func _physics_process(delta: float) -> void:
 func take_hit(dmg: float, dir: float) -> void:
 	if not alive:
 		return
+	if blocking:
+		hp -= dmg * 0.15
+		velocity.x = dir * 20.0
+		body.color = Color(0.9, 0.95, 0.5)
+		get_tree().create_timer(0.12).timeout.connect(_block_reset_color)
+		if hp <= 0.0:
+			die()
+		return
 	hp -= dmg
 	velocity.x = dir * 100.0
 	velocity.y = -80.0
@@ -47,6 +70,12 @@ func take_hit(dmg: float, dir: float) -> void:
 	get_tree().create_timer(0.12).timeout.connect(_reset_color)
 	if hp <= 0.0:
 		die()
+
+
+func _block_reset_color() -> void:
+	if not blocking:
+		return
+	body.color = Color(0.35, 0.8, 0.55, 1)
 
 
 func _reset_color() -> void:
