@@ -7,6 +7,7 @@ const ACTIONS := {
 	"attack": [KEY_J, KEY_Z],
 	"heavy_attack": [KEY_K, KEY_X],
 	"special": [KEY_L, KEY_C],
+	"block": [KEY_Q],
 }
 
 

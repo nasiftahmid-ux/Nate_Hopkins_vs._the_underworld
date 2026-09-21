@@ -22,6 +22,7 @@ var facing := 1
 var combo_step := 0
 var combo_timer := 0.0
 var is_attacking := false
+var is_blocking := false
 var attack_anim := "attack_punch"
 var attack_left := 0.0
 var hit_delay := 0.0
@@ -50,7 +51,10 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 
 	var input := Input.get_axis("move_left", "move_right")
-	if is_attacking:
+	is_blocking = Input.is_action_pressed("block") and not is_attacking
+	if is_blocking:
+		velocity.x = move_toward(velocity.x, 0.0, 1200.0 * delta)
+	elif is_attacking:
 		velocity.x = move_toward(velocity.x, 0.0, 800.0 * delta)
 	elif input != 0.0:
 		velocity.x = input * SPEED
@@ -59,7 +63,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = move_toward(velocity.x, 0.0, 800.0 * delta)
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump") and is_on_floor() and not is_blocking:
 		velocity.y = JUMP_VELOCITY
 
 	special_cooldown = maxf(special_cooldown - delta, 0.0)
@@ -80,7 +84,7 @@ func _physics_process(delta: float) -> void:
 		if attack_left <= 0.0:
 			is_attacking = false
 			sprite.modulate = Color.WHITE
-	elif not is_attacking:
+	elif not is_attacking and not is_blocking:
 		if Input.is_action_just_pressed("attack"):
 			try_attack(false, false, not is_on_floor())
 		elif Input.is_action_just_pressed("heavy_attack"):
@@ -134,7 +138,10 @@ func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:
 
 
 func _update_animation(input: float) -> void:
-	if is_attacking:
+	if is_blocking:
+		if sprite.sprite_frames.has_animation("block") and sprite.animation != "block":
+			sprite.play("block")
+	elif is_attacking:
 		if sprite.animation != attack_anim:
 			sprite.play(attack_anim)
 	elif not is_on_floor():
@@ -154,8 +161,14 @@ func apply_hit() -> void:
 			target.take_hit(hit_damage, facing)
 
 
-func take_damage(amount: float) -> void:
+func take_damage(amount: float, blockable: bool = true) -> void:
 	if invuln_time > 0.0:
+		return
+	if is_blocking and blockable:
+		sprite.modulate = Color(0.7, 0.9, 1.0)
+		invuln_time = 0.25
+		sprite.visible = true
+		get_tree().create_timer(0.12).timeout.connect(reset_color)
 		return
 	invuln_time = INVULN_DURATION
 	hp = maxf(hp - amount, 0.0)
@@ -169,7 +182,7 @@ func take_damage(amount: float) -> void:
 
 
 func reset_color() -> void:
-	if not is_attacking:
+	if not is_attacking and not is_blocking:
 		sprite.modulate = Color.WHITE
 
 

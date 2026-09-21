@@ -191,7 +191,7 @@ func _state_melee(player: Node2D) -> void:
 		if not melee_done:
 			melee_done = true
 			if player and _player_in_melee_reach(player):
-				player.take_damage(damage)
+				player.take_damage(damage, false)
 	else:
 		_end_attack(1.1)
 
@@ -234,7 +234,7 @@ func _state_slam_land(player: Node2D) -> void:
 			_spawn_shockwave()
 			if player and absf(player.global_position.x - global_position.x) < SLAM_RADIUS \
 				and absf(player.global_position.y - global_position.y) < 130.0:
-				player.take_damage(damage)
+				player.take_damage(damage, false)
 	else:
 		_end_attack(1.2)
 
@@ -263,7 +263,7 @@ func _state_charge(_delta: float, player: Node2D) -> void:
 	if player and absf(player.global_position.x - global_position.x) < 42.0 \
 		and absf(player.global_position.y - global_position.y) < 120.0 and not charge_hit:
 		charge_hit = true
-		player.take_damage(damage)
+		player.take_damage(damage, false)
 	if state_time > 0.8 or is_on_wall():
 		_end_attack(1.0)
 
