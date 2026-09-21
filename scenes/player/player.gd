@@ -183,7 +183,7 @@ func die() -> void:
 	var fall_delay := 0.0
 	if sprite.sprite_frames.has_animation("death"):
 		sprite.play("death")
-		fall_delay = sprite.sprite_frames.get_frame_duration("death", 0)
+		fall_delay = sprite.sprite_frames.get_animation_length("death")
 	else:
 		fall_delay = 0.5
 	await get_tree().create_timer(fall_delay + 0.6).timeout
