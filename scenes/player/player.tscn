@@ -1,6 +1,204 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=54 format=3]
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
+[ext_resource type="Texture2D" path="res://assets/nate_idle.png" id="id_sp_idle"]
+[ext_resource type="Texture2D" path="res://assets/nate_run.png" id="id_sp_run"]
+[ext_resource type="Texture2D" path="res://assets/nate_attack_punch.png" id="id_sp_attack_punch"]
+[ext_resource type="Texture2D" path="res://assets/nate_attack_kick.png" id="id_sp_attack_kick"]
+[ext_resource type="Texture2D" path="res://assets/nate_attack_uppercut.png" id="id_sp_attack_uppercut"]
+[ext_resource type="Texture2D" path="res://assets/nate_jump.png" id="id_sp_jump"]
+
+[sub_resource type="AtlasTexture" id="idle_AT_0"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(0, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_1"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(66, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_2"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(132, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_3"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(198, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_4"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(264, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_5"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(330, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_6"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(396, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="idle_AT_7"]
+atlas = ExtResource("id_sp_idle")
+region = Rect2(462, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_0"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(0, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_1"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(84, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_2"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(168, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_3"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(252, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_4"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(336, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_5"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(420, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_6"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(504, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_7"]
+atlas = ExtResource("id_sp_run")
+region = Rect2(588, 0, 84, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_0"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(0, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_1"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(106, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_2"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(212, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_3"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(318, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_4"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(424, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_5"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(530, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_6"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(636, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_7"]
+atlas = ExtResource("id_sp_attack_punch")
+region = Rect2(742, 0, 106, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_0"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(0, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_1"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(102, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_2"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(204, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_3"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(306, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_4"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(408, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_5"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(510, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_6"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(612, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_7"]
+atlas = ExtResource("id_sp_attack_kick")
+region = Rect2(714, 0, 102, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_0"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(0, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_1"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(78, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_2"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(156, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_3"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(234, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_4"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(312, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_5"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(390, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_6"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(468, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_7"]
+atlas = ExtResource("id_sp_attack_uppercut")
+region = Rect2(546, 0, 78, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_0"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(0, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_1"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(66, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_2"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(132, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_3"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(198, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_4"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(264, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_5"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(330, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_6"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(396, 0, 66, 190)
+
+[sub_resource type="AtlasTexture" id="jump_AT_7"]
+atlas = ExtResource("id_sp_jump")
+region = Rect2(462, 0, 66, 190)
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(34, 64)
@@ -8,15 +206,16 @@ size = Vector2(34, 64)
 [sub_resource type="RectangleShape2D" id="hit_shape"]
 size = Vector2(42, 48)
 
+[sub_resource type="SpriteFrames" id="SpriteFrames_player"]
+animations = [{"name": &"idle", "speed": 5, "loop": true, "frames": [ {"texture": SubResource("idle_AT_0"), "duration": 1.0}, {"texture": SubResource("idle_AT_1"), "duration": 1.0}, {"texture": SubResource("idle_AT_2"), "duration": 1.0}, {"texture": SubResource("idle_AT_3"), "duration": 1.0}, {"texture": SubResource("idle_AT_4"), "duration": 1.0}, {"texture": SubResource("idle_AT_5"), "duration": 1.0}, {"texture": SubResource("idle_AT_6"), "duration": 1.0}, {"texture": SubResource("idle_AT_7"), "duration": 1.0} ]}, {"name": &"run", "speed": 13, "loop": true, "frames": [ {"texture": SubResource("run_AT_0"), "duration": 1.0}, {"texture": SubResource("run_AT_1"), "duration": 1.0}, {"texture": SubResource("run_AT_2"), "duration": 1.0}, {"texture": SubResource("run_AT_3"), "duration": 1.0}, {"texture": SubResource("run_AT_4"), "duration": 1.0}, {"texture": SubResource("run_AT_5"), "duration": 1.0}, {"texture": SubResource("run_AT_6"), "duration": 1.0}, {"texture": SubResource("run_AT_7"), "duration": 1.0} ]}, {"name": &"attack_punch", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_punch_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_7"), "duration": 1.0} ]}, {"name": &"attack_kick", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_kick_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_7"), "duration": 1.0} ]}, {"name": &"attack_uppercut", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_uppercut_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_7"), "duration": 1.0} ]}, {"name": &"jump", "speed": 8, "loop": true, "frames": [ {"texture": SubResource("jump_AT_0"), "duration": 1.0}, {"texture": SubResource("jump_AT_1"), "duration": 1.0}, {"texture": SubResource("jump_AT_2"), "duration": 1.0}, {"texture": SubResource("jump_AT_3"), "duration": 1.0}, {"texture": SubResource("jump_AT_4"), "duration": 1.0}, {"texture": SubResource("jump_AT_5"), "duration": 1.0}, {"texture": SubResource("jump_AT_6"), "duration": 1.0}, {"texture": SubResource("jump_AT_7"), "duration": 1.0} ]}]
+
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_player")
 
-[node name="Body" type="ColorRect" parent="."]
-offset_left = -17.0
-offset_top = -64.0
-offset_right = 17.0
-offset_bottom = 0.0
-color = Color(0.2, 0.6, 1, 1)
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_player")
+offset = Vector2(0, -31)
+scale = Vector2(0.5, 0.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("body_shape")
