@@ -24,6 +24,5 @@ func _on_restart_level() -> void:
 
 
 func _on_restart_game() -> void:
-	GameState.new_game()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/ui/main.tscn")

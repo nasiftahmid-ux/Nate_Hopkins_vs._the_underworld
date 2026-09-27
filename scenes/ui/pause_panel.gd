@@ -56,5 +56,4 @@ func _on_quit() -> void:
 	paused = false
 	get_tree().paused = false
 	visible = false
-	GameState.new_game()
 	get_tree().change_scene_to_file("res://scenes/ui/main.tscn")

@@ -17,7 +17,6 @@ var level_select: Array[Dictionary] = [
 
 
 func _ready() -> void:
-	GameState.new_game()
 	start_button.grab_focus()
 	start_button.pressed.connect(_on_start)
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
@@ -62,6 +61,7 @@ func _setup_rhythm(phase: int) -> void:
 
 
 func _on_start() -> void:
+	GameState.new_game()
 	GameState.dialogue_lines = [
 		{"speaker": "Narrator", "text": "A Friday night. Another party. Another chance for Nate Hopkins to make questionable life decisions."},
 		{"speaker": "Nate", "text": "Hey Tracy, who's that girl? The one by the punch bowl."},

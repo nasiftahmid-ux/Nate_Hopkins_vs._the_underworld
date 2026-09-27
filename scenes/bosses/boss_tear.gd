@@ -10,6 +10,7 @@ var max_speed := 240.0
 
 
 func _ready() -> void:
+	add_to_group("boss_hazard")
 	body_entered.connect(_on_body_entered)
 
 

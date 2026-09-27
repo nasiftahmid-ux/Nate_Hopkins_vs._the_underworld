@@ -8,6 +8,8 @@ signal level_healed(amount: float)
 const SAVE_PATH := "user://save.json"
 const PERFECT_HEAL_RATIO := 0.5
 const MIN_REWARD_MULT := 0.25
+const BASE_MAX_HP := 100.0
+const MAX_HP_PER_LEVEL := 10.0
 
 var player_health := 0.0
 var player_max_hp := 100.0
@@ -32,6 +34,7 @@ func _ready() -> void:
 
 
 func new_game() -> void:
+	player_max_hp = max_hp_for_level(1)
 	player_health = player_max_hp
 	damage_taken = 0.0
 	money = 0
@@ -42,6 +45,10 @@ func new_game() -> void:
 	scene_after_dialogue = ""
 	rhythm_followup_lines = []
 	rhythm_followup_scene = ""
+
+
+func max_hp_for_level(target_level: int) -> float:
+	return BASE_MAX_HP + MAX_HP_PER_LEVEL * float(maxi(1, target_level) - 1)
 
 
 func save_game() -> void:
@@ -71,6 +78,7 @@ func load_game() -> bool:
 	exp = parsed.get("exp", exp)
 	level = parsed.get("level", level)
 	defeated_exes = parsed.get("defeated_exes", defeated_exes)
+	player_max_hp = max_hp_for_level(level)
 	return true
 
 
@@ -85,7 +93,7 @@ func add_exp(value: int) -> void:
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
 		level += 1
-		player_max_hp += 10.0
+		player_max_hp = max_hp_for_level(level)
 		var heal := player_max_hp * level_up_heal_ratio()
 		player_health = minf(player_health + heal, player_max_hp)
 		level_changed.emit(level)
