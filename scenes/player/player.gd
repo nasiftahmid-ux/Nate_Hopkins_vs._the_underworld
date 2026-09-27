@@ -43,6 +43,17 @@ func _ready() -> void:
 	start_pos = global_position
 	max_hp = GameState.player_max_hp
 	hp = clampf(GameState.player_health, 1.0, max_hp) if GameState.player_health > 0.0 else max_hp
+	GameState.player_health = hp
+	hp_changed.emit(hp, max_hp)
+	GameState.level_healed.connect(_on_level_healed)
+
+
+func _on_level_healed(amount: float) -> void:
+	if hp <= 0.0:
+		return
+	max_hp = GameState.player_max_hp
+	hp = minf(hp + amount, max_hp)
+	GameState.player_health = hp
 	hp_changed.emit(hp, max_hp)
 
 
@@ -182,6 +193,7 @@ func take_damage(amount: float, blockable: bool = true) -> void:
 	invuln_time = INVULN_DURATION
 	hp = maxf(hp - amount, 0.0)
 	GameState.player_health = hp
+	GameState.register_damage(amount)
 	hp_changed.emit(hp, max_hp)
 	sprite.modulate = Color(1, 0.3, 0.3)
 	if hp <= 0.0:

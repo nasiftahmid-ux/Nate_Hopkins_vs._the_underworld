@@ -18,7 +18,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_restart_level() -> void:
-	GameState.player_health = GameState.player_max_hp
+	GameState.begin_level()
 	get_tree().paused = false
 	get_tree().reload_current_scene()
 

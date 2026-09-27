@@ -38,7 +38,7 @@ func _on_level_selected(entry: Dictionary) -> void:
 		_setup_rhythm(entry["rhythm"])
 	elif entry.has("exes"):
 		GameState.defeated_exes = entry["exes"]
-	GameState.player_health = GameState.player_max_hp
+	GameState.begin_level()
 	get_tree().change_scene_to_file(entry["scene"])
 
 

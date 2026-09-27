@@ -3,11 +3,15 @@ extends Node
 signal money_changed(value: int)
 signal exp_changed(value: int)
 signal level_changed(value: int)
+signal level_healed(amount: float)
 
 const SAVE_PATH := "user://save.json"
+const PERFECT_HEAL_RATIO := 0.5
+const MIN_REWARD_MULT := 0.25
 
 var player_health := 0.0
 var player_max_hp := 100.0
+var damage_taken := 0.0
 
 var money := 0
 var exp := 0
@@ -29,6 +33,7 @@ func _ready() -> void:
 
 func new_game() -> void:
 	player_health = player_max_hp
+	damage_taken = 0.0
 	money = 0
 	exp = 0
 	level = 1
@@ -76,15 +81,40 @@ func add_money(value: int) -> void:
 
 
 func add_exp(value: int) -> void:
-	exp += value
+	exp += maxi(1, int(round(value * xp_multiplier())))
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
 		level += 1
 		player_max_hp += 10.0
-		player_health = player_max_hp
+		var heal := player_max_hp * level_up_heal_ratio()
+		player_health = minf(player_health + heal, player_max_hp)
 		level_changed.emit(level)
+		level_healed.emit(heal)
 	exp_changed.emit(exp)
 	save_game()
+
+
+func begin_level() -> void:
+	clear_damage_penalty()
+	player_health = player_max_hp
+
+
+func clear_damage_penalty() -> void:
+	damage_taken = 0.0
+
+
+func register_damage(amount: float) -> void:
+	damage_taken += amount
+
+
+func xp_multiplier() -> float:
+	if player_max_hp <= 0.0:
+		return 1.0
+	return clampf(1.0 - damage_taken / player_max_hp, MIN_REWARD_MULT, 1.0)
+
+
+func level_up_heal_ratio() -> float:
+	return PERFECT_HEAL_RATIO * xp_multiplier()
 
 
 func exp_to_next_level() -> int:

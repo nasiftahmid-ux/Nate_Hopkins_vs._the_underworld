@@ -45,7 +45,7 @@ func _on_resume() -> void:
 
 
 func _on_restart() -> void:
-	GameState.player_health = GameState.player_max_hp
+	GameState.begin_level()
 	paused = false
 	get_tree().paused = false
 	visible = false
