@@ -96,7 +96,6 @@ var title_label: Label
 
 var _player: Node2D
 var _camera: Camera2D
-var _shake_tween: Tween
 
 
 func _get_player() -> Node2D:
@@ -298,8 +297,7 @@ func _state_melee(player: Node2D) -> void:
 		if not melee_done:
 			melee_done = true
 			if player and _player_in_melee_reach(player):
-				player.take_damage(damage, false)
-				_shake(5.0, 0.18)
+				player.take_damage(damage, false, global_position)
 	else:
 		_end_attack(1.1)
 
@@ -340,10 +338,10 @@ func _state_slam_land(player: Node2D) -> void:
 		if not slam_landed:
 			slam_landed = true
 			_spawn_shockwave()
-			_shake(9.0, 0.25)
+			_shake(0.38, Vector2.DOWN)
 			if player and absf(player.global_position.x - global_position.x) < SLAM_RADIUS \
 				and absf(player.global_position.y - global_position.y) < 130.0:
-				player.take_damage(damage, false)
+				player.take_damage(damage, false, global_position)
 	else:
 		_end_attack(1.2)
 
@@ -372,8 +370,7 @@ func _state_charge(_delta: float, player: Node2D) -> void:
 	if player and absf(player.global_position.x - global_position.x) < 42.0 \
 		and absf(player.global_position.y - global_position.y) < 120.0 and not charge_hit:
 		charge_hit = true
-		player.take_damage(damage, false)
-		_shake(7.0, 0.2)
+		player.take_damage(damage, false, global_position)
 	if state_time > 0.8 or is_on_wall():
 		_end_attack(1.0)
 
@@ -466,8 +463,7 @@ func _state_lunge(delta: float, player: Node2D) -> void:
 		and absf(player.global_position.x - global_position.x) < 62.0 \
 		and absf(player.global_position.y - global_position.y) < 130.0:
 		lunge_hits += 1
-		player.take_damage(damage, false)
-		_shake(8.0, 0.2)
+		player.take_damage(damage, false, global_position)
 	if state_time > 0.45 or is_on_wall():
 		velocity.x = 0.0
 		_end_attack(0.9)
@@ -503,7 +499,7 @@ func _spawn_spike_field(player: Node2D) -> void:
 		spike.delay = 0.6 + absf(i - (count - 1) * 0.5) * 0.05
 		spike.modulate = body.color
 		get_tree().current_scene.add_child(spike)
-	_shake(6.0, 0.25)
+	_shake(0.26)
 
 
 func _state_barrage(delta: float, player: Node2D) -> void:
@@ -570,7 +566,7 @@ func _state_execute_windup(delta: float, player: Node2D) -> void:
 	if state_time < 0.8:
 		return
 	telegraph.visible = false
-	_shake(6.0, 0.2)
+	_shake(0.26, Vector2(signf(execute_x - global_position.x), 0.0))
 	set_state(State.EXECUTE)
 
 
@@ -583,8 +579,7 @@ func _state_execute(delta: float, player: Node2D) -> void:
 	if player and not execute_hit and absf(player.global_position.x - execute_x) < 130.0 \
 		and absf(player.global_position.y - global_position.y) < 150.0:
 		execute_hit = true
-		player.take_damage(damage * 1.7, false)
-		_shake(16.0, 0.4)
+		player.take_damage(damage * 1.7, false, global_position)
 		_burst_tears(10, 260.0)
 	if absf(global_position.x - execute_x) < 24.0 or state_time > 1.2 or is_on_wall():
 		velocity.x = 0.0
@@ -612,7 +607,7 @@ func _spawn_phantoms() -> void:
 		phantom.set("fire_damage", damage * 0.4)
 		phantom.global_position = Vector2(clampf(global_position.x + (60.0 + 70.0 * float(i)) * (1.0 if i == 0 else -1.0), ARENA_LEFT, ARENA_RIGHT), global_position.y)
 		get_tree().current_scene.add_child(phantom)
-	_shake(8.0, 0.3)
+	_shake(0.34)
 
 
 func _state_shift(_delta: float) -> void:
@@ -624,7 +619,7 @@ func _state_shift(_delta: float) -> void:
 		return
 	invulnerable = false
 	_burst_tears(12 + phase * 2, 300.0)
-	_shake(14.0, 0.5)
+	_shake(0.55)
 	_end_attack(0.6)
 
 
@@ -781,19 +776,13 @@ func _update_names() -> void:
 		boss_bar.self_modulate = Color(1, 0.5, 0.5) if phase == 3 else Color(1, 1, 1)
 
 
-func _shake(amount: float, time: float) -> void:
+## Trauma-based shake. `dir` biases the displacement along the impact axis;
+## omit it for an omnidirectional rumble. Trauma is capped and decays on its
+## own, so overlapping hits layer without a tween fight.
+func _shake(amount: float, dir: Vector2 = Vector2.ZERO) -> void:
 	var cam := _get_camera()
-	if not cam:
-		return
-	if _shake_tween and _shake_tween.is_valid():
-		_shake_tween.kill()
-	_shake_tween = create_tween()
-	var steps := 6
-	for i in range(steps):
-		var falloff := 1.0 - float(i) / float(steps)
-		_shake_tween.tween_property(cam, "offset",
-			Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0)) * amount * falloff, time / float(steps))
-	_shake_tween.tween_property(cam, "offset", Vector2.ZERO, 0.06)
+	if cam and cam.has_method("add_trauma"):
+		cam.add_trauma(amount, dir)
 
 
 func _clear_hazards() -> void:
@@ -827,7 +816,7 @@ func _check_second_wind() -> void:
 	_update_names()
 	_set_title()
 	_burst_tears(16, 320.0)
-	_shake(18.0, 0.6)
+	_shake(0.68)
 	invulnerable = true
 	set_state(State.SHIFT)
 

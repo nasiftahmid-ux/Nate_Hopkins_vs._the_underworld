@@ -34,7 +34,7 @@ func _erupt() -> void:
 	mark.visible = false
 	var player := get_tree().get_first_node_in_group("player")
 	if player and _overlaps(player):
-		player.take_damage(damage, false)
+		player.take_damage(damage, false, global_position)
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -42,7 +42,7 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if _overlaps(body):
 		erupted = false
-		body.take_damage(damage, false)
+		body.take_damage(damage, false, global_position)
 
 
 func _overlaps(target: Node2D) -> bool:

@@ -45,7 +45,7 @@ func _physics_process(delta: float) -> void:
 		if dist < 32.0 and attack_cooldown <= 0.0:
 			attack_cooldown = 0.7
 			if player.has_method("take_damage"):
-				player.take_damage(damage)
+				player.take_damage(damage, true, global_position)
 	velocity.x = move_toward(velocity.x, vx, 900.0 * delta)
 	move_and_slide()
 	if dodging and dodge_time_left <= 0.0:

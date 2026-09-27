@@ -1,6 +1,7 @@
-[gd_scene load_steps=72 format=3]
+[gd_scene load_steps=73 format=3]
 
 [ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scenes/player/camera_shake.gd" id="1_shake"]
 [ext_resource type="Texture2D" path="res://assets/nate_idle.png" id="id_sp_idle"]
 [ext_resource type="Texture2D" path="res://assets/nate_run.png" id="id_sp_run"]
 [ext_resource type="Texture2D" path="res://assets/nate_attack_punch.png" id="id_sp_attack_punch"]
@@ -278,3 +279,4 @@ shape = SubResource("hit_shape")
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
+script = ExtResource("1_shake")

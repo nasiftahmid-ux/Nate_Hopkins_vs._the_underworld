@@ -35,6 +35,7 @@ const KILL_PLANE_Y := 640.0
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var hitbox: Area2D = $Hitbox
+@onready var camera: Camera2D = $Camera2D
 
 
 func _ready() -> void:
@@ -176,12 +177,27 @@ func _update_animation(input: float) -> void:
 
 
 func apply_hit() -> void:
+	var landed := false
 	for target in hitbox.get_overlapping_bodies():
 		if target.is_in_group("enemy") and target.has_method("take_hit"):
 			target.take_hit(hit_damage, facing)
+			landed = true
+	# Once per swing, not once per target, so a jab that clips three enemies does
+	# not read as a heavy hit.
+	if landed:
+		_shake_from_hit(Vector2(facing, 0.0))
 
 
-func take_damage(amount: float, blockable: bool = true) -> void:
+## Player offence gets a small shake scaled to the attack's damage, so a light
+## jab barely registers while the special reads as a real impact.
+func _shake_from_hit(dir: Vector2) -> void:
+	if camera.has_method("add_offence_trauma"):
+		camera.add_offence_trauma(hit_damage, ATK_SPECIAL, dir)
+
+
+## `from_position` is the world position the hit came from; leave it at the
+## default to fall back to a sideways shake based on facing.
+func take_damage(amount: float, blockable: bool = true, from_position: Vector2 = Vector2.ZERO) -> void:
 	if invuln_time > 0.0:
 		return
 	if is_blocking and blockable:
@@ -194,6 +210,8 @@ func take_damage(amount: float, blockable: bool = true) -> void:
 	hp = maxf(hp - amount, 0.0)
 	GameState.player_health = hp
 	GameState.register_damage(amount)
+	if camera.has_method("add_damage_trauma"):
+		camera.add_damage_trauma(amount, max_hp, _damage_direction(from_position))
 	hp_changed.emit(hp, max_hp)
 	sprite.modulate = Color(1, 0.3, 0.3)
 	if hp <= 0.0:
@@ -205,6 +223,16 @@ func take_damage(amount: float, blockable: bool = true) -> void:
 func reset_color() -> void:
 	if not is_attacking and not is_blocking:
 		sprite.modulate = Color.WHITE
+
+
+## Pushes the camera away from whatever hit us, so a hit from the right shakes
+## right. With no source known, fall back to the side the player is facing.
+func _damage_direction(from_position: Vector2) -> Vector2:
+	if not from_position.is_zero_approx():
+		var away := global_position - from_position
+		if not away.is_zero_approx():
+			return away.normalized()
+	return Vector2(float(-facing), -0.35).normalized()
 
 
 func die() -> void:

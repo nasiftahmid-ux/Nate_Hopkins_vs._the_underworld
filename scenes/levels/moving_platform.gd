@@ -71,7 +71,7 @@ func _check_crush() -> void:
 		else:
 			crushed = _left_crush(player, half)
 	if crushed:
-		player.take_damage(player.max_hp * CRUSH_DAMAGE_PERCENT, false)
+		player.take_damage(player.max_hp * CRUSH_DAMAGE_PERCENT, false, global_position)
 
 
 func _down_crush(player: Node2D, half: Vector2) -> bool:
