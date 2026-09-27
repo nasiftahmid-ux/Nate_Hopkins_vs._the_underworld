@@ -1,22 +1,26 @@
-extends CharacterBody2D
+extends EnemyBase
 
 const GRAVITY := 1600.0
 
-var hp := 120.0
 var speed := 42.0
 var damage := 12.0
-var alive := true
 var attack_cooldown := 0.0
 var blocking := false
 var block_timer := 0.0
 
 const BLOCK_RANGE := 84.0
 
-@onready var body: ColorRect = $Body
-
 
 func _ready() -> void:
-	add_to_group("enemy")
+	max_hp = 120.0
+	exp_reward = 60
+	money_reward = 20
+	hit_color = Color(1.0, 0.8, 0.4)
+	hit_flash_time = 0.12
+	death_delay = 0.8
+	knockback_x = 100.0
+	knockback_y = -80.0
+	super._ready()
 
 
 func _physics_process(delta: float) -> void:
@@ -25,7 +29,7 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
 	attack_cooldown -= delta
-	var player := get_tree().get_first_node_in_group("player")
+	var player := _get_player()
 	var vx := 0.0
 	if player:
 		var dir := signf(player.global_position.x - global_position.x)
@@ -59,17 +63,11 @@ func take_hit(dmg: float, dir: float) -> void:
 		hp -= dmg * 0.15
 		velocity.x = dir * 20.0
 		body.color = Color(0.9, 0.95, 0.5)
-		get_tree().create_timer(0.12).timeout.connect(_block_reset_color)
+		get_tree().create_timer(hit_flash_time).timeout.connect(_block_reset_color)
 		if hp <= 0.0:
 			die()
 		return
-	hp -= dmg
-	velocity.x = dir * 100.0
-	velocity.y = -80.0
-	body.color = Color(1.0, 0.8, 0.4)
-	get_tree().create_timer(0.12).timeout.connect(_reset_color)
-	if hp <= 0.0:
-		die()
+	super.take_hit(dmg, dir)
 
 
 func _block_reset_color() -> void:
@@ -78,26 +76,5 @@ func _block_reset_color() -> void:
 	body.color = Color(0.35, 0.8, 0.55, 1)
 
 
-func _reset_color() -> void:
-	body.color = Color(0.55, 0.3, 0.65, 1)
-
-
-func die() -> void:
-	if not alive:
-		return
-	alive = false
-	GameState.add_money(20)
-	GameState.add_exp(60)
-	_spawn_coin()
-	collision_layer = 0
-	collision_mask = 0
-	velocity = Vector2.ZERO
-	body.color = Color(0.35, 0.35, 0.35)
-	await get_tree().create_timer(0.8).timeout
-	queue_free()
-
-
-func _spawn_coin() -> void:
-	var coin := preload("res://scenes/items/coin.tscn").instantiate()
-	coin.global_position = global_position + Vector2(0, -20)
-	get_tree().current_scene.add_child(coin)
+func _base_color() -> Color:
+	return Color(0.55, 0.3, 0.65, 1)

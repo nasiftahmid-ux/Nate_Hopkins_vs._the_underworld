@@ -22,7 +22,7 @@
 
 
 
-[ext_resource type="Script" path="res://scenes/levels/level4.gd" id="6_level"]
+[ext_resource type="Script" path="res://scenes/levels/level_base.gd" id="6_level"]
 
 
 
@@ -138,11 +138,9 @@ size = Vector2(56, 64)
 
 [node name="Level4" type="Node2D"]
 
-
-
 script = ExtResource("6_level")
 
-
+camera_limit_right = 15350
 
 [node name="BG" type="ColorRect" parent="."]
 

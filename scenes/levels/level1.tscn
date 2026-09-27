@@ -10,7 +10,7 @@
 
 [ext_resource type="Script" path="res://scenes/levels/door.gd" id="5_door"]
 
-[ext_resource type="Script" path="res://scenes/levels/level1.gd" id="6_level"]
+[ext_resource type="Script" path="res://scenes/levels/level_base.gd" id="6_level"]
 
 [ext_resource type="PackedScene" path="res://scenes/items/spikes.tscn" id="8_spike"]
 
@@ -59,6 +59,8 @@ size = Vector2(56, 64)
 [node name="Level1" type="Node2D"]
 
 script = ExtResource("6_level")
+
+camera_limit_right = 4900
 
 [node name="BG" type="ColorRect" parent="."]
 

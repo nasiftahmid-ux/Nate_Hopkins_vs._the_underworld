@@ -11,9 +11,16 @@ var _start_pos := Vector2.ZERO
 var _activated := false
 var _progress := 0.0
 var _dir := 1.0
+var _player: Node2D
 
 @onready var _platform_half_height: float = _shape_half_size().y
 @onready var _platform_half_width: float = _shape_half_size().x
+
+
+func _get_player() -> Node2D:
+	if not is_instance_valid(_player):
+		_player = get_tree().get_first_node_in_group("player")
+	return _player
 
 
 func _ready() -> void:
@@ -37,7 +44,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _try_activate() -> void:
-	var player := get_tree().get_first_node_in_group("player")
+	var player := _get_player()
 	if not player:
 		return
 	var player_feet: float = player.global_position.y + 32.0
@@ -48,7 +55,7 @@ func _try_activate() -> void:
 
 
 func _check_crush() -> void:
-	var player := get_tree().get_first_node_in_group("player")
+	var player := _get_player()
 	if not player or not is_instance_valid(player) or not player.has_method("take_damage"):
 		return
 	var half := _player_half(player)
@@ -136,7 +143,7 @@ func _player_half(player: Node2D) -> Vector2:
 
 
 func _shape_half_size() -> Vector2:
-	var col := get_node("Col") as CollisionShape2D
+	var col := get_node_or_null("Col") as CollisionShape2D
 	if col and col.shape is RectangleShape2D:
 		return (col.shape as RectangleShape2D).size * 0.5
 	return Vector2(90, 12)

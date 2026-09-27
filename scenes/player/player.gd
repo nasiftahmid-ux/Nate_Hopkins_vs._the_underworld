@@ -52,6 +52,18 @@ func _physics_process(delta: float) -> void:
 
 	var input := Input.get_axis("move_left", "move_right")
 	is_blocking = Input.is_action_pressed("block") and not is_attacking
+	_process_movement(delta, input)
+	_process_timers(delta)
+	_process_combat(delta)
+	_update_animation(input)
+
+	move_and_slide()
+
+	if global_position.y > KILL_PLANE_Y:
+		die()
+
+
+func _process_movement(delta: float, input: float) -> void:
 	if is_blocking:
 		velocity.x = move_toward(velocity.x, 0.0, 1200.0 * delta)
 	elif is_attacking:
@@ -66,6 +78,8 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor() and not is_blocking:
 		velocity.y = JUMP_VELOCITY
 
+
+func _process_timers(delta: float) -> void:
 	special_cooldown = maxf(special_cooldown - delta, 0.0)
 	invuln_time = maxf(invuln_time - delta, 0.0)
 	sprite.visible = not int(fmod(Time.get_ticks_msec() / 60.0, 2.0)) if invuln_time > 0.0 else true
@@ -79,25 +93,20 @@ func _physics_process(delta: float) -> void:
 		if hit_delay <= 0.0:
 			apply_hit()
 
+
+func _process_combat(delta: float) -> void:
 	if is_attacking:
 		attack_left -= delta
 		if attack_left <= 0.0:
 			is_attacking = false
 			sprite.modulate = Color.WHITE
-	elif not is_attacking and not is_blocking:
+	elif not is_blocking:
 		if Input.is_action_just_pressed("attack"):
 			try_attack(false, false, not is_on_floor())
 		elif Input.is_action_just_pressed("heavy_attack"):
 			try_attack(true, false)
 		elif Input.is_action_just_pressed("special") and special_cooldown <= 0.0:
 			try_attack(false, true)
-
-	_update_animation(input)
-
-	move_and_slide()
-
-	if global_position.y > KILL_PLANE_Y:
-		die()
 
 
 func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:

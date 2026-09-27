@@ -14,6 +14,19 @@ const BROKEN_BASE_COLOR := Color(0.95, 0.3, 0.5)
 const SWEET_BASE_COLOR := Color(0.75, 0.4, 0.95)
 const ENRAGED_COLOR := Color(1.0, 0.2, 0.2)
 
+const MELEE_CHANCE := 0.5
+const PHASE3_CHARGE_CHANCE := 0.35
+const PHASE3_SPIT_CHANCE := 0.7
+const PHASE2_SLAM_CHANCE := 0.5
+const SWEET_TELEPORT_CHANCE_P1 := 0.82
+const SWEET_TELEPORT_CHANCE_P2 := 0.78
+const SWEET_TELEPORT_CHANCE_P3 := 0.7
+const SWEET_P3_RAIN_LOW := 0.3
+const SWEET_P3_RAIN_HIGH := 0.5
+const SWEET_P3_CHARGE_HIGH := 0.78
+const SWEET_P2_SPIT_THRESHOLD := 0.4
+const SWEET_P2_CHARGE_HIGH := 0.62
+
 var boss_kind := BossKind.BROKEN
 var hp := 300.0
 var max_hp := 300.0
@@ -46,6 +59,14 @@ var charge_speed := 520.0
 
 var boss_bar: ProgressBar
 var boss_name_label: Label
+
+var _player: Node2D
+
+
+func _get_player() -> Node2D:
+	if not is_instance_valid(_player):
+		_player = get_tree().get_first_node_in_group("player")
+	return _player
 
 
 func _ready() -> void:
@@ -81,7 +102,7 @@ func _physics_process(delta: float) -> void:
 	state_time += delta
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
 	teleport_cooldown = maxf(teleport_cooldown - delta, 0.0)
-	var player := get_tree().get_first_node_in_group("player")
+	var player := _get_player()
 
 	if state == State.CHASE or state == State.MELEE or state == State.SLAM_WINDUP \
 		or state == State.SLAM_AIR or state == State.SLAM_LAND or state == State.SPIT \
@@ -143,39 +164,39 @@ func _choose_attack(player: Node2D, dist: float) -> void:
 		if dist <= MELEE_MOVE_RANGE + 24.0:
 			set_state(State.MELEE)
 		elif phase >= 3:
-			if r < 0.35:
+			if r < PHASE3_CHARGE_CHANCE:
 				set_state(State.CHARGE_WINDUP)
-			elif r < 0.7:
+			elif r < PHASE3_SPIT_CHANCE:
 				set_state(State.SPIT)
 			else:
 				set_state(State.SLAM_WINDUP)
 		elif phase >= 2:
-			if r < 0.5:
+			if r < PHASE2_SLAM_CHANCE:
 				set_state(State.SLAM_WINDUP)
 			else:
 				attack_cooldown = 0.3
 		else:
 			set_state(State.MELEE)
 	else:
-		if dist <= MELEE_MOVE_RANGE + 24.0 and r < 0.5:
+		if dist <= MELEE_MOVE_RANGE + 24.0 and r < MELEE_CHANCE:
 			set_state(State.MELEE)
 		else:
-			var want_teleport := r >= 0.82 if phase == 1 else (r >= 0.78 if phase == 2 else r >= 0.7)
+			var want_teleport := r >= SWEET_TELEPORT_CHANCE_P1 if phase == 1 else (r >= SWEET_TELEPORT_CHANCE_P2 if phase == 2 else r >= SWEET_TELEPORT_CHANCE_P3)
 			if want_teleport and teleport_cooldown <= 0.0:
 				set_state(State.TELEPORT)
 			elif phase >= 3:
-				if r < 0.3:
+				if r < SWEET_P3_RAIN_LOW:
 					set_state(State.SPIT)
-				elif r < 0.5:
+				elif r < SWEET_P3_RAIN_HIGH:
 					set_state(State.RAIN)
-				elif r < 0.78:
+				elif r < SWEET_P3_CHARGE_HIGH:
 					set_state(State.CHARGE_WINDUP)
 				else:
 					set_state(State.SPIT)
 			elif phase >= 2:
-				if r < 0.4:
+				if r < SWEET_P2_SPIT_THRESHOLD:
 					set_state(State.SPIT)
-				elif r < 0.62:
+				elif r < SWEET_P2_CHARGE_HIGH:
 					set_state(State.CHARGE_WINDUP)
 				else:
 					set_state(State.SPIT)
