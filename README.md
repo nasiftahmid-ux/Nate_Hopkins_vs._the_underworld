@@ -14,20 +14,21 @@ Nate Hopkins has a track record of breaking hearts. At a party, he meets Hazel �
 - **Rhythm finale:** After both bosses fall, prove yourself in a Guitar-Hero-style rhythm minigame — hit the right key (J / K / L) on the beat, with combo tracking and a miss-streak fail state.
 - **Progression:** Earn coins and XP from defeated enemies, level up to increase max HP, and unlock hints scattered through the levels.
 - **No-damage bonus:** Every hit you take during a level scales down your rewards. The XP multiplier is `1 - damage taken / max HP` (floor `x0.25`), and a level-up restores `50%` of max HP multiplied by that same factor — so a flawless clear pays full XP and a 50% heal, while a bad run earns as little as 25% XP and a 12.5% heal. The counter resets every time a level starts, and the HUD shows the live `XP x0.00 / HEAL 0%` penalty.
+- **Gamepad support:** Full PlayStation and Xbox controller support, including in-game combat and menu navigation.
 
 ## Controls
 
-| Action | Keys |
-|---|---|
-| Move | `A` / `D` or Arrow Keys |
-| Jump | `W` / `Up` / `Space` |
-| Attack (combo) | `J` / `Z` |
-| Heavy Attack | `K` / `X` |
-| Special | `L` / `C` |
-| Block | `Q` |
-| Pause | `Esc` |
+| Action | Keys | PlayStation | Xbox |
+|---|---|---|---|
+| Move | `A` / `D` or Arrow Keys | Left Stick / D-pad | Left Stick / D-pad |
+| Jump | `W` / `Up` / `Space` | ✕ (Cross) or D-pad Up | A or D-pad Up |
+| Attack (combo) | `J` / `Z` | □ (Square) | X |
+| Heavy Attack | `K` / `X` | △ (Triangle) | Y |
+| Special | `L` / `C` | R1 or R2 | RB or RT |
+| Block | `Q` | L1 or L2 | LB or LT |
+| Pause | `Esc` | Options | Menu (Start) |
 
-Controls are registered programmatically at startup (see `autoload/input_setup.gd`), so they're guaranteed to be consistent even if the project's Input Map is reset.
+Controls are registered programmatically at startup (see `autoload/input_setup.gd`), so they're guaranteed to be consistent even if the project's Input Map is reset. Gamepads are supported for both PlayStation and Xbox pads — Godot's standard SDL layout is used, so any controller that follows either convention works, and menus are navigable with ✕/A (accept) and Options/Start (pause). Movement uses the left stick with a 0.25 deadzone, so small stick deflections are ignored, and block/special can be held on the analog triggers.
 
 ## Tech Stack
 
@@ -57,7 +58,7 @@ There's also a level-select screen on the title menu for jumping straight into a
 
 ## Project Status
 
-This is an actively developed solo project. Recent work: a damage-based reward penalty was added — taking hits during a level scales down the XP from further kills and the HP restored on level-up, rewarding clean runs (level-up healing now also applies to the live player HP instead of only the stored value); enemy and level scripts were refactored into shared base classes (`EnemyBase` and `level_base.gd`, reducing duplicated logic across all levels); and a persistent save/load system was added (`GameState` writes progress to `user://save.json`). Future focus areas include deeper content — new enemy types, more boss attacks, and level polish.
+This is an actively developed solo project. Recent work: controller support was added — PlayStation and Xbox pads now drive every action (left stick or D-pad movement, face buttons for jump/light/heavy, shoulder buttons or analog triggers for special/block, and Start for pause), with menus wired to the same layout; a damage-based reward penalty was added — taking hits during a level scales down the XP from further kills and the HP restored on level-up, rewarding clean runs (level-up healing now also applies to the live player HP instead of only the stored value); enemy and level scripts were refactored into shared base classes (`EnemyBase` and `level_base.gd`, reducing duplicated logic across all levels); and a persistent save/load system was added (`GameState` writes progress to `user://save.json`). Future focus areas include deeper content — new enemy types, more boss attacks, and level polish.
 
 ## License
 
