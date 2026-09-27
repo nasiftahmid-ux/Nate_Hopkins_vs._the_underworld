@@ -4,7 +4,6 @@ enum Phase { INTRO, NOTE, GAP, GAMEOVER, WIN }
 
 const NOTE_GAP := 1.0
 const INTRO_TIME := 1.6
-const MAX_MISS_STREAK := 2
 const HIT_SCORE := 100
 
 const TARGET_ACTIONS := ["attack", "heavy_attack", "special"]
@@ -18,6 +17,8 @@ const TARGET_COLORS := [
 var notes: Array[int] = []
 var note_count := 24
 var window_time := 1.0
+var max_miss_streak := 2
+var grade := ""
 var note_index := 0
 var phase := Phase.INTRO
 var phase_time := 0.0
@@ -38,9 +39,13 @@ var finished := false
 @onready var title_label: Label = $UI/TitleLabel
 @onready var boss_box: ColorRect = $UI/BossBox
 @onready var boss_label: Label = $UI/BossLabel
+@onready var hint_label: Label = $UI/Hint
 
 
 func _ready() -> void:
+	var rule := GameState.apply_combat_grade()
+	grade = String(rule["id"])
+	max_miss_streak = maxi(GameState.rhythm_streak_limit, 1)
 	note_count = GameState.rhythm_notes if GameState.rhythm_notes > 0 else 24
 	window_time = GameState.rhythm_window if GameState.rhythm_window > 0.0 else 1.0
 	for i in range(note_count):
@@ -53,6 +58,8 @@ func _ready() -> void:
 	else:
 		boss_label.text = "THE ONE YOU HURT"
 		boss_box.color = Color(0.85, 0.5, 0.95, 1)
+	hint_label.add_theme_color_override("font_color", rule["color"])
+	hint_label.text = GameState.grade_brief()
 	$UI/FeedbackTimer.timeout.connect(func() -> void: feedback.visible = false)
 	_begin_intro()
 
@@ -134,8 +141,8 @@ func _miss() -> void:
 	prompt_panel.color = Color(0.55, 0.15, 0.2)
 	_show_feedback("MISS", Color(1.0, 0.35, 0.35))
 	_update_hud()
-	if miss_streak >= MAX_MISS_STREAK:
-		intro_label.text = "GAME OVER\nTWO MISSES IN A ROW..."
+	if miss_streak >= max_miss_streak:
+		intro_label.text = "GAME OVER\n%d MISSES IN A ROW..." % max_miss_streak
 		intro_label.visible = true
 		prompt.text = ""
 		phase = Phase.GAMEOVER
@@ -178,7 +185,7 @@ func _show_feedback(text_str: String, color: Color) -> void:
 
 func _update_hud() -> void:
 	combo_label.text = "Combo: %d" % combo
-	miss_label.text = "Miss streak: %d / %d" % [miss_streak, MAX_MISS_STREAK]
+	miss_label.text = "Miss streak: %d / %d" % [miss_streak, max_miss_streak]
 
 
 func _go_to_ending() -> void:

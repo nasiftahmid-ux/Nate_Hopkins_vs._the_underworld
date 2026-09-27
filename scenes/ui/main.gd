@@ -43,20 +43,19 @@ func _on_level_selected(entry: Dictionary) -> void:
 
 func _setup_rhythm(phase: int) -> void:
 	GameState.defeated_exes = phase
+	GameState.forced_grade = ""
 	if phase == 1:
-		GameState.rhythm_window = 1.0
-		GameState.rhythm_notes = 20
+		GameState.set_rhythm_difficulty(1.0, 20)
 		GameState.rhythm_followup_lines = []
 		GameState.rhythm_followup_scene = "res://scenes/levels/level5.tscn"
 	else:
-		GameState.rhythm_window = 1.0
-		GameState.rhythm_notes = 30
-		GameState.rhythm_followup_lines = [
+		GameState.set_rhythm_difficulty(1.0, 30)
+		GameState.rhythm_followup_lines = GameState.decorate_followup_lines([
 			{"speaker": "Nate", "text": "Hazel... I clawed my way out of the actual Underworld for this."},
 			{"speaker": "Hazel", "text": "...That's the weirdest pickup line I've ever heard."},
 			{"speaker": "Hazel", "text": "But I guess anyone who fights through Hell deserves a first date. Dinner?"},
 			{"speaker": "Narrator", "text": "Nate became a master of the Underworld dating circuit. 10/10 no notes."},
-		]
+		])
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 
 

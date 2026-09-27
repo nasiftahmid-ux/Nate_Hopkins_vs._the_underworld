@@ -210,6 +210,7 @@ func reset_color() -> void:
 func die() -> void:
 	if not is_physics_processing():
 		return
+	GameState.register_death()
 	set_physics_process(false)
 	get_tree().paused = true
 	sprite.process_mode = Node.PROCESS_MODE_ALWAYS

@@ -115,6 +115,7 @@ func _get_camera() -> Camera2D:
 
 func _ready() -> void:
 	add_to_group("enemy")
+	GameState.begin_stage()
 	hp = HP_BASE + GameState.defeated_exes * HP_PER_EX
 	max_hp = hp
 	boss_kind = BossKind.BROKEN if GameState.defeated_exes == 0 else BossKind.SWEETHEART
@@ -879,35 +880,36 @@ func die() -> void:
 		title_label.text = "NOW SING FOR YOUR SOUL" if GameState.defeated_exes + 1 >= 2 else "ONE HEART DOWN"
 	if boss_bar:
 		boss_bar.value = 0
+	GameState.close_stage()
 	await get_tree().create_timer(1.4).timeout
 	GameState.defeated_exes += 1
 	if GameState.defeated_exes >= 2:
 		GameState.dialogue_lines = [
 			{"speaker": "Aphrodite", "text": "Impressive, mortal. Two broken hearts, both beaten to a pulp..."},
 			{"speaker": "Aphrodite", "text": "But love is never won with fists. Love is a SONG, Nate Hopkins."},
+			GameState.grade_chant(),
 			{"speaker": "???", "text": "Proof you deserve another chance... must be sung beautifully."},
 			{"speaker": "Nate", "text": "Seriously? A dating game taught me how to fight. Now I have to learn to sing too?"},
 			{"speaker": "Aphrodite", "text": "Sing, and the Underworld will set you free. Miss the beat, and you begin again."},
 		]
-		GameState.rhythm_window = 1.0
-		GameState.rhythm_notes = 30
-		GameState.rhythm_followup_lines = [
+		GameState.set_rhythm_difficulty(1.0, 30)
+		GameState.rhythm_followup_lines = GameState.decorate_followup_lines([
 			{"speaker": "Nate", "text": "Hazel... I clawed my way out of the actual Underworld for this."},
 			{"speaker": "Hazel", "text": "...That's the weirdest pickup line I've ever heard."},
 			{"speaker": "Hazel", "text": "But I guess anyone who fights through Hell deserves a first date. Dinner?"},
 			{"speaker": "Narrator", "text": "Nate became a master of the Underworld dating circuit. 10/10 no notes."},
-		]
+		])
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
 	else:
 		GameState.dialogue_lines = [
 			{"speaker": "Aphrodite", "text": "One heart down, one to go. But don't celebrate yet, Nate Hopkins."},
 			{"speaker": "???", "text": "You really don't remember me? My heart was yours first. And you broke it first."},
+			GameState.grade_chant(),
 			{"speaker": "???", "text": "You've learned to fight. Now prove you can keep a beat."},
 			{"speaker": "Nate", "text": "A rhythm game? In the Underworld? Who designed this place?"},
 		]
-		GameState.rhythm_window = 1.0
-		GameState.rhythm_notes = 20
+		GameState.set_rhythm_difficulty(1.0, 20)
 		GameState.rhythm_followup_lines = []
 		GameState.rhythm_followup_scene = "res://scenes/levels/level5.tscn"
 		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
