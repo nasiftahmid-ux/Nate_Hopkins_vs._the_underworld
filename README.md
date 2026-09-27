@@ -33,12 +33,12 @@ Controls are registered programmatically at startup (see `autoload/input_setup.g
 - **Engine:** [Godot 4.7](https://godotengine.org/)
 - **Language:** GDScript
 - **Architecture:**
-  - `autoload/` — global singletons: `GameState` (persistent run data: HP, money, XP, level, dialogue/rhythm config) and `InputSetup` (keybinding registration).
+  - `autoload/` — global singletons: `GameState` (persistent run data: HP, money, XP, level, dialogue/rhythm config, with JSON save/load to `user://save.json`) and `InputSetup` (keybinding registration).
   - `scenes/player/` — player movement, combat, and damage/death handling.
-  - `scenes/enemies/` — enemy AI and combat behavior.
+  - `scenes/enemies/` — enemy AI and combat behavior, all sharing the `EnemyBase` class.
   - `scenes/bosses/` — boss fight state machine, boss arena, boss projectiles, and the rhythm-game finale.
   - `scenes/items/` — pickups and environmental hazards (coins, lava, spikes, falling rocks).
-  - `scenes/levels/` — level scenes, moving platforms, doors, and hint zones.
+  - `scenes/levels/` — level scenes built on a shared parameterized `level_base.gd`, plus moving platforms, doors, hazard scripts, and hint zones.
   - `scenes/ui/` — main menu, HUD, pause menu, and death screen.
   - `scenes/dialogue/` — a lightweight line-by-line dialogue/cutscene system.
 
@@ -56,7 +56,7 @@ There's also a level-select screen on the title menu for jumping straight into a
 
 ## Project Status
 
-This is an actively developed solo project. Current focus areas include reducing duplicated logic between enemy and level scripts and adding persistent save/load support for player progress between sessions.
+This is an actively developed solo project. Recent work: enemy and level scripts were refactored into shared base classes (`EnemyBase` and `level_base.gd`, reducing duplicated logic across all levels), and a persistent save/load system was added (`GameState` writes progress to `user://save.json`). Future focus areas include deeper content — new enemy types, more boss attacks, and level polish.
 
 ## License
 
