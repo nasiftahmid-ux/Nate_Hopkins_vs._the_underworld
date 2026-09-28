@@ -15,6 +15,9 @@ const ATK_HEAVY := 18.0
 const ATK_FINISHER := 20.0
 const ATK_SLAM := 22.0
 const ATK_SPECIAL := 40.0
+## How long a revived player is untouchable, so a Second Chance does not
+## immediately walk back into whatever killed them.
+const REVIVE_INVULN := 1.5
 
 var hp := 0.0
 var max_hp := 100.0
@@ -127,18 +130,18 @@ func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:
 	is_attacking = true
 	attack_left = SPECIAL_DURATION if special else ATTACK_DURATION
 	if special:
-		special_cooldown = 2.0
+		special_cooldown = GameState.special_cooldown_value()
 		combo_step = 0
-		hit_damage = ATK_SPECIAL
+		hit_damage = _scaled(ATK_SPECIAL)
 		attack_anim = "attack_uppercut"
 	elif heavy:
 		combo_step = 0
-		hit_damage = ATK_HEAVY
+		hit_damage = _scaled(ATK_HEAVY, true)
 		attack_anim = "attack_kick"
 	elif aerial:
 		combo_step = 0
 		attack_left = AERIAL_DURATION
-		hit_damage = ATK_SLAM
+		hit_damage = _scaled(ATK_SLAM, true)
 		attack_anim = "jump"
 		velocity.y = 400.0
 	else:
@@ -146,16 +149,25 @@ func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:
 		combo_timer = COMBO_WINDOW
 		match combo_step:
 			1:
-				hit_damage = ATK_LIGHT
+				hit_damage = _scaled(ATK_LIGHT)
 				attack_anim = "attack_punch"
 			2:
-				hit_damage = ATK_HEAVY - 6.0
+				hit_damage = _scaled(ATK_HEAVY - 6.0, true)
 				attack_anim = "attack_kick"
 			_:
-				hit_damage = ATK_FINISHER if combo_step == 3 else ATK_LIGHT
+				hit_damage = _scaled(ATK_FINISHER, true) if combo_step == 3 else _scaled(ATK_LIGHT)
 				attack_anim = "attack_uppercut" if combo_step == 3 else "attack_punch"
 	hitbox.position.x = facing * ATTACK_REACH
 	hit_delay = 0.03
+
+
+## Applies shop upgrades to a base attack value. `heavy` marks the attacks that
+## Wrath strengthens; Warcry lifts everything for the stage it is active.
+func _scaled(base: float, heavy: bool = false) -> float:
+	var value := base
+	if heavy:
+		value += GameState.heavy_damage_bonus()
+	return value + GameState.warcry_damage_bonus()
 
 
 func _update_animation(input: float) -> void:
@@ -238,6 +250,11 @@ func _damage_direction(from_position: Vector2) -> Vector2:
 func die() -> void:
 	if not is_physics_processing():
 		return
+	# A stored Second Chance intercepts before anything irreversible happens: no
+	# death animation, no death screen, no death recorded for grading.
+	if GameState.consume_revive():
+		_revive()
+		return
 	GameState.register_death()
 	set_physics_process(false)
 	get_tree().paused = true
@@ -257,3 +274,24 @@ func die() -> void:
 		await get_tree().create_timer(1.1, true).timeout
 	var death_panel := preload("res://scenes/ui/death_panel.tscn").instantiate()
 	get_tree().current_scene.add_child(death_panel)
+
+
+## Second Chance: stand back up where you fell, at full health, briefly
+## untouchable. Uses the current max HP so a Vitality purchase is respected.
+## A fall death respawns at the level start instead, because the kill plane
+## would otherwise call `die()` again on the very next frame and burn the revive.
+func _revive() -> void:
+	max_hp = GameState.player_max_hp
+	hp = max_hp
+	GameState.player_health = hp
+	invuln_time = REVIVE_INVULN
+	is_attacking = false
+	is_blocking = false
+	hitbox.monitoring = true
+	velocity = Vector2.ZERO
+	sprite.modulate = Color.WHITE
+	if sprite.sprite_frames.has_animation("idle"):
+		sprite.play("idle")
+	if global_position.y > KILL_PLANE_Y:
+		global_position = start_pos
+	hp_changed.emit(hp, max_hp)

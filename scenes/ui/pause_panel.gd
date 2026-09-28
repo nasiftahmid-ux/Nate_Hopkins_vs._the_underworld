@@ -25,6 +25,10 @@ func _can_pause() -> bool:
 	var scene := get_tree().current_scene
 	if scene == null or scene.name == "Main":
 		return false
+	# The shop handles ui_cancel itself to close out the visit, and autoloads
+	# receive input before the current scene, so pausing would swallow ESC.
+	if scene.name == "Shop":
+		return false
 	if scene.has_node("DeathPanel"):
 		return false
 	return true

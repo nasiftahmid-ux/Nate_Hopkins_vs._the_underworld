@@ -11,6 +11,12 @@ class_name EnemyBase
 @export var knockback_x := 220.0
 @export var knockback_y := -180.0
 
+## How many coins a kill's payout is broken into, and what that payout is.
+## Splitting it means a kill scatters several coins that each have to be run
+## down on their own before they time out.
+const COIN_DROP := 5
+const COIN_SPLIT := 3
+
 var hp: float
 var alive := true
 
@@ -67,6 +73,23 @@ func die() -> void:
 
 
 func _spawn_coin() -> void:
-	var coin := preload("res://scenes/items/coin.tscn").instantiate()
-	coin.global_position = global_position + Vector2(0, -20)
-	get_tree().current_scene.add_child(coin)
+	_spawn_coins(COIN_DROP, COIN_SPLIT)
+
+
+## Bursts a kill's payout as several coins instead of one tidy pickup. The total
+## is unchanged, so the run's theoretical income still holds; what changes is how
+## much of it the player actually manages to chase down before they evaporate.
+func _spawn_coins(total: int, pieces: int) -> void:
+	if total <= 0:
+		return
+	var count := maxi(1, mini(pieces, total))
+	var scene := preload("res://scenes/items/coin.tscn")
+	var each := total / count
+	var remainder := total % count
+	for i in range(count):
+		var coin: Node2D = scene.instantiate()
+		# Hand the leftover coins to the first few pieces so the split is exact.
+		coin.value = each + (1 if i < remainder else 0)
+		coin.global_position = global_position + Vector2(randf_range(-6, 6), -20)
+		coin.rotation = randf_range(-PI, PI)
+		get_tree().current_scene.add_child(coin)

@@ -869,7 +869,7 @@ func die() -> void:
 		title_label.text = "NOW SING FOR YOUR SOUL" if GameState.defeated_exes + 1 >= 2 else "ONE HEART DOWN"
 	if boss_bar:
 		boss_bar.value = 0
-	GameState.close_stage()
+	GameState.finish_stage()
 	await get_tree().create_timer(1.4).timeout
 	GameState.defeated_exes += 1
 	if GameState.defeated_exes >= 2:

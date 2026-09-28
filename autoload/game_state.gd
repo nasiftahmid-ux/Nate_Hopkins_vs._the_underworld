@@ -14,6 +14,73 @@ const DEATH_RATIO_PENALTY := 0.1
 const MIN_RHYTHM_WINDOW := 0.15
 const MIN_RHYTHM_NOTES := 8
 
+## How many things the player may buy on a single shop visit. One purchase per
+## exit is the whole point: the run only offers five decisions, so each one has
+## to hurt a little.
+const SHOP_PURCHASES_PER_VISIT := 1
+## Per-rank effects for the stat upgrades.
+const SHOP_HP_PER_RANK := 10.0
+const SHOP_HEAVY_PER_RANK := 3.0
+const SHOP_COOLDOWN_PER_RANK := 0.25
+const SHOP_WARCRY_PER_RANK := 6.0
+const BASE_SPECIAL_COOLDOWN := 2.0
+
+## Aphrodite's Underworld Shop catalogue. `base` is the first purchase, `scale`
+## multiplies the price on every repeat, and `max_ranks` caps it (`0` = forever).
+## Costs are tuned against the ~1125 coins a full run earns, so the rising curve
+## absorbs most of the purse without any single visit being a dead end.
+const SHOP_ITEMS: Array[Dictionary] = [
+	{
+		"id": "heal",
+		"name": "Restore",
+		"blurb": "Heal to full. Cheap, and always here when you need it.",
+		"base": 50,
+		"scale": 1.45,
+		"max_ranks": 0,
+		"blocked_at_full_health": true,
+	},
+	{
+		"id": "warcry",
+		"name": "Warcry",
+		"blurb": "+6 damage on every attack, for the next stage only.",
+		"base": 120,
+		"scale": 1.4,
+		"max_ranks": 0,
+	},
+	{
+		"id": "cooldown",
+		"name": "Swiftness",
+		"blurb": "Special recovers 0.25s sooner. Down to 1.0s at four ranks.",
+		"base": 180,
+		"scale": 1.7,
+		"max_ranks": 4,
+	},
+	{
+		"id": "hp",
+		"name": "Vitality",
+		"blurb": "+10 max HP, for good.",
+		"base": 200,
+		"scale": 1.6,
+		"max_ranks": 0,
+	},
+	{
+		"id": "heavy",
+		"name": "Wrath",
+		"blurb": "+3 damage on heavy, slam and combo finisher.",
+		"base": 220,
+		"scale": 1.6,
+		"max_ranks": 0,
+	},
+	{
+		"id": "revive",
+		"name": "Second Chance",
+		"blurb": "Cheat death once per run. Her favourite. She'd never say it.",
+		"base": 450,
+		"scale": 1.0,
+		"max_ranks": 1,
+	},
+]
+
 ## Combat grade is derived from how cleanly the whole run was fought. The first
 ## entry whose `min_ratio` the clean-combat ratio reaches wins, so the table is
 ## ordered best to worst. `window`/`notes`/`streak` are the difficulty knobs the
@@ -82,6 +149,18 @@ var exp := 0
 var level := 1
 var defeated_exes := 0
 
+## Aphrodite's Underworld Shop. Purchased ranks are permanent for the run; the
+## scene holding the shop is `scenes/ui/shop.tscn`, which is entered from the
+## level door and charges this state.
+var shop_ranks := {}
+var purchases_this_visit := 0
+var shop_next_scene := ""
+## Warcry ranks bought but not yet spent. They convert to `warcry_active` the
+## next time a stage opens, so the boost lasts exactly one stage.
+var warcry_charges := 0
+var warcry_active := 0
+var revives_left := 0
+
 var dialogue_lines: Array[Dictionary] = []
 var scene_after_dialogue := ""
 
@@ -100,8 +179,6 @@ func _ready() -> void:
 
 
 func new_game() -> void:
-	player_max_hp = max_hp_for_level(1)
-	player_health = player_max_hp
 	damage_taken = 0.0
 	run_damage_taken = 0.0
 	run_deaths = 0
@@ -112,6 +189,16 @@ func new_game() -> void:
 	exp = 0
 	level = 1
 	defeated_exes = 0
+	shop_ranks.clear()
+	purchases_this_visit = 0
+	shop_next_scene = ""
+	warcry_charges = 0
+	warcry_active = 0
+	revives_left = 0
+	# Level and shop state must already be reset before deriving max HP, or a
+	# new run inherits the previous run's Vitality bonus.
+	player_max_hp = total_max_hp()
+	player_health = player_max_hp
 	dialogue_lines = []
 	scene_after_dialogue = ""
 	rhythm_followup_lines = []
@@ -128,6 +215,134 @@ func max_hp_for_level(target_level: int) -> float:
 	return BASE_MAX_HP + MAX_HP_PER_LEVEL * float(maxi(1, target_level) - 1)
 
 
+## Max HP from levels plus whatever the shop has granted. Shop HP lives in its
+## own field on purpose: `max_hp_for_level` is authoritative for the level
+## curve, and folding shop bonuses into `player_max_hp` directly would let the
+## next level-up or save load silently erase a purchase.
+func total_max_hp() -> float:
+	return max_hp_for_level(level) + bonus_max_hp()
+
+
+func bonus_max_hp() -> float:
+	return SHOP_HP_PER_RANK * float(shop_rank("hp"))
+
+
+func shop_rank(id: String) -> int:
+	return int(shop_ranks.get(id, 0))
+
+
+## Damage bonus from Wrath, applied to heavy, slam and the combo finisher.
+func heavy_damage_bonus() -> float:
+	return SHOP_HEAVY_PER_RANK * float(shop_rank("heavy"))
+
+
+func special_cooldown_value() -> float:
+	return maxf(
+		BASE_SPECIAL_COOLDOWN - SHOP_COOLDOWN_PER_RANK * float(shop_rank("cooldown")),
+		1.0
+	)
+
+
+## Warcry bought but not yet applied, plus the boost live on this stage.
+func warcry_damage_bonus() -> float:
+	return SHOP_WARCRY_PER_RANK * float(warcry_active)
+
+
+## Called when a stage opens: banked warcry ranks become a live buff for exactly
+## one stage. Only promotes ranks that are still banked, so a stage restart or a
+## save/load mid-stage keeps the buff the player already paid for. The buff is
+## retired by `finish_stage()` when the stage is actually cleared.
+func _consume_warcry() -> void:
+	if warcry_charges <= 0:
+		return
+	warcry_active = warcry_charges
+	warcry_charges = 0
+	# Persist the promotion, otherwise quitting here would save a spent charge
+	# with no active buff and the purchase would be lost.
+	save_game()
+
+
+func can_revive() -> bool:
+	return revives_left > 0
+
+
+## Spends a stored revive. Returns false when the player has none, so `die()`
+## can fall through to the death screen.
+func consume_revive() -> bool:
+	if revives_left <= 0:
+		return false
+	revives_left -= 1
+	save_game()
+	return true
+
+
+func shop_item(id: String) -> Dictionary:
+	for entry in SHOP_ITEMS:
+		if str(entry["id"]) == id:
+			return entry
+	return {}
+
+
+func shop_price(id: String) -> int:
+	var entry := shop_item(id)
+	if entry.is_empty():
+		return 0
+	var ranks := shop_rank(id)
+	return int(round(float(entry["base"]) * pow(float(entry["scale"]), float(ranks))))
+
+
+## True when the item exists, is below its rank cap, and is not blocked by
+## current state (an item like Restore is meaningless at full health).
+func shop_item_available(id: String) -> bool:
+	var entry := shop_item(id)
+	if entry.is_empty():
+		return false
+	var cap := int(entry["max_ranks"])
+	if cap > 0 and shop_rank(id) >= cap:
+		return false
+	if bool(entry.get("blocked_at_full_health", false)) and player_health >= player_max_hp - 0.01:
+		return false
+	return true
+
+
+## The one decision the visit allows. Returns false and changes nothing if the
+## player cannot afford the item, has already bought this visit, or the item is
+## unavailable.
+func buy_shop_item(id: String) -> bool:
+	if purchases_this_visit >= SHOP_PURCHASES_PER_VISIT:
+		return false
+	if not shop_item_available(id):
+		return false
+	var cost := shop_price(id)
+	if money < cost:
+		return false
+
+	money -= cost
+	shop_ranks[id] = shop_rank(id) + 1
+	purchases_this_visit += 1
+	match id:
+		"hp":
+			# Grant the extra max HP now so the player sees the bar move, and top
+			# up so the new ceiling is not immediately empty.
+			player_max_hp = total_max_hp()
+			player_health = minf(player_max_hp, player_health + SHOP_HP_PER_RANK)
+		"warcry":
+			warcry_charges += 1
+		"revive":
+			revives_left += 1
+		"heal":
+			player_health = player_max_hp
+
+	save_game()
+	money_changed.emit(money)
+	return true
+
+
+func reset_shop_visit() -> void:
+	purchases_this_visit = 0
+	save_game()
+
+
 func save_game() -> void:
 	var data := {
 		"player_max_hp": player_max_hp,
@@ -138,6 +353,10 @@ func save_game() -> void:
 		"run_damage_taken": run_damage_taken,
 		"run_deaths": run_deaths,
 		"stage_damage": stage_damage,
+		"shop_ranks": shop_ranks,
+		"warcry_charges": warcry_charges,
+		"warcry_active": warcry_active,
+		"revives_left": revives_left,
 	}
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
@@ -165,7 +384,17 @@ func load_game() -> bool:
 	if saved_stages is Array:
 		for value in saved_stages:
 			stage_damage.append(float(value))
-	player_max_hp = max_hp_for_level(level)
+	shop_ranks.clear()
+	var saved_ranks = parsed.get("shop_ranks", {})
+	if saved_ranks is Dictionary:
+		for key in saved_ranks:
+			shop_ranks[str(key)] = int(saved_ranks[key])
+	warcry_charges = int(parsed.get("warcry_charges", 0))
+	warcry_active = int(parsed.get("warcry_active", 0))
+	revives_left = int(parsed.get("revives_left", 0))
+	# Max HP is recomputed from the level curve plus shop bonuses, so a purchase
+	# survives a reload instead of being clobbered by the authoritative curve.
+	player_max_hp = total_max_hp()
 	return true
 
 
@@ -180,7 +409,7 @@ func add_exp(value: int) -> void:
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
 		level += 1
-		player_max_hp = max_hp_for_level(level)
+		player_max_hp = total_max_hp()
 		var heal := player_max_hp * level_up_heal_ratio()
 		player_health = minf(player_health + heal, player_max_hp)
 		level_changed.emit(level)
@@ -195,10 +424,12 @@ func begin_level() -> void:
 
 
 ## Called by every stage scene on entry. Closing is idempotent, so a door that
-## already closed the previous stage does not record a duplicate.
+## already closed the previous stage does not record a duplicate. Warcry bought
+## at the previous door goes live here, and `finish_stage()` retires it.
 func begin_stage() -> void:
 	clear_damage_penalty()
 	_stage_open = true
+	_consume_warcry()
 
 
 func close_stage() -> void:
@@ -206,6 +437,15 @@ func close_stage() -> void:
 		return
 	stage_damage.append(damage_taken)
 	_stage_open = false
+
+
+## Called when a stage is genuinely cleared, as opposed to retried. A retry
+## (`begin_level`) must not retire the Warcry, so the buff expires here at the
+## door rather than inside `close_stage`.
+func finish_stage() -> void:
+	clear_damage_penalty()
+	warcry_active = 0
+	save_game()
 
 
 func clear_damage_penalty() -> void:

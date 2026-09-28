@@ -26,3 +26,6 @@ offset_bottom = -8.0
 theme_override_font_sizes/font_size = 10
 text = "$"
 horizontal_alignment = 1
+
+[node name="Ground" type="RayCast2D" parent="."]
+target_position = Vector2(0, 26)
