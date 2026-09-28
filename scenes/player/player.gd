@@ -50,6 +50,12 @@ func _ready() -> void:
 	GameState.player_health = hp
 	hp_changed.emit(hp, max_hp)
 	GameState.level_healed.connect(_on_level_healed)
+	# God mode is a session flag, not a per-player one, so a player that spawns
+	# after the cheat was switched on still starts untouchable.
+	if GameState.dev_god_mode:
+		hp = max_hp
+		GameState.player_health = hp
+		hp_changed.emit(hp, max_hp)
 
 
 func _on_level_healed(amount: float) -> void:
@@ -75,7 +81,14 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	if global_position.y > KILL_PLANE_Y:
-		die()
+		if GameState.dev_god_mode:
+			# God mode does not make pits survivable, it removes the death: drop
+			# back to the level start so a dev test keeps moving instead of
+			# dumping you on a death screen every time you test a pit.
+			global_position = start_pos
+			velocity = Vector2.ZERO
+		else:
+			die()
 
 
 func _process_movement(delta: float, input: float) -> void:
@@ -211,6 +224,14 @@ func _shake_from_hit(dir: Vector2) -> void:
 ## default to fall back to a sideways shake based on facing.
 func take_damage(amount: float, blockable: bool = true, from_position: Vector2 = Vector2.ZERO) -> void:
 	if invuln_time > 0.0:
+		return
+	# Dev cheat: swallow the hit whole. Returning before `register_damage()`
+	# also keeps a god-mode run out of the clean-combat grading, so enabling
+	# this cannot quietly flatter a score.
+	if GameState.dev_god_mode:
+		hp = max_hp
+		GameState.player_health = hp
+		hp_changed.emit(hp, max_hp)
 		return
 	if is_blocking and blockable:
 		sprite.modulate = Color(0.7, 0.9, 1.0)

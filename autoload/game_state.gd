@@ -176,6 +176,11 @@ var rhythm_streak_limit := 2
 
 func _ready() -> void:
 	load_game()
+	# The cheats must answer while the tree is paused, because that is exactly
+	# when you want them: the death screen is up and you want to walk back out.
+	# This autoload has no per-frame logic, so running it while paused is free.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	_register_dev_actions()
 
 
 func new_game() -> void:
@@ -553,3 +558,105 @@ func level_up_heal_ratio() -> float:
 
 func exp_to_next_level() -> int:
 	return level * 50
+
+
+## ---------------------------------------------------------------------------
+## Developer cheats
+## ---------------------------------------------------------------------------
+##
+## `cheat` is the one entry point, so the engine command line needs a single
+## form. Bare `cheat` cannot work in that console: it evaluates an expression
+## and prints the result, it never invokes a value, so a bare identifier can
+## only ever echo something back. The working form is a call:
+##
+##     GameState.cheat()             toggle unlimited health
+##     GameState.cheat("health")     the same, spelled out
+##     GameState.cheat("health off") turn it back off
+##     GameState.cheat("money")      refill the purse, for shop testing
+##
+## F9 toggles unlimited health too, and unlike the command line it also works
+## in an exported build, which is where balance actually needs checking.
+
+## When true, the player takes no damage and the kill plane cannot kill them.
+## Deliberately absent from `save_game()`: god mode belongs to the session that
+## asked for it, and must never follow a player into a real run.
+var dev_god_mode := false
+
+## Only honoured in a debug build, so a stray keypress cannot enable a cheat in
+## a shipped copy. Returns false in an exported release build.
+static func dev_cheats_available() -> bool:
+	return OS.is_debug_build()
+
+
+## F9 mirrors the command line for testing in an exported build, where the
+## engine console does not exist at all.
+const DEV_CHEAT_ACTION := &"dev_cheat"
+## Enough to buy anything in the shop several times over, for price testing.
+const DEV_MONEY_REFILL := 5000
+
+
+func _register_dev_actions() -> void:
+	if not dev_cheats_available():
+		return
+	if not InputMap.has_action(DEV_CHEAT_ACTION):
+		InputMap.add_action(DEV_CHEAT_ACTION)
+	var ev := InputEventKey.new()
+	ev.physical_keycode = KEY_F9
+	InputMap.action_add_event(DEV_CHEAT_ACTION, ev)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not dev_cheats_available():
+		return
+	if event.is_action_pressed(DEV_CHEAT_ACTION):
+		cheat("health")
+		get_viewport().set_input_as_handled()
+
+
+## Handles every dev command. An unknown argument reports the usage instead of
+## failing silently, because a typo in a debug console is otherwise invisible.
+func cheat(arg: String = "") -> String:
+	var request := arg.strip_edges().to_lower()
+	if not dev_cheats_available():
+		return "Cheats are disabled in this build."
+	match request:
+		"", "god", "godmode", "health", "hp":
+			dev_god_mode = not dev_god_mode
+			_apply_dev_health()
+			return "Unlimited health %s." % ("ON" if dev_god_mode else "off")
+		"health off", "god off", "hp off", "off":
+			dev_god_mode = false
+			_apply_dev_health()
+			return "Unlimited health off."
+		"money", "cash", "coins":
+			money = DEV_MONEY_REFILL
+			save_game()
+			return "Purse refilled to %d coins." % money
+		"status":
+			return "god mode %s, %d coins, level %d, %.0f/%.0f HP." % [
+				"on" if dev_god_mode else "off", money, level,
+				player_health, player_max_hp,
+			]
+		_:
+			return "Unknown cheat '%s'. Try: health, money, status." % arg
+
+
+func _apply_dev_health() -> void:
+	var player := _dev_player()
+	if player == null:
+		# No player in the tree (menus, shop). Flag is still set, and the next
+		# player to spawn picks it up via `dev_god_mode`.
+		return
+	if dev_god_mode:
+		player.hp = player.max_hp
+	else:
+		player.hp = minf(player.hp, player.max_hp)
+	player.invuln_time = 0.0
+	GameState.player_health = player.hp
+	player.hp_changed.emit(player.hp, player.max_hp)
+
+
+func _dev_player() -> Node2D:
+	if not is_inside_tree():
+		return null
+	return get_tree().get_first_node_in_group("player") as Node2D
