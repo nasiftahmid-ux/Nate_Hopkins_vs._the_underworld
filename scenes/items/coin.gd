@@ -65,7 +65,13 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 		var ground: RayCast2D = $Ground
 		ground.force_raycast_update()
-		if ground.is_colliding() and velocity.y > 0.0:
+		# Only scenery counts as ground. The ray shares a collision layer with the
+		# player, so without this a coin can perch on the player's head and hover
+		# there instead of landing. Static bodies are the only things a coin is
+		# ever allowed to rest on.
+		var landed := ground.is_colliding() and velocity.y > 0.0 \
+			and ground.get_collider() is StaticBody2D
+		if landed:
 			# Land on top of whatever was hit rather than sinking into it.
 			global_position.y = ground.get_collision_point().y - GROUND_OFFSET
 			velocity.y = -velocity.y * BOUNCE_DAMP
