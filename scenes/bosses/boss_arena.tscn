@@ -9,7 +9,7 @@
 size = Vector2(900, 60)
 
 [sub_resource type="RectangleShape2D" id="wall_shape"]
-size = Vector2(40, 800)
+size = Vector2(40, 900)
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
 size = Vector2(56, 64)
@@ -47,7 +47,7 @@ shape = SubResource("wall_shape")
 offset_left = -20.0
 offset_top = -400.0
 offset_right = 20.0
-offset_bottom = 400.0
+offset_bottom = 450.0
 color = Color(0.3, 0.08, 0.12, 1)
 
 [node name="WallR" type="StaticBody2D" parent="."]
@@ -60,7 +60,7 @@ shape = SubResource("wall_shape")
 offset_left = -20.0
 offset_top = -400.0
 offset_right = 20.0
-offset_bottom = 400.0
+offset_bottom = 450.0
 color = Color(0.3, 0.08, 0.12, 1)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]

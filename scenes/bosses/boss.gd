@@ -18,6 +18,9 @@ const ARENA_LEFT := 60.0
 const ARENA_RIGHT := 840.0
 const ARENA_TOP := -260.0
 const ARENA_FLOOR := 440.0
+## Half the boss collision box's height, so code that assigns global_position
+## directly can place it exactly where physics would have rested it.
+const BODY_HALF_HEIGHT := 42.0
 
 const PHASE2_RATIO := 0.66
 const PHASE3_RATIO := 0.33
@@ -200,8 +203,8 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	if global_position.y > ARENA_FLOOR + 40.0 or global_position.y < ARENA_TOP:
-		global_position.y = ARENA_FLOOR - 40.0
+	if global_position.y > ARENA_FLOOR - BODY_HALF_HEIGHT + 40.0 or global_position.y < ARENA_TOP:
+		global_position.y = ARENA_FLOOR - BODY_HALF_HEIGHT
 		velocity.y = 0.0
 	global_position.x = clampf(global_position.x, ARENA_LEFT - 40.0, ARENA_RIGHT + 40.0)
 
@@ -412,6 +415,11 @@ func _state_teleport(delta: float, player: Node2D) -> void:
 					side = 1.0
 				global_position = player.global_position + Vector2(side * 250.0, 0.0)
 				global_position.x = clampf(global_position.x, ARENA_LEFT, ARENA_RIGHT)
+				# A teleport writes global_position directly, so it never goes
+				# through move_and_slide and inherits no collision correction.
+				# Copying the player's y therefore buries the boss in the floor
+				# whenever the player is standing. Snap to the floor line instead.
+				global_position.y = ARENA_FLOOR - BODY_HALF_HEIGHT
 			teleport_cooldown = 4.0
 		return
 	collision_layer = 1
