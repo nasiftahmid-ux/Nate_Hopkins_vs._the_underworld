@@ -18,7 +18,13 @@ offset_left = -25.0
 offset_top = -92.0
 offset_right = 25.0
 offset_bottom = 0.0
+pivot_offset = Vector2(25, 46)
 color = Color(0.55, 0.3, 0.65, 1)
+
+[node name="Telegraph" type="Polygon2D" parent="."]
+position = Vector2(0, -6)
+color = Color(1, 0.82, 0.28, 1)
+polygon = PackedVector2Array(0, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("body_shape")
