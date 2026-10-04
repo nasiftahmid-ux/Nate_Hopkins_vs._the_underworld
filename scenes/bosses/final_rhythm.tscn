@@ -1,6 +1,10 @@
 [gd_scene load_steps=2 format=3]
 
 [ext_resource type="Script" path="res://scenes/bosses/final_rhythm.gd" id="1_final"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Guitar.png" id="id_guitar"]
+[ext_resource type="SpriteFrames" path="res://scenes/bosses/guitar_frames.tres" id="id_guitar_frames"]
+
+
 
 [node name="FinalRhythm" type="Node2D"]
 script = ExtResource("1_final")
@@ -15,12 +19,9 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.07, 0.03, 0.12, 1)
 
-[node name="NateBox" type="ColorRect" parent="UI"]
-offset_left = 283.0
-offset_top = 320.0
-offset_right = 317.0
-offset_bottom = 384.0
-color = Color(0.2, 0.6, 1, 1)
+[node name="NateGuitar" type="AnimatedSprite2D" parent="UI"]
+position = Vector2(300, 352)
+sprite_frames = ExtResource("id_guitar_frames")
 
 [node name="NateLabel" type="Label" parent="UI"]
 offset_left = 223.0

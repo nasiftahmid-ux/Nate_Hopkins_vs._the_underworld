@@ -1,0 +1,16 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/Nate_Guitar.png" id="res_1"]
+
+[sub_resource type="AtlasTexture" id="AT_guitar"]
+atlas = ExtResource("res_1")
+region = Rect2(0, 0, 787, 173)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [{"duration": 1.0, "texture": SubResource("AT_guitar")}],
+"loop": true,
+"name": &"default",
+"speed": 5
+}]
