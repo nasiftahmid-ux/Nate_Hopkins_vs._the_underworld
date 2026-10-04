@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c2nfbr35d33qx"
-path="res://.godot/imported/Nate_Idle.png-34b902f3979a1f1bf99987a685d49a74.ctex"
+uid="uid://cvxnap1ph04f6"
+path="res://.godot/imported/Nate_Kick.png-3b0d896d92748ec93f08a3370f50939c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Nate_Idle.png"
-dest_files=["res://.godot/imported/Nate_Idle.png-34b902f3979a1f1bf99987a685d49a74.ctex"]
+source_file="res://assets/Nate_Kick.png"
+dest_files=["res://.godot/imported/Nate_Kick.png-3b0d896d92748ec93f08a3370f50939c.ctex"]
 
 [params]
 

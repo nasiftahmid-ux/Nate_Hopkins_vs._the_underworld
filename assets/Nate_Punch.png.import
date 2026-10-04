@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cb1drwtjlpjma"
-path="res://.godot/imported/nate_attack_punch.png-01ab47b9ebe1d42f5e247c88b60bdf49.ctex"
+uid="uid://dkryi2xbgkw0y"
+path="res://.godot/imported/Nate_Punch.png-a1d6cac048e30aadf1dae402705d85f1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/nate_attack_punch.png"
-dest_files=["res://.godot/imported/nate_attack_punch.png-01ab47b9ebe1d42f5e247c88b60bdf49.ctex"]
+source_file="res://assets/Nate_Punch.png"
+dest_files=["res://.godot/imported/Nate_Punch.png-a1d6cac048e30aadf1dae402705d85f1.ctex"]
 
 [params]
 

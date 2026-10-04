@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dnugt052mq66s"
-path="res://.godot/imported/nate_death.png-1f347ebba482cc8e5187b8f2374081de.ctex"
+uid="uid://dj4dpeqbpnc3h"
+path="res://.godot/imported/Nate_Jumping.png-f5a33df55f05325ff3c94d03b850ee46.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/nate_death.png"
-dest_files=["res://.godot/imported/nate_death.png-1f347ebba482cc8e5187b8f2374081de.ctex"]
+source_file="res://assets/Nate_Jumping.png"
+dest_files=["res://.godot/imported/Nate_Jumping.png-f5a33df55f05325ff3c94d03b850ee46.ctex"]
 
 [params]
 

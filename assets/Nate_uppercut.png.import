@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dvjpnkons0vgn"
-path="res://.godot/imported/nate_attack_uppercut.png-ec7b434963ee96a2e6f0e82e7ccf85c7.ctex"
+uid="uid://bb6vpa1lophjr"
+path="res://.godot/imported/Nate_uppercut.png-b3cb4421db14aaf0e4df3575f64334f8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/nate_attack_uppercut.png"
-dest_files=["res://.godot/imported/nate_attack_uppercut.png-ec7b434963ee96a2e6f0e82e7ccf85c7.ctex"]
+source_file="res://assets/Nate_uppercut.png"
+dest_files=["res://.godot/imported/Nate_uppercut.png-b3cb4421db14aaf0e4df3575f64334f8.ctex"]
 
 [params]
 

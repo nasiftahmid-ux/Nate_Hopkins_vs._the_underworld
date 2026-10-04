@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dsj1yvb10sh0i"
-path="res://.godot/imported/nate_jump.png-f4113b535603bc68f9631dc4ab191fad.ctex"
+uid="uid://dn36oqiip7wek"
+path="res://.godot/imported/Nate_Guitar.png-5a10736fe63f42f2485db152152206f1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/nate_jump.png"
-dest_files=["res://.godot/imported/nate_jump.png-f4113b535603bc68f9631dc4ab191fad.ctex"]
+source_file="res://assets/Nate_Guitar.png"
+dest_files=["res://.godot/imported/Nate_Guitar.png-5a10736fe63f42f2485db152152206f1.ctex"]
 
 [params]
 
