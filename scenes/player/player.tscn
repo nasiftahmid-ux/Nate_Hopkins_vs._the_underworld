@@ -9,6 +9,8 @@
 [ext_resource type="Texture2D" path="res://assets/Nate_uppercut.png" id="id_sp_attack_uppercut"]
 [ext_resource type="Texture2D" path="res://assets/Nate_Jumping.png" id="id_sp_jump"]
 [ext_resource type="Texture2D" path="res://assets/Nate_Hurt.png" id="id_sp_death"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Block.png" id="id_sp_block"]
+
 
 [sub_resource type="AtlasTexture" id="idle_AT_0"]
 atlas = ExtResource("id_sp_idle")
@@ -325,7 +327,6 @@ region = Rect2(3033, 0, 144, 255)
 [sub_resource type="AtlasTexture" id="death_AT_0"]
 atlas = ExtResource("id_sp_death")
 filter_clip = true
-filter_clip = true
 region = Rect2(87, 0, 99, 255)
 
 [sub_resource type="AtlasTexture" id="death_AT_1"]
@@ -336,42 +337,43 @@ region = Rect2(357, 0, 99, 255)
 [sub_resource type="AtlasTexture" id="death_AT_2"]
 atlas = ExtResource("id_sp_death")
 filter_clip = true
-region = Rect2(627, 0, 105, 255)
-
-[sub_resource type="AtlasTexture" id="death_AT_3"]
-atlas = ExtResource("id_sp_death")
+region = Rect2(627, 0, 105, 255)[sub_resource type="AtlasTexture" id="block_AT_0"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(225, 0, 75, 190)
+region = Rect2(93, 0, 87, 255)
 
-[sub_resource type="AtlasTexture" id="death_AT_4"]
-atlas = ExtResource("id_sp_death")
+[sub_resource type="AtlasTexture" id="block_AT_1"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(300, 0, 75, 190)
+region = Rect2(363, 0, 87, 255)
 
-[sub_resource type="AtlasTexture" id="death_AT_5"]
-atlas = ExtResource("id_sp_death")
+[sub_resource type="AtlasTexture" id="block_AT_2"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(375, 0, 75, 190)
+region = Rect2(633, 0, 87, 255)
 
-[sub_resource type="AtlasTexture" id="death_AT_6"]
-atlas = ExtResource("id_sp_death")
+[sub_resource type="AtlasTexture" id="block_AT_3"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(450, 0, 75, 190)
+region = Rect2(903, 0, 87, 255)
 
-[sub_resource type="AtlasTexture" id="death_AT_7"]
-atlas = ExtResource("id_sp_death")
+[sub_resource type="AtlasTexture" id="block_AT_4"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(525, 0, 75, 190)
+region = Rect2(1176, 0, 87, 255)
 
-[sub_resource type="AtlasTexture" id="death_AT_8"]
-atlas = ExtResource("id_sp_death")
+[sub_resource type="AtlasTexture" id="block_AT_5"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(600, 0, 75, 190)
+region = Rect2(1440, 0, 96, 255)
 
-[sub_resource type="AtlasTexture" id="death_AT_9"]
-atlas = ExtResource("id_sp_death")
+[sub_resource type="AtlasTexture" id="block_AT_6"]
+atlas = ExtResource("id_sp_block")
 filter_clip = true
-region = Rect2(675, 0, 75, 190)
+region = Rect2(1698, 0, 111, 255)
+
+
+
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(34, 64)
@@ -380,7 +382,7 @@ size = Vector2(34, 64)
 size = Vector2(42, 48)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_player"]
-animations = [{"name": &"idle", "speed": 5, "loop": true, "frames": [ {"texture": SubResource("idle_AT_0"), "duration": 1.0}, {"texture": SubResource("idle_AT_1"), "duration": 1.0}, {"texture": SubResource("idle_AT_2"), "duration": 1.0}, {"texture": SubResource("idle_AT_3"), "duration": 1.0}, {"texture": SubResource("idle_AT_4"), "duration": 1.0} ]}, {"name": &"run", "speed": 13, "loop": true, "frames": [ {"texture": SubResource("run_AT_0"), "duration": 1.0}, {"texture": SubResource("run_AT_1"), "duration": 1.0}, {"texture": SubResource("run_AT_2"), "duration": 1.0}, {"texture": SubResource("run_AT_3"), "duration": 1.0}, {"texture": SubResource("run_AT_4"), "duration": 1.0}, {"texture": SubResource("run_AT_5"), "duration": 1.0}, {"texture": SubResource("run_AT_6"), "duration": 1.0}, {"texture": SubResource("run_AT_7"), "duration": 1.0} ]}, {"name": &"attack_punch", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_punch_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_7"), "duration": 1.0} ]}, {"name": &"attack_kick", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_kick_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_7"), "duration": 1.0} ]}, {"name": &"attack_uppercut", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_uppercut_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_7"), "duration": 1.0} ]}, {"name": &"jump", "speed": 8, "loop": true, "frames": [{"texture": SubResource("jump_AT_0"), "duration": 1.0}, {"texture": SubResource("jump_AT_1"), "duration": 1.0}, {"texture": SubResource("jump_AT_2"), "duration": 1.0}, {"texture": SubResource("jump_AT_3"), "duration": 1.0}, {"texture": SubResource("jump_AT_4"), "duration": 1.0}, {"texture": SubResource("jump_AT_5"), "duration": 1.0}, {"texture": SubResource("jump_AT_6"), "duration": 1.0}, {"texture": SubResource("jump_AT_7"), "duration": 1.0}, {"texture": SubResource("jump_AT_8"), "duration": 1.0}, {"texture": SubResource("jump_AT_9"), "duration": 1.0}, {"texture": SubResource("jump_AT_10"), "duration": 1.0}, {"texture": SubResource("jump_AT_11"), "duration": 1.0}]}, {"name": &"death", "speed": 14, "loop": false, "frames": [ {"texture": SubResource("death_AT_0"), "duration": 1.0}, {"texture": SubResource("death_AT_1"), "duration": 1.0}, {"texture": SubResource("death_AT_2"), "duration": 1.0}, {"texture": SubResource("death_AT_3"), "duration": 1.0}, {"texture": SubResource("death_AT_4"), "duration": 1.0}, {"texture": SubResource("death_AT_5"), "duration": 1.0}, {"texture": SubResource("death_AT_6"), "duration": 1.0}, {"texture": SubResource("death_AT_7"), "duration": 1.0}, {"texture": SubResource("death_AT_8"), "duration": 1.0}, {"texture": SubResource("death_AT_9"), "duration": 1.0} ]}, {"name": &"block", "speed": 8, "loop": true, "frames": [ {"texture": SubResource("idle_AT_0"), "duration": 1.0} ]}]
+animations = [{"name": &"idle", "speed": 5, "loop": true, "frames": [ {"texture": SubResource("idle_AT_0"), "duration": 1.0}, {"texture": SubResource("idle_AT_1"), "duration": 1.0}, {"texture": SubResource("idle_AT_2"), "duration": 1.0}, {"texture": SubResource("idle_AT_3"), "duration": 1.0}, {"texture": SubResource("idle_AT_4"), "duration": 1.0} ]}, {"name": &"run", "speed": 13, "loop": true, "frames": [ {"texture": SubResource("run_AT_0"), "duration": 1.0}, {"texture": SubResource("run_AT_1"), "duration": 1.0}, {"texture": SubResource("run_AT_2"), "duration": 1.0}, {"texture": SubResource("run_AT_3"), "duration": 1.0}, {"texture": SubResource("run_AT_4"), "duration": 1.0}, {"texture": SubResource("run_AT_5"), "duration": 1.0}, {"texture": SubResource("run_AT_6"), "duration": 1.0}, {"texture": SubResource("run_AT_7"), "duration": 1.0} ]}, {"name": &"attack_punch", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_punch_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_7"), "duration": 1.0} ]}, {"name": &"attack_kick", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_kick_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_7"), "duration": 1.0} ]}, {"name": &"attack_uppercut", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_uppercut_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_7"), "duration": 1.0} ]}, {"name": &"jump", "speed": 8, "loop": true, "frames": [{"texture": SubResource("jump_AT_0"), "duration": 1.0}, {"texture": SubResource("jump_AT_1"), "duration": 1.0}, {"texture": SubResource("jump_AT_2"), "duration": 1.0}, {"texture": SubResource("jump_AT_3"), "duration": 1.0}, {"texture": SubResource("jump_AT_4"), "duration": 1.0}, {"texture": SubResource("jump_AT_5"), "duration": 1.0}, {"texture": SubResource("jump_AT_6"), "duration": 1.0}, {"texture": SubResource("jump_AT_7"), "duration": 1.0}, {"texture": SubResource("jump_AT_8"), "duration": 1.0}, {"texture": SubResource("jump_AT_9"), "duration": 1.0}, {"texture": SubResource("jump_AT_10"), "duration": 1.0}, {"texture": SubResource("jump_AT_11"), "duration": 1.0}]}, {"name": &"death", "speed": 14, "loop": false, "frames": [{"texture": SubResource("death_AT_0"), "duration": 1.0}, {"texture": SubResource("death_AT_1"), "duration": 1.0}, {"texture": SubResource("death_AT_2"), "duration": 1.0}]}, {"name": &"block", "speed": 8, "loop": true, "frames": [{"texture": SubResource("block_AT_0"), "duration": 1.0}, {"texture": SubResource("block_AT_1"), "duration": 1.0}, {"texture": SubResource("block_AT_2"), "duration": 1.0}, {"texture": SubResource("block_AT_3"), "duration": 1.0}, {"texture": SubResource("block_AT_4"), "duration": 1.0}, {"texture": SubResource("block_AT_5"), "duration": 1.0}, {"texture": SubResource("block_AT_6"), "duration": 1.0}]}]
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("1_player")
