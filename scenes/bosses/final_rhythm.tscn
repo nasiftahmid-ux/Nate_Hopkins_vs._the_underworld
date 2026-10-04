@@ -21,7 +21,9 @@ color = Color(0.07, 0.03, 0.12, 1)
 
 [node name="NateGuitar" type="AnimatedSprite2D" parent="UI"]
 position = Vector2(300, 352)
+scale = Vector2(0.4, 0.4)
 sprite_frames = ExtResource("id_guitar_frames")
+autoplay = "default"
 
 [node name="NateLabel" type="Label" parent="UI"]
 offset_left = 223.0

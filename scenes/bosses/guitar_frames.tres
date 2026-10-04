@@ -2,15 +2,45 @@
 
 [ext_resource type="Texture2D" path="res://assets/Nate_Guitar.png" id="res_1"]
 
-[sub_resource type="AtlasTexture" id="AT_guitar"]
+[sub_resource type="AtlasTexture" id="AT_0"]
 atlas = ExtResource("res_1")
-region = Rect2(0, 0, 787, 173)
+region = Rect2(42, 0, 174, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AT_1"]
+atlas = ExtResource("res_1")
+region = Rect2(282, 0, 36, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AT_2"]
+atlas = ExtResource("res_1")
+region = Rect2(330, 0, 180, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AT_3"]
+atlas = ExtResource("res_1")
+region = Rect2(609, 0, 183, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AT_4"]
+atlas = ExtResource("res_1")
+region = Rect2(873, 0, 147, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AT_5"]
+atlas = ExtResource("res_1")
+region = Rect2(1026, 0, 45, 255)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AT_6"]
+atlas = ExtResource("res_1")
+region = Rect2(1140, 0, 153, 255)
 filter_clip = true
 
 [resource]
 animations = [{
-"frames": [{"duration": 1.0, "texture": SubResource("AT_guitar")}],
+"frames": [{"duration": 1.0, "texture": SubResource("AT_0")}, {"duration": 1.0, "texture": SubResource("AT_1")}, {"duration": 1.0, "texture": SubResource("AT_2")}, {"duration": 1.0, "texture": SubResource("AT_3")}, {"duration": 1.0, "texture": SubResource("AT_4")}, {"duration": 1.0, "texture": SubResource("AT_5")}, {"duration": 1.0, "texture": SubResource("AT_6")}],
 "loop": true,
 "name": &"default",
-"speed": 5
+"speed": 12
 }]
