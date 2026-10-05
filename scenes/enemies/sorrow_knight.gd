@@ -31,6 +31,11 @@ const IMPACT_WHITE := Color(1.0, 1.0, 0.88, 1)
 ## Punched-out, spent, and waiting to be punished for it.
 const RECOVERY_GREY := Color(0.42, 0.4, 0.48, 1)
 const ARC_COLOR := Color(1.0, 0.82, 0.28, 1)
+## A blocked hit lands dull and green rather than white, so the player can tell
+## a parry from a connect.
+const BLOCK_HIT := Color(0.9, 0.95, 0.5, 1)
+## Matches EnemyBase greying the body out on death, which this enemy never draws.
+const DEATH_GREY := Color(0.45, 0.45, 0.45, 1)
 
 ## How wide the swing arc is drawn, in degrees either side of facing.
 const ARC_HALF_ANGLE := 55.0
@@ -50,8 +55,16 @@ var _facing := 1
 ## Counts down the white hit flash. While it runs the telegraph is not allowed
 ## to repaint the body, or the "you hit it" feedback would be invisible.
 var _hit_flash_left := 0.0
+## While this is set the state machine is not allowed to repaint the sprite. Used
+## for the hurt reaction and the death animation, which must not be cut short by
+## a windup restarting or the knight going back to neutral.
+var _hold := ""
+## The authored scale from the scene. The telegraph squashes the sprite every
+## frame, so it has to multiply this rather than overwrite it.
+var _base_scale := Vector2.ONE
 
 @onready var arc: Polygon2D = $Telegraph
+@onready var sprite: AnimatedSprite2D = $Sprite
 
 
 func _ready() -> void:
@@ -65,8 +78,12 @@ func _ready() -> void:
 	knockback_y = -80.0
 	super._ready()
 	_build_arc()
-	body.color = BASE_PURPLE
-	body.pivot_offset = body.size * 0.5
+	# The Body node is only a stand-in so the shared script has something to tint.
+	# This enemy draws a sprite instead, so keep it out of sight.
+	body.visible = false
+	_base_scale = sprite.scale
+	sprite.modulate = BASE_PURPLE
+	sprite.flip_h = _facing < 0
 
 
 ## The swing is drawn as a real fan of ground, not a tint on the knight. Modern
@@ -85,6 +102,8 @@ func _build_arc() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Runs even after death so the death animation keeps playing.
+	_update_anim()
 	if not alive:
 		return
 	if not is_on_floor():
@@ -161,6 +180,38 @@ func _can_act() -> bool:
 	return _state == State.NORMAL and not blocking
 
 
+## Ties the sprite to the state machine.
+## Unlike the small enemies this one is not allowed to be interrupted freely:
+## the windup, impact and recovery each own the sprite for their length so the
+## telegraph always plays start to finish, because the telegraph *is* the
+## mechanic. Only the hurt reaction and the death animation outrank it.
+func _update_anim() -> void:
+	if not sprite.is_playing():
+		_hold = ""
+	if _hold != "":
+		return
+	match _state:
+		State.WINDUP:
+			_play("windup")
+		State.ACTIVE:
+			_play("swing")
+		State.RECOVERY:
+			_play("recovery")
+		_:
+			# A blocking knight is planted, so guarding has nothing to show beyond
+			# the idle pose: the green tint is the whole read.
+			_play("walk" if absf(velocity.x) > 4.0 else "idle")
+
+
+## Plays `anim` unless it is already the current, still-running animation.
+func _play(anim: String) -> void:
+	if not sprite.sprite_frames.has_animation(anim):
+		return
+	if sprite.animation == anim and sprite.is_playing():
+		return
+	sprite.play(anim)
+
+
 ## Drives the whole visual read: anticipation while winding up, a squash and a
 ## white flash on the impact frame, then a grey slump while it is punishable.
 func _update_visual() -> void:
@@ -196,10 +247,13 @@ func _progress() -> float:
 	return clampf(1.0 - _state_timer / total, 0.0, 1.0)
 
 
-## Scale is written by the telegraph every frame, so facing is reapplied here
-## rather than set once, otherwise the squash would flip the knight around.
+## Scale is written by the telegraph every frame, so it multiplies the authored
+## base scale instead of replacing it, and facing lives on flip_h rather than on
+## a negative x scale. Scaling x negatively would mirror the squash the wrong way
+## and read as a glitch every time the knight turned around.
 func _set_scale(s: Vector2) -> void:
-	body.scale = Vector2(absf(s.x) * float(_facing), s.y)
+	sprite.scale = Vector2(_base_scale.x * absf(s.x), _base_scale.y * s.y)
+	sprite.flip_h = _facing < 0
 	arc.scale.x = float(_facing)
 
 
@@ -207,7 +261,7 @@ func _set_colour(c: Color) -> void:
 	# A hit flash outranks the telegraph: if the knight is struck while winding
 	# up, seeing the white hit is more useful than seeing the tell.
 	if _hit_flash_left <= 0.0:
-		body.color = c
+		sprite.modulate = c
 
 
 func _set_arc(alpha: float, boost: float) -> void:
@@ -224,18 +278,31 @@ func take_hit(dmg: float, dir: float) -> void:
 	if blocking:
 		hp -= dmg * 0.15
 		velocity.x = dir * 20.0
-		body.color = Color(0.9, 0.95, 0.5)
+		sprite.modulate = BLOCK_HIT
 		get_tree().create_timer(hit_flash_time).timeout.connect(_block_reset_color)
 		if hp <= 0.0:
 			die()
 		return
+	# The sprite carries the feedback, since the Body it used to tint is hidden.
+	sprite.modulate = hit_color
+	_hold = "hurt"
+	_play("hurt")
 	super.take_hit(dmg, dir)
+
+
+func die() -> void:
+	if not alive:
+		return
+	_hold = "death"
+	_play("death")
+	sprite.modulate = DEATH_GREY
+	super.die()
 
 
 func _block_reset_color() -> void:
 	if not blocking:
 		return
-	body.color = Color(0.35, 0.8, 0.55, 1)
+	sprite.modulate = BLOCK_GREEN
 
 
 func _base_color() -> Color:

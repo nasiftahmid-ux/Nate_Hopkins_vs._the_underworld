@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scenes/enemies/sorrow_knight.gd" id="1_knight"]
+[ext_resource type="SpriteFrames" path="res://scenes/enemies/sorrow_knight_frames.tres" id="2_frames"]
 
 [sub_resource type="RectangleShape2D" id="body_shape"]
 size = Vector2(50, 92)
@@ -20,6 +21,12 @@ offset_right = 25.0
 offset_bottom = 0.0
 pivot_offset = Vector2(25, 46)
 color = Color(0.55, 0.3, 0.65, 1)
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -37.7)
+sprite_frames = ExtResource("2_frames")
+autoplay = "idle"
+scale = Vector2(0.75, 0.75)
 
 [node name="Telegraph" type="Polygon2D" parent="."]
 position = Vector2(0, -6)
