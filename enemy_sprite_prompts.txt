@@ -1,0 +1,358 @@
+# Enemy Spritesheet Prompts
+# Nate Hopkins vs. the Underworld
+#
+# Copy-paste each PROMPT block into your image generator, save the result as
+# PNG in assets/, and tell me the filename. I will slice, repack and wire it up.
+#
+# All design details below were read out of the actual behaviour scripts in
+# scenes/enemies/, not guessed. Source of truth for each fact is cited.
+
+
+================================================================================
+## SHEET SPEC - apply this to EVERY enemy
+================================================================================
+
+These constraints are not stylistic preferences. They are what my slicer relies
+on to cut clean frames, and what stops animation bleeding between cells.
+
+  - Transparent background (RGBA). No drop shadows, no vignette, no ground
+    plane, no grid lines, no borders drawn around cells.
+  - Horizontal STRIP layout: one animation per row, frames left to right.
+  - All frames in ALL rows share ONE horizontal BASELINE. The soles/underside
+    of the character must sit on the same imaginary ground line in every single
+    frame. This is the single most important rule - a drifting baseline makes
+    the character look like it is floating or sinking.
+  - Leave at least 8% of the cell width as empty transparent space between
+    neighbouring frames so limbs never touch and bleed in.
+  - Every frame centred horizontally in its cell.
+  - Character fully inside its cell - do not crop at the edges.
+  - Pixel art, limited palette, hard 1px clean edges, no anti-aliasing, no
+    soft glow unless the character is literally made of light.
+  - The character FACES RIGHT in every frame. The game mirrors it at runtime,
+    so never draw a left-facing variant.
+  - Consistent scale and consistent character design across all rows of the
+    sheet. Same colours, same silhouette, same costume in every frame.
+  - Output as a single PNG, no transparency checkerboard baked into the image.
+
+Recommended canvas: width 1400-1800px, one row per animation, rows stacked
+vertically with clear empty bands between rows.
+
+Frame counts are chosen to match the timing already coded in the project:
+  - Basic enemy run = 12fps, attack = 14fps, hurt = 10fps, death = 8fps
+  - Imp dodge window is 0.30s, so 4 frames at ~13fps
+  - Knight windup is 0.28s, impact 0.07s, recovery 0.45s
+
+
+================================================================================
+## 1. CINDER IMP  (cinder_imp) - the fast dodger
+================================================================================
+
+PROMPT
+--------------------------------------------------------------------------------
+Pixel art sprite sheet of a small mischievous fire imp, side view, facing
+right, on a fully transparent background.
+
+The imp is a fast, cowardly creature made of ember and cinder: a small round
+scrappy body with two tiny legs, short pointed horns, a wicked little grin, and
+a wisp of flame instead of a head plume. Its body glows hot orange-red
+(around #FF7326) with darker charred-red shading and bright yellow-white
+highlights on the hottest parts of its face and hands. It is small - roughly
+half the height of a human - so its proportions are scrappy and slightly
+chibi: big head relative to body, small limbs, energetic posture. It looks
+cute and mischievous, not genuinely scary.
+
+Rows, top to bottom, frames left to right:
+
+  ROW 1 - IDLE, 4 frames
+    Standing bounce-loop, feet planted, flame wisp flickering. Small vertical
+    bob of a few pixels, alternating weight shift onto each foot. Arms relaxed.
+
+  ROW 2 - RUN, 6 frames
+    Fast sprint cycle. Lean forward, legs cycling through contact, passing,
+    contact, passing. Arms pumping hard. Flame wisp streaming BACKWARD as if
+    wind-blown by its own speed. This is much faster and more frantic than a
+    walk - motion energy on every frame.
+
+  ROW 3 - ATTACK, 4 frames
+    Lunge-bite. Crouch and coil back, then spring forward with jaws/mouth wide
+    open and both little claws thrust out. Last frame is the impact pose,
+    lunging forward with a small burst of flame.
+
+  ROW 4 - DODGE, 4 frames
+    A desperate evasive BACKFLIP away from danger. Tuck and crouch, launch
+    backward off the ground, rotate upside-down in mid-air with all four limbs
+    splayed, then land back on its feet. This reads as a panicked escape, and
+    its body should be tinted a distinct VIOLET/PURPLE (around #9959FF)
+    instead of orange to sell that it is briefly intangible/unhittable.
+
+  ROW 5 - HURT, 2 frames
+    Reacting to a hit: recoil backward, eyes squeezed shut, mouth open in a
+    yelp, limbs thrown out. One frame for the flinch, one for the settle.
+
+  ROW 6 - DEATH, 5 frames
+    Pop and crumble. Start standing, then burst upward into a shower of
+    orange embers, leaving only ash and a fading puff of smoke that dissipates
+    into nothing. Losing material as it dies.
+
+Technical notes from the code, for accuracy:
+  - Body collision box is 24x42px, so the character should read as roughly
+    45-55px tall in the source art with room for the dodge arc.
+  - Fastest enemy in the game (speed 175 vs the basic soul's 80). Motion should
+    look frantic, not ponderous.
+  - It is invulnerable DURING the dodge, which is why the dodge reads violet.
+  - Dies fast (death_delay 0.4s), so the death row should read quickly.
+
+Design ground truth:
+  colours from scenes/enemies/cinder_imp.tscn -> Color(1, 0.45, 0.2)
+  dodge colour from cinder_imp.gd:53-62 -> Color(0.6, 0.35, 1.0)
+  dodge/attack logic from cinder_imp.gd:43-63
+
+
+================================================================================
+## 2. TEARDROP  (teardrop) - the flying projectile
+================================================================================
+
+NOTE: This one is NOT a walking character. It is a thrown projectile that
+spawns in mid-air, flies at 220px/s, and despawns on contact. It has no legs
+and never touches the ground, so it does NOT need a baseline or a walk cycle.
+Give it a spin instead.
+
+PROMPT
+--------------------------------------------------------------------------------
+Pixel art sprite sheet of a single animated water droplet projectile on a
+fully transparent background, facing right.
+
+A plump glossy teardrop of water: rounded bottom, tapering to a sharp point at
+the top trailing behind, like a falling drop of water. Bright luminous cyan
+(around #59E6FF) with a paler near-white highlight bubble on the lower front
+and a deeper blue-teal edge on the trailing side. It reads as a small energetic
+water blob with a bit of spirit in it - not a glass ornament, not a rock.
+
+Rows, top to bottom, frames left to right:
+
+  ROW 1 - SPIN / FLY, 6 frames
+    The droplet tumbling through the air as it travels. A smooth continuous
+    rotation of the whole drop, exactly one full 360 degree turn across the
+    6 frames. The highlight must rotate WITH the body so the spin is readable
+    as rotation and not as a shape morph. Keep the silhouette a teardrop in
+    every frame - only its orientation changes.
+
+  ROW 2 - SPLASH, 3 frames
+    The droplet bursts on impact. Frame 1: the body splatters outward into a
+    ring of droplets and a ragged crown of water. Frame 2: the crown breaks
+    into scattered separate droplets flying outward and downward. Frame 3:
+    only a few tiny residual specks and mist remain, nearly gone.
+
+Technical notes from the code:
+  - Small fast projectile (collision radius 7, visual 10x16), but it must still
+    be clearly VISIBLE on screen against the level backgrounds, so do not make
+    it tiny in the source art - aim for roughly 40-60px tall so it scales down
+    cleanly.
+  - Lifetime is 3.5s, so a 6-frame spin loop reads fine at any travel speed.
+  - Dies on contact with the player OR any static scenery, so the splash row
+    is used for both cases.
+
+Design ground truth:
+  colour from scenes/enemies/teardrop.tscn -> Color(0.35, 0.9, 1.0)
+  projectile behaviour from teardrop.gd (vel, ttl 3.5, damage 6)
+
+
+================================================================================
+## 3. TEARDROP SHOOTER  (teardrop_shooter) - the kiter
+================================================================================
+
+PROMPT
+--------------------------------------------------------------------------------
+Pixel art sprite sheet of a tall slender water-spitter creature, side view,
+facing right, on a fully transparent background.
+
+An elegant, upright, slightly anxious-looking water elemental: a narrow
+teardrop-shaped body that tapers to a point at the top of its head, pale
+sky-blue / teal (around #33B3D9) with a lighter belly and darker blue shading
+where it tapers. It has a single large expressive eye near the top of its body
+and a small open mouth-spout low on its face that it aims at you. Two thin
+stick-like legs. It should read as nervous and skittish - a creature that
+wants to keep its distance rather than brawl. Taller and thinner than the basic
+soul, roughly 15% taller.
+
+Rows, top to bottom, frames left to right:
+
+  ROW 1 - IDLE, 4 frames
+    Nervous hovering-bob. Weight on one leg then the other, body bobbing up and
+    down a few pixels, eye darting side to side as if checking if you are
+    approaching. The tapered head sways slightly. Antsy, never fully still.
+
+  ROW 2 - RUN, 6 frames
+    Skittering walk cycle. Long thin legs cycling, body leaning into the
+    direction of travel, the tall tapered head bobbing with each step. Because
+    it backpedals a lot, the walk must read clearly in reverse too - keep the
+    limbs distinct and separated so the cycle is legible backwards.
+
+  ROW 3 - SHOOT, 5 frames
+    Spitting a water droplet at a range. Frame 1: it inhales, cheeks/body
+    swelling slightly, eye narrowing. Frame 2: it leans back and aims the
+    mouth-spout directly forward. Frame 3: full recoil, mouth wide open with
+    a small blue droplet being fired out in front of it. Frame 4: a follow-
+    through spurt with droplets spraying. Frame 5: a brief exhausted slump,
+    body wobbling, before it resets. The fired droplet should be a small
+    separate blue blob just ahead of its mouth.
+
+  ROW 4 - RETREAT, 4 frames
+    Backing away defensively. Leaning away from the threat with both arms and
+    legs braced backwards, spraying a small defensive burst of water droplets
+    outward as a barrier, body tilted well away from centre. Reads as
+    "go away, I don't want to fight you."
+
+  ROW 5 - HURT, 2 frames
+    Flinching from a hit: body jackknifes sideways, eye squeezed shut, water
+    scattering off it in droplets.
+
+  ROW 6 - DEATH, 5 frames
+    Dehydrating and evaporating. Body deflates and sinks, colour draining from
+    saturated teal to pale washed-out blue, then breaks into a spray of small
+    droplets that fall and evaporate, leaving a damp patch that fades out.
+
+Technical notes from the code:
+  - Body collision box is 30x50px, so target roughly 60-70px of character
+    height in the source art.
+  - It is a KITER: it retreats if you get closer than 260px and only closes to
+    about 620px to fire. So its body language should favour backing away -
+    that is the core of its character.
+  - Fires every 1.6s, so the shoot animation should be quick and repeatable.
+
+Design ground truth:
+  colour from scenes/enemies/teardrop_shooter.tscn -> Color(0.2, 0.7, 0.85)
+  kiting logic from teardrop_shooter.gd:32-40 (MIN_RANGE 260, FIRE_RANGE 620)
+
+
+================================================================================
+## 4. SORROW KNIGHT  (sorrow_knight) - the telegraph boss
+================================================================================
+
+THIS IS THE MOST IMPORTANT ONE TO GET RIGHT.
+
+This enemy is a timed duellist, not a brawler. The code runs an explicit state
+machine - WINDUP (0.28s) -> ACTIVE impact (0.07s) -> RECOVERY (0.45s) - and the
+player's ONLY way to beat it is to read the windup tell and react. So the
+anticipation pose must be instantly readable at a glance, and the recovery
+slump must be obviously helpless. The artwork IS the difficulty setting here.
+
+PROMPT
+--------------------------------------------------------------------------------
+Pixel art sprite sheet of a tall, imposing armoured knight consumed by grief,
+side view, facing right, on a fully transparent background.
+
+A heavy, slow, mournful knight: bulky dark plate armour stained with dull
+purple (around #8C4DA6), a dented breastplate, a tattered cape hanging behind
+that drags toward the ground, and a simple helm with a single narrow glowing
+visor slit instead of a face. The silhouette is broad and top-heavy with very
+thick arms and legs, making it look slow and immovable. It should read as sad
+and tired rather than angry - a warrior who is exhausted and fights out of
+obligation. This is the largest enemy in the game, noticeably bigger and
+bulkier than a normal enemy.
+
+Rows, top to bottom, frames left to right:
+
+  ROW 1 - IDLE, 4 frames
+    Standing vigil, head bowed. Slow heavy breathing: the whole body rises and
+    falls a few pixels, the cape shifts, the visor glow pulses gently. Weight
+    shifting slightly between the legs. A mournful resting pose.
+
+  ROW 2 - WALK, 6 frames
+    Slow deliberate march. Heavy ponderous steps, each footfall planting
+    firmly before the other lifts, the body rocking slightly with the weight
+    transfer. The cape drags and sways behind with real delay. Everything
+    should look heavy and reluctant - no bounce, no energy.
+
+  ROW 3 - GUARD, 2 frames
+    Raising the shield/arm to block, triggered when the player attacks. Braces
+    into a defensive crouch behind a raised guard, body angled away, cape
+    pulled in tight, visor dimming. Reads as "this hit will not land."
+
+  ROW 4 - WINDUP, 3 frames
+    THE CRITICAL TELEGRAPH. The knight coils BACKWARD before striking: the
+    weapon arm pulls back and up behind the body, the torso leans away from
+    the target, and the body visibly compresses and stretches TALL - it
+    narrows horizontally and grows vertically as it loads the swing. Progress
+    across the 3 frames from a small coil to a maximum extreme coil-back, so
+    the anticipation is unmistakable. Add a bright amber/orange energy
+    gathering at the weapon tip that intensifies each frame. This pose must be
+    readable as "I am about to hit you very hard."
+
+  ROW 5 - SWING, 3 frames
+    The strike itself. Frame 1: explosive forward swing, body lunging hard in
+    the direction it faces, weapon sweeping down and across in a wide arc.
+    Frame 2: full IMPACT - maximum forward extension, body stretched wide and
+    squashed vertically, weapon at the far end of the arc, bright white flash
+    at the point of contact. Frame 3: hold the end of the arc, still extended.
+    This is a fast violent change from the windup row - the contrast is the
+    whole point.
+
+  ROW 6 - RECOVERY, 3 frames
+    THE PUNISH WINDOW. The knight is committed and helpless. The weapon stays
+    low and forward, the body slumps downward, shoulders dropping, head
+    lowering, stance widening and going soft. Progressively more defeated and
+    more slumped across the 3 frames, ending clearly open and vulnerable. The
+    armour desaturates toward a tired grey-purple as it loses its glow. This
+    pose must read unmistakably as "safe to hit me now."
+
+  ROW 7 - HURT, 2 frames
+    Taking a hit while idle: a heavy full-body flinch, head snapping back,
+    armour rattling, cape jerking.
+
+  ROW 8 - DEATH, 6 frames
+    A slow, heavy, dignified collapse - it does not pop or explode. Frame 1:
+    staggers backward, knees buckling. Frame 2: drops to one knee. Frame 3:
+    sinks further, one hand on the ground. Frame 4: falls forward onto both
+    hands. Frame 5: collapses flat, the cape settling over it. Frame 6: fully
+    prone and still, visor light fading to black, armour dulled and scorched.
+    Slow, weighted, and sad rather than violent.
+
+Technical notes from the code - these mirror real runtime transforms:
+  - Body collision box is 50x92px, the biggest in the game. Target roughly
+    100-115px of character height in the source art.
+  - Windup scale is animated to (1.0 - 0.10t, 1.0 + 0.12t): it gets NARROWER
+    and TALLER as it charges. Draw the windup frames progressively thinner and
+    taller to match.
+  - Impact scale is (1.25, 0.78): WIDER and SHORTER on the hit frame. Draw the
+    impact frame visibly broader and compressed.
+  - Recovery scale is (1.0 + 0.12s, 1.0 - 0.12s): it slowly slumps wider and
+    shorter.
+  - Windup 0.28s, impact 0.07s, recovery 0.45s. The recovery is the longest
+    window in the game, so make it read as clearly and unmistakably vulnerable.
+  - The windup tell pulses faster as it nears the strike. Suggest this in the
+    artwork by making the glow build across the 3 windup frames.
+  - Colour language from the code: idle purple, guard GREEN, windup builds to
+    AMBER then hot yellow, impact WHITE, recovery desaturates to grey. Bake
+    these tints into the relevant rows so the pose and the colour tell agree.
+  - speed is only 42, so it should always look like it is barely moving.
+
+Design ground truth:
+  colours from sorrow_knight.gd:23-38 (BASE_PURPLE, BLOCK_GREEN, WARN_AMBER,
+  WARN_HOT, IMPACT_WHITE, RECOVERY_GREY)
+  squash/stretch from sorrow_knight.gd:166-192 (_update_visual)
+  timings from sorrow_knight.gd:16-22
+  damage 12, hp 120 from sorrow_knight.gd:42,61
+
+
+================================================================================
+## AFTER YOU GENERATE
+================================================================================
+
+1. Save each sheet as a PNG into assets/ (e.g. cinder_imp.png,
+   teardrop_sheet.png, sorrow_knight.png).
+2. Do NOT make a .tres or edit any scene. I will handle slicing, repacking into
+   a uniform grid, generating the SpriteFrames resource, matching the on-screen
+   scale to Nate, and wiring the animations into the .gd scripts.
+3. Tell me which animation names you want, or just say "use the names in the
+   prompt" and I will map them to the existing code (idle / run / attack /
+   hurt / death, plus dodge / shoot / retreat / guard / windup / swing /
+   recovery / spin / splash as listed above).
+
+NOTE ON AI IMAGE GENERATORS
+  They are unreliable at frame-to-frame consistency. If a generated sheet comes
+  back with a character that changes shape or colour between frames, the clean
+   fallback is to generate ONE strong standing pose per animation row and I will
+   build the in-between motion with code-driven squash/stretch tweening, the
+   same way the sorrow knight already does it. Tell me if you want that route
+   instead.
