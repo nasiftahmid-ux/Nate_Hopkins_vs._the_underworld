@@ -16,22 +16,22 @@ These constraints are not stylistic preferences. They are what my slicer relies
 on to cut clean frames, and what stops animation bleeding between cells.
 
   - Transparent background (RGBA). No drop shadows, no vignette, no ground
-    plane, no grid lines, no borders drawn around cells.
+	plane, no grid lines, no borders drawn around cells.
   - Horizontal STRIP layout: one animation per row, frames left to right.
   - All frames in ALL rows share ONE horizontal BASELINE. The soles/underside
-    of the character must sit on the same imaginary ground line in every single
-    frame. This is the single most important rule - a drifting baseline makes
-    the character look like it is floating or sinking.
+	of the character must sit on the same imaginary ground line in every single
+	frame. This is the single most important rule - a drifting baseline makes
+	the character look like it is floating or sinking.
   - Leave at least 8% of the cell width as empty transparent space between
-    neighbouring frames so limbs never touch and bleed in.
+	neighbouring frames so limbs never touch and bleed in.
   - Every frame centred horizontally in its cell.
   - Character fully inside its cell - do not crop at the edges.
   - Pixel art, limited palette, hard 1px clean edges, no anti-aliasing, no
-    soft glow unless the character is literally made of light.
+	soft glow unless the character is literally made of light.
   - The character FACES RIGHT in every frame. The game mirrors it at runtime,
-    so never draw a left-facing variant.
+	so never draw a left-facing variant.
   - Consistent scale and consistent character design across all rows of the
-    sheet. Same colours, same silhouette, same costume in every frame.
+	sheet. Same colours, same silhouette, same costume in every frame.
   - Output as a single PNG, no transparency checkerboard baked into the image.
 
 Recommended canvas: width 1400-1800px, one row per animation, rows stacked
@@ -64,39 +64,39 @@ cute and mischievous, not genuinely scary.
 Rows, top to bottom, frames left to right:
 
   ROW 1 - IDLE, 4 frames
-    Standing bounce-loop, feet planted, flame wisp flickering. Small vertical
-    bob of a few pixels, alternating weight shift onto each foot. Arms relaxed.
+	Standing bounce-loop, feet planted, flame wisp flickering. Small vertical
+	bob of a few pixels, alternating weight shift onto each foot. Arms relaxed.
 
   ROW 2 - RUN, 6 frames
-    Fast sprint cycle. Lean forward, legs cycling through contact, passing,
-    contact, passing. Arms pumping hard. Flame wisp streaming BACKWARD as if
-    wind-blown by its own speed. This is much faster and more frantic than a
-    walk - motion energy on every frame.
+	Fast sprint cycle. Lean forward, legs cycling through contact, passing,
+	contact, passing. Arms pumping hard. Flame wisp streaming BACKWARD as if
+	wind-blown by its own speed. This is much faster and more frantic than a
+	walk - motion energy on every frame.
 
   ROW 3 - ATTACK, 4 frames
-    Lunge-bite. Crouch and coil back, then spring forward with jaws/mouth wide
-    open and both little claws thrust out. Last frame is the impact pose,
-    lunging forward with a small burst of flame.
+	Lunge-bite. Crouch and coil back, then spring forward with jaws/mouth wide
+	open and both little claws thrust out. Last frame is the impact pose,
+	lunging forward with a small burst of flame.
 
   ROW 4 - DODGE, 4 frames
-    A desperate evasive BACKFLIP away from danger. Tuck and crouch, launch
-    backward off the ground, rotate upside-down in mid-air with all four limbs
-    splayed, then land back on its feet. This reads as a panicked escape, and
-    its body should be tinted a distinct VIOLET/PURPLE (around #9959FF)
-    instead of orange to sell that it is briefly intangible/unhittable.
+	A desperate evasive BACKFLIP away from danger. Tuck and crouch, launch
+	backward off the ground, rotate upside-down in mid-air with all four limbs
+	splayed, then land back on its feet. This reads as a panicked escape, and
+	its body should be tinted a distinct VIOLET/PURPLE (around #9959FF)
+	instead of orange to sell that it is briefly intangible/unhittable.
 
   ROW 5 - HURT, 2 frames
-    Reacting to a hit: recoil backward, eyes squeezed shut, mouth open in a
-    yelp, limbs thrown out. One frame for the flinch, one for the settle.
+	Reacting to a hit: recoil backward, eyes squeezed shut, mouth open in a
+	yelp, limbs thrown out. One frame for the flinch, one for the settle.
 
   ROW 6 - DEATH, 5 frames
-    Pop and crumble. Start standing, then burst upward into a shower of
-    orange embers, leaving only ash and a fading puff of smoke that dissipates
-    into nothing. Losing material as it dies.
+	Pop and crumble. Start standing, then burst upward into a shower of
+	orange embers, leaving only ash and a fading puff of smoke that dissipates
+	into nothing. Losing material as it dies.
 
 Technical notes from the code, for accuracy:
   - Body collision box is 24x42px, so the character should read as roughly
-    45-55px tall in the source art with room for the dodge arc.
+	45-55px tall in the source art with room for the dodge arc.
   - Fastest enemy in the game (speed 175 vs the basic soul's 80). Motion should
     look frantic, not ponderous.
   - It is invulnerable DURING the dodge, which is why the dodge reads violet.
@@ -201,7 +201,7 @@ Rows, top to bottom, frames left to right:
     Backing away defensively. Leaning away from the threat with both arms and
     legs braced backwards, spraying a small defensive burst of water droplets
     outward as a barrier, body tilted well away from centre. Reads as
-    "go away, I don't want to fight you."
+	"go away, I don't want to fight you."
 
   ROW 5 - HURT, 2 frames
     Flinching from a hit: body jackknifes sideways, eye squeezed shut, water
@@ -267,7 +267,7 @@ Rows, top to bottom, frames left to right:
   ROW 3 - GUARD, 2 frames
     Raising the shield/arm to block, triggered when the player attacks. Braces
     into a defensive crouch behind a raised guard, body angled away, cape
-    pulled in tight, visor dimming. Reads as "this hit will not land."
+	pulled in tight, visor dimming. Reads as "this hit will not land."
 
   ROW 4 - WINDUP, 3 frames
     THE CRITICAL TELEGRAPH. The knight coils BACKWARD before striking: the
@@ -277,7 +277,7 @@ Rows, top to bottom, frames left to right:
     across the 3 frames from a small coil to a maximum extreme coil-back, so
     the anticipation is unmistakable. Add a bright amber/orange energy
     gathering at the weapon tip that intensifies each frame. This pose must be
-    readable as "I am about to hit you very hard."
+	readable as "I am about to hit you very hard."
 
   ROW 5 - SWING, 3 frames
     The strike itself. Frame 1: explosive forward swing, body lunging hard in
@@ -294,7 +294,7 @@ Rows, top to bottom, frames left to right:
     lowering, stance widening and going soft. Progressively more defeated and
     more slumped across the 3 frames, ending clearly open and vulnerable. The
     armour desaturates toward a tired grey-purple as it loses its glow. This
-    pose must read unmistakably as "safe to hit me now."
+	pose must read unmistakably as "safe to hit me now."
 
   ROW 7 - HURT, 2 frames
     Taking a hit while idle: a heavy full-body flinch, head snapping back,

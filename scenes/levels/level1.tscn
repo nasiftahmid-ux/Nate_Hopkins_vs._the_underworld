@@ -1,84 +1,55 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene format=3 uid="uid://vwcro7a2rpjw"]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
-
 [ext_resource type="PackedScene" path="res://scenes/enemies/basic_enemy.tscn" id="2_soul"]
-
 [ext_resource type="PackedScene" path="res://scenes/levels/hint_zone.tscn" id="3_hint"]
-
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4_hud"]
-
-[ext_resource type="Script" path="res://scenes/levels/door.gd" id="5_door"]
-
-[ext_resource type="Script" path="res://scenes/levels/level_base.gd" id="6_level"]
-
+[ext_resource type="Script" uid="uid://bmqflhfn3ak0b" path="res://scenes/levels/door.gd" id="5_door"]
+[ext_resource type="Script" uid="uid://c6imm5e7uepd2" path="res://scenes/levels/level_base.gd" id="6_level"]
 [ext_resource type="PackedScene" path="res://scenes/items/spikes.tscn" id="8_spike"]
-
-[ext_resource type="Script" path="res://scenes/levels/moving_platform.gd" id="9_moving_platform"]
+[ext_resource type="Script" uid="uid://b5sh521x4csmw" path="res://scenes/levels/moving_platform.gd" id="9_moving_platform"]
 [ext_resource type="Texture2D" path="res://assets/level1/floor_tile.png" id="7_floor"]
 [ext_resource type="Texture2D" path="res://assets/level1/platform_tile.png" id="10_platform"]
 [ext_resource type="Texture2D" path="res://assets/level1/wall.png" id="11_wall"]
 [ext_resource type="Texture2D" path="res://assets/level1/door.png" id="12_door"]
 [ext_resource type="Texture2D" path="res://assets/level1/background.png" id="13_bg"]
 
-[sub_resource type="RectangleShape2D" id="floor_shape"]
-
-size = Vector2(450, 60)
-
 [sub_resource type="RectangleShape2D" id="floor_shape2"]
-
 size = Vector2(700, 60)
 
-[sub_resource type="RectangleShape2D" id="floor_shape3"]
+[sub_resource type="RectangleShape2D" id="floor_shape"]
+size = Vector2(450, 60)
 
+[sub_resource type="RectangleShape2D" id="floor_shape3"]
 size = Vector2(800, 60)
 
 [sub_resource type="RectangleShape2D" id="wall_shape"]
-
 size = Vector2(40, 800)
 
-[sub_resource type="RectangleShape2D" id="platform_shape"]
-
-size = Vector2(170, 24)
-
 [sub_resource type="RectangleShape2D" id="platform_shape2"]
-
 size = Vector2(200, 24)
 
-[sub_resource type="RectangleShape2D" id="platform_shape3"]
-
-size = Vector2(220, 24)
-
 [sub_resource type="RectangleShape2D" id="platform_shape4"]
-
 size = Vector2(240, 24)
 
-[sub_resource type="RectangleShape2D" id="platform_shape5"]
+[sub_resource type="RectangleShape2D" id="platform_shape"]
+size = Vector2(170, 24)
 
+[sub_resource type="RectangleShape2D" id="platform_shape5"]
 size = Vector2(260, 24)
 
 [sub_resource type="RectangleShape2D" id="door_shape"]
-
 size = Vector2(56, 64)
 
-[node name="Level1" type="Node2D"]
-
+[node name="Level1" type="Node2D" unique_id=2112552650]
 script = ExtResource("6_level")
 
-camera_limit_right = 4900
-
-[node name="BG" type="ColorRect" parent="."]
-
+[node name="BG" type="ColorRect" parent="." unique_id=500651557]
 offset_left = -300.0
-
 offset_top = -600.0
-
 offset_right = 5100.0
-
 offset_bottom = 540.0
-
 color = Color(0.08, 0.05, 0.14, 1)
-
 
 [node name="BGArt" type="TextureRect" parent="."]
 offset_left = -300.0
@@ -88,1226 +59,800 @@ offset_bottom = 540.0
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("13_bg")
-[node name="FloorA" type="StaticBody2D" parent="."]
 
+[node name="FloorA" type="StaticBody2D" parent="." unique_id=533601029]
 position = Vector2(350, 470)
 
-[node name="Col" type="CollisionShape2D" parent="FloorA"]
-
+[node name="Col" type="CollisionShape2D" parent="FloorA" unique_id=1881960480]
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="TextureRect" parent="FloorA"]
-
-offset_left = -350
-
+[node name="Vis" type="TextureRect" parent="FloorA" unique_id=1950596738]
+offset_left = -350.0
 offset_top = -30.0
-
-offset_right = 350
-
+offset_right = 350.0
 offset_bottom = 30.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("7_floor")
-[node name="FloorB" type="StaticBody2D" parent="."]
-
+[node name="FloorB" type="StaticBody2D" parent="." unique_id=985726552]
 position = Vector2(1075, 470)
 
-[node name="Col" type="CollisionShape2D" parent="FloorB"]
-
+[node name="Col" type="CollisionShape2D" parent="FloorB" unique_id=1660392842]
 shape = SubResource("floor_shape")
 
-[node name="Vis" type="TextureRect" parent="FloorB"]
-
-offset_left = -225
-
+[node name="Vis" type="TextureRect" parent="FloorB" unique_id=1596468222]
+offset_left = -225.0
 offset_top = -30.0
-
-offset_right = 225
-
+offset_right = 225.0
 offset_bottom = 30.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("7_floor")
-[node name="FloorC" type="StaticBody2D" parent="."]
-
+[node name="FloorC" type="StaticBody2D" parent="." unique_id=402493609]
 position = Vector2(1950, 470)
 
-[node name="Col" type="CollisionShape2D" parent="FloorC"]
-
+[node name="Col" type="CollisionShape2D" parent="FloorC" unique_id=41791300]
 shape = SubResource("floor_shape3")
 
-[node name="Vis" type="TextureRect" parent="FloorC"]
-
-offset_left = -400
-
+[node name="Vis" type="TextureRect" parent="FloorC" unique_id=944202759]
+offset_left = -400.0
 offset_top = -30.0
-
-offset_right = 400
-
+offset_right = 400.0
 offset_bottom = 30.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("7_floor")
-[node name="FloorD" type="StaticBody2D" parent="."]
-
+[node name="FloorD" type="StaticBody2D" parent="." unique_id=763201634]
 position = Vector2(2700, 470)
 
-[node name="Col" type="CollisionShape2D" parent="FloorD"]
-
+[node name="Col" type="CollisionShape2D" parent="FloorD" unique_id=727312378]
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="TextureRect" parent="FloorD"]
-
-offset_left = -350
-
+[node name="Vis" type="TextureRect" parent="FloorD" unique_id=1221304553]
+offset_left = -350.0
 offset_top = -30.0
-
-offset_right = 350
-
+offset_right = 350.0
 offset_bottom = 30.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("7_floor")
-[node name="FloorE" type="StaticBody2D" parent="."]
-
+[node name="FloorE" type="StaticBody2D" parent="." unique_id=345656066]
 position = Vector2(3700, 470)
 
-[node name="Col" type="CollisionShape2D" parent="FloorE"]
-
+[node name="Col" type="CollisionShape2D" parent="FloorE" unique_id=259057709]
 shape = SubResource("floor_shape3")
 
-[node name="Vis" type="TextureRect" parent="FloorE"]
-
-offset_left = -400
-
+[node name="Vis" type="TextureRect" parent="FloorE" unique_id=1135429039]
+offset_left = -400.0
 offset_top = -30.0
-
-offset_right = 400
-
+offset_right = 400.0
 offset_bottom = 30.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("7_floor")
-[node name="FloorF" type="StaticBody2D" parent="."]
-
+[node name="FloorF" type="StaticBody2D" parent="." unique_id=1817539918]
 position = Vector2(4500, 470)
 
-[node name="Col" type="CollisionShape2D" parent="FloorF"]
-
+[node name="Col" type="CollisionShape2D" parent="FloorF" unique_id=1583874475]
 shape = SubResource("floor_shape3")
 
-[node name="Vis" type="TextureRect" parent="FloorF"]
-
-offset_left = -400
-
+[node name="Vis" type="TextureRect" parent="FloorF" unique_id=48815964]
+offset_left = -400.0
 offset_top = -30.0
-
-offset_right = 400
-
+offset_right = 400.0
 offset_bottom = 30.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("7_floor")
-[node name="WallL" type="StaticBody2D" parent="."]
-
+[node name="WallL" type="StaticBody2D" parent="." unique_id=2018048956]
 position = Vector2(-20, 0)
 
-[node name="Col" type="CollisionShape2D" parent="WallL"]
-
+[node name="Col" type="CollisionShape2D" parent="WallL" unique_id=731182976]
 shape = SubResource("wall_shape")
 
-[node name="Vis" type="TextureRect" parent="WallL"]
-
+[node name="Vis" type="TextureRect" parent="WallL" unique_id=1261015904]
 offset_left = -20.0
-
 offset_top = -400.0
-
 offset_right = 20.0
-
 offset_bottom = 400.0
-
 
 expand_mode = 1
 stretch_mode = 0
 texture = ExtResource("11_wall")
-[node name="WallR" type="StaticBody2D" parent="."]
-
+[node name="WallR" type="StaticBody2D" parent="." unique_id=1269678747]
 position = Vector2(4920, 0)
 
-[node name="Col" type="CollisionShape2D" parent="WallR"]
-
+[node name="Col" type="CollisionShape2D" parent="WallR" unique_id=1141994778]
 shape = SubResource("wall_shape")
 
-[node name="Vis" type="TextureRect" parent="WallR"]
-
+[node name="Vis" type="TextureRect" parent="WallR" unique_id=947620515]
 offset_left = -20.0
-
 offset_top = -400.0
-
 offset_right = 20.0
-
 offset_bottom = 400.0
-
 
 expand_mode = 1
 stretch_mode = 0
 texture = ExtResource("11_wall")
-[node name="GapStone1" type="StaticBody2D" parent="."]
-
+[node name="GapStone1" type="StaticBody2D" parent="." unique_id=1466441596]
 position = Vector2(1475, 520)
 
-[node name="Col" type="CollisionShape2D" parent="GapStone1"]
-
+[node name="Col" type="CollisionShape2D" parent="GapStone1" unique_id=666302150]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="GapStone1"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="GapStone1" unique_id=654096294]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="GapStone2" type="StaticBody2D" parent="."]
-
+[node name="GapStone2" type="StaticBody2D" parent="." unique_id=923010248]
 position = Vector2(3175, 520)
 
-[node name="Col" type="CollisionShape2D" parent="GapStone2"]
-
+[node name="Col" type="CollisionShape2D" parent="GapStone2" unique_id=554187438]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="GapStone2"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="GapStone2" unique_id=1045171397]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatA" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatA" type="AnimatableBody2D" parent="." unique_id=1933490481]
 position = Vector2(300, 320)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatA"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatA" unique_id=898081038]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatA"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatA" unique_id=2094311240]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatB" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatB" type="AnimatableBody2D" parent="." unique_id=430558515]
 position = Vector2(480, 190)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 165.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatB"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatB" unique_id=409284891]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="PlatB"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="PlatB" unique_id=1842255267]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatC" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatC" type="AnimatableBody2D" parent="." unique_id=904575687]
 position = Vector2(660, 300)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 187.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatC"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatC" unique_id=204511305]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatC"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatC" unique_id=1196867696]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatD" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatD" type="AnimatableBody2D" parent="." unique_id=631253712]
 position = Vector2(840, 170)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 210.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatD"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatD" unique_id=465167201]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatD"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatD" unique_id=1018726765]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatE" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatE" type="AnimatableBody2D" parent="." unique_id=1733654793]
 position = Vector2(1020, 290)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatE"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatE" unique_id=923414949]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatE"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatE" unique_id=979407524]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatF" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatF" type="AnimatableBody2D" parent="." unique_id=550299842]
 position = Vector2(1200, 160)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 165.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatF"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatF" unique_id=384364339]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatF"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatF" unique_id=472038773]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatG" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatG" type="AnimatableBody2D" parent="." unique_id=924298533]
 position = Vector2(1380, 300)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 187.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatG"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatG" unique_id=1599556012]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatG"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatG" unique_id=68635648]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatH" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatH" type="AnimatableBody2D" parent="." unique_id=1244794933]
 position = Vector2(1560, 150)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 210.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatH"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatH" unique_id=1633206907]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatH"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatH" unique_id=1860683423]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatI" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatI" type="AnimatableBody2D" parent="." unique_id=338820562]
 position = Vector2(1740, 290)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatI"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatI" unique_id=1118896381]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatI"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatI" unique_id=1704691634]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatJ" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatJ" type="AnimatableBody2D" parent="." unique_id=1696095571]
 position = Vector2(1920, 170)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 165.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatJ"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatJ" unique_id=1795260558]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatJ"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatJ" unique_id=2142918321]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatK" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatK" type="AnimatableBody2D" parent="." unique_id=1207594780]
 position = Vector2(2100, 310)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 187.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatK"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatK" unique_id=938501862]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatK"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatK" unique_id=2079771716]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatL" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatL" type="AnimatableBody2D" parent="." unique_id=1906036967]
 position = Vector2(2220, 230)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 210.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatL"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatL" unique_id=984786287]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="PlatL"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="PlatL" unique_id=1900767542]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatM" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatM" type="AnimatableBody2D" parent="." unique_id=299285779]
 position = Vector2(2360, 150)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatM"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatM" unique_id=1180564001]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="PlatM"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="PlatM" unique_id=1672079491]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatN" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatN" type="AnimatableBody2D" parent="." unique_id=1918007651]
 position = Vector2(2500, 80)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 165.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatN"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatN" unique_id=416774970]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="PlatN"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="PlatN" unique_id=1579151945]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatO" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatO" type="AnimatableBody2D" parent="." unique_id=1062166032]
 position = Vector2(2640, 20)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 187.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatO"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatO" unique_id=68563981]
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="TextureRect" parent="PlatO"]
-
-offset_left = -100
-
+[node name="Vis" type="TextureRect" parent="PlatO" unique_id=945669569]
+offset_left = -100.0
 offset_top = -12.0
-
-offset_right = 100
-
+offset_right = 100.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatP" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatP" type="AnimatableBody2D" parent="." unique_id=1692738316]
 position = Vector2(2820, 200)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 210.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatP"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatP" unique_id=1911897762]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatP"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatP" unique_id=272221569]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatQ" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatQ" type="AnimatableBody2D" parent="." unique_id=330516589]
 position = Vector2(3000, 110)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatQ"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatQ" unique_id=249111239]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatQ"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatQ" unique_id=1079095843]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatR" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatR" type="AnimatableBody2D" parent="." unique_id=313221529]
 position = Vector2(3180, 250)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 165.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatR"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatR" unique_id=1149671916]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatR"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatR" unique_id=635522082]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatS" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatS" type="AnimatableBody2D" parent="." unique_id=204630656]
 position = Vector2(3360, 130)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 187.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatS"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatS" unique_id=219670237]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatS"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatS" unique_id=961948645]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatT" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatT" type="AnimatableBody2D" parent="." unique_id=1333351871]
 position = Vector2(3540, 270)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 210.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatT"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatT" unique_id=1609406568]
 shape = SubResource("platform_shape")
 
-[node name="Vis" type="TextureRect" parent="PlatT"]
-
-offset_left = -85
-
+[node name="Vis" type="TextureRect" parent="PlatT" unique_id=1221593020]
+offset_left = -85.0
 offset_top = -12.0
-
-offset_right = 85
-
+offset_right = 85.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatU" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatU" type="AnimatableBody2D" parent="." unique_id=1170075455]
 position = Vector2(3720, 160)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatU"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatU" unique_id=1637580796]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatU"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatU" unique_id=42970982]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatV" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatV" type="AnimatableBody2D" parent="." unique_id=1934993437]
 position = Vector2(3850, 90)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 165.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatV"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatV" unique_id=1522943693]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatV"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatV" unique_id=1357671999]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatW" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatW" type="AnimatableBody2D" parent="." unique_id=443215326]
 position = Vector2(3980, 30)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 187.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatW"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatW" unique_id=550648782]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatW"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatW" unique_id=824158700]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatX" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatX" type="AnimatableBody2D" parent="." unique_id=715156802]
 position = Vector2(4160, 200)
-
+script = ExtResource("9_moving_platform")
 axis = 1
-
 travel = 125.0
-
 speed = 210.0
 
-[node name="Col" type="CollisionShape2D" parent="PlatX"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatX" unique_id=538980215]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatX"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatX" unique_id=115440187]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatY" type="AnimatableBody2D" parent="."]
-
-script = ExtResource("9_moving_platform")
-
+[node name="PlatY" type="AnimatableBody2D" parent="." unique_id=95457814]
 position = Vector2(4340, 120)
-
-axis = 0
-
+script = ExtResource("9_moving_platform")
 travel = 125.0
-
 speed = 142.5
 
-[node name="Col" type="CollisionShape2D" parent="PlatY"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatY" unique_id=89495421]
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="TextureRect" parent="PlatY"]
-
-offset_left = -120
-
+[node name="Vis" type="TextureRect" parent="PlatY" unique_id=1355848050]
+offset_left = -120.0
 offset_top = -12.0
-
-offset_right = 120
-
+offset_right = 120.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="PlatDoor" type="StaticBody2D" parent="."]
-
+[node name="PlatDoor" type="StaticBody2D" parent="." unique_id=1673883789]
 position = Vector2(4620, 90)
 
-[node name="Col" type="CollisionShape2D" parent="PlatDoor"]
-
+[node name="Col" type="CollisionShape2D" parent="PlatDoor" unique_id=1500586559]
 shape = SubResource("platform_shape5")
 
-[node name="Vis" type="TextureRect" parent="PlatDoor"]
-
-offset_left = -130
-
+[node name="Vis" type="TextureRect" parent="PlatDoor" unique_id=1716119865]
+offset_left = -130.0
 offset_top = -12.0
-
-offset_right = 130
-
+offset_right = 130.0
 offset_bottom = 12.0
-
 
 expand_mode = 1
 stretch_mode = 1
 texture = ExtResource("10_platform")
-[node name="Soul1" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul1" parent="." unique_id=728737972 instance=ExtResource("2_soul")]
 position = Vector2(250, 442)
+death_delay = 0.6
 
-[node name="Soul2" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul2" parent="." unique_id=1886935359 instance=ExtResource("2_soul")]
 position = Vector2(500, 442)
+death_delay = 0.6
 
-[node name="Soul3" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul3" parent="." unique_id=407048592 instance=ExtResource("2_soul")]
 position = Vector2(660, 288)
+death_delay = 0.6
 
-[node name="Soul4" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul4" parent="." unique_id=1315751914 instance=ExtResource("2_soul")]
 position = Vector2(900, 442)
+death_delay = 0.6
 
-[node name="Soul5" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul5" parent="." unique_id=1731870026 instance=ExtResource("2_soul")]
 position = Vector2(1200, 148)
+death_delay = 0.6
 
-[node name="Soul6" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul6" parent="." unique_id=1306407206 instance=ExtResource("2_soul")]
 position = Vector2(1500, 442)
+death_delay = 0.6
 
-[node name="Soul7" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul7" parent="." unique_id=1504218589 instance=ExtResource("2_soul")]
 position = Vector2(1740, 278)
+death_delay = 0.6
 
-[node name="Soul8" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul8" parent="." unique_id=1066398960 instance=ExtResource("2_soul")]
 position = Vector2(2000, 442)
+death_delay = 0.6
 
-[node name="Soul9" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul9" parent="." unique_id=687551866 instance=ExtResource("2_soul")]
 position = Vector2(2360, 138)
+death_delay = 0.6
 
-[node name="Soul10" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul10" parent="." unique_id=944162454 instance=ExtResource("2_soul")]
 position = Vector2(2500, 68)
+death_delay = 0.6
 
-[node name="Soul11" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul11" parent="." unique_id=730390509 instance=ExtResource("2_soul")]
 position = Vector2(3450, 442)
+death_delay = 0.6
 
-[node name="Soul12" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul12" parent="." unique_id=1494016410 instance=ExtResource("2_soul")]
 position = Vector2(3650, 442)
+death_delay = 0.6
 
-[node name="Soul13" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul13" parent="." unique_id=1716400026 instance=ExtResource("2_soul")]
 position = Vector2(3950, 442)
+death_delay = 0.6
 
-[node name="Soul14" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul14" parent="." unique_id=298296013 instance=ExtResource("2_soul")]
 position = Vector2(4250, 442)
+death_delay = 0.6
 
-[node name="Soul15" parent="." instance=ExtResource("2_soul")]
-
+[node name="Soul15" parent="." unique_id=464326138 instance=ExtResource("2_soul")]
 position = Vector2(4650, 442)
+death_delay = 0.6
 
-[node name="Spike1" parent="." instance=ExtResource("8_spike")]
-
+[node name="Spike1" parent="." unique_id=1548732571 instance=ExtResource("8_spike")]
 position = Vector2(900, 442)
 
-[node name="Spike2" parent="." instance=ExtResource("8_spike")]
-
+[node name="Spike2" parent="." unique_id=696061975 instance=ExtResource("8_spike")]
 position = Vector2(1950, 442)
 
-[node name="Spike3" parent="." instance=ExtResource("8_spike")]
-
+[node name="Spike3" parent="." unique_id=859084389 instance=ExtResource("8_spike")]
 position = Vector2(2900, 442)
 
-[node name="Spike4" parent="." instance=ExtResource("8_spike")]
-
+[node name="Spike4" parent="." unique_id=99442494 instance=ExtResource("8_spike")]
 position = Vector2(3750, 442)
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
-
+[node name="Player" parent="." unique_id=1448091504 instance=ExtResource("1_player")]
 position = Vector2(160, 400)
 
-[node name="Door" type="Area2D" parent="."]
-
-script = ExtResource("5_door")
-
+[node name="Door" type="Area2D" parent="." unique_id=1076210617]
 position = Vector2(4650, 86)
-
+script = ExtResource("5_door")
 next_scene = "res://scenes/levels/level2.tscn"
 
-[node name="Col" type="CollisionShape2D" parent="Door"]
-
+[node name="Col" type="CollisionShape2D" parent="Door" unique_id=1169395515]
 shape = SubResource("door_shape")
 
-[node name="Vis" type="TextureRect" parent="Door"]
-
+[node name="Vis" type="TextureRect" parent="Door" unique_id=1881598125]
 offset_left = -28.0
-
 offset_top = -32.0
-
 offset_right = 28.0
-
 offset_bottom = 32.0
-
 
 expand_mode = 1
 stretch_mode = 0
 texture = ExtResource("12_door")
-[node name="Label" type="Label" parent="Door"]
-
+[node name="Label" type="Label" parent="Door" unique_id=1823763251]
 offset_left = -40.0
-
 offset_top = -54.0
-
 offset_right = 40.0
-
 offset_bottom = -34.0
-
-theme_override_font_sizes/font_size = 14
-
 theme_override_colors/font_color = Color(0.95, 0.85, 0.2, 1)
-
+theme_override_font_sizes/font_size = 14
 text = "EXIT"
-
 horizontal_alignment = 1
 
-[node name="HintStart" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintStart" parent="." unique_id=1246115900 instance=ExtResource("3_hint")]
 position = Vector2(180, 400)
-
 hint = "TIP: Move with A/D. Press W or Space to jump!"
 
-[node name="HintSoul" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintSoul" parent="." unique_id=598950844 instance=ExtResource("3_hint")]
 position = Vector2(380, 440)
-
 hint = "TIP: A Soul! They hop platforms and gaps to chase you. Press J (or Z) to attack."
 
-[node name="HintCoins" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintCoins" parent="." unique_id=687450987 instance=ExtResource("3_hint")]
 position = Vector2(600, 400)
-
 hint = "TIP: The platforms zigzag UP and DOWN! Hop the stairs to cross the gaps."
 
-[node name="HintSpike" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintSpike" parent="." unique_id=1651065899 instance=ExtResource("3_hint")]
 position = Vector2(760, 440)
-
 hint = "TIP: Spikes deal 15 damage. Jump over them!"
 
-[node name="HintHeavy" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintHeavy" parent="." unique_id=759311704 instance=ExtResource("3_hint")]
 position = Vector2(900, 440)
-
 hint = "TIP: K (or X) is your heavy attack - slower, but hits much harder."
 
-[node name="HintSpecial" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintSpecial" parent="." unique_id=831952871 instance=ExtResource("3_hint")]
 position = Vector2(1150, 440)
-
 hint = "TIP: L (or C) is your special attack. Strong, but on a cooldown."
 
-[node name="HintJump" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintJump" parent="." unique_id=957581327 instance=ExtResource("3_hint")]
 position = Vector2(1420, 380)
-
 hint = "TIP: A BIG gap ahead - run from the edge, or bounce up through the maze above!"
 
-[node name="HintExit" parent="." instance=ExtResource("3_hint")]
-
+[node name="HintExit" parent="." unique_id=1770841441 instance=ExtResource("3_hint")]
 position = Vector2(3350, 330)
-
 hint = "TIP: Climb the high stairs, drop back down, beat the 5 guards, then take the last stairs to the EXIT."
 
-[node name="HUD" parent="." instance=ExtResource("4_hud")]
+[node name="HUD" parent="." unique_id=1974628891 instance=ExtResource("4_hud")]
 
-[node name="HintLayer" type="CanvasLayer" parent="."]
+[node name="HintLayer" type="CanvasLayer" parent="." unique_id=698658788]
 
-[node name="HintPanel" type="ColorRect" parent="HintLayer"]
-
-offset_left = 140.0
-
-offset_top = 640.0
-
-offset_right = 1140.0
-
-offset_bottom = 706.0
-
+[node name="HintPanel" type="ColorRect" parent="HintLayer" unique_id=1250376027]
 visible = false
-
+offset_left = 140.0
+offset_top = 640.0
+offset_right = 1140.0
+offset_bottom = 706.0
 color = Color(0.1, 0.08, 0.2, 0.88)
 
-[node name="HintLabel" type="Label" parent="HintLayer"]
-
+[node name="HintLabel" type="Label" parent="HintLayer" unique_id=241633320]
 offset_left = 160.0
-
 offset_top = 656.0
-
 offset_right = 1120.0
-
 offset_bottom = 690.0
-
 theme_override_colors/font_color = Color(0.95, 0.85, 0.45, 1)
-
 theme_override_font_sizes/font_size = 20
-
 horizontal_alignment = 1
-
 vertical_alignment = 1
 
-[node name="HintTimer" type="Timer" parent="HintLayer"]
-
+[node name="HintTimer" type="Timer" parent="HintLayer" unique_id=1098016829]
 wait_time = 4.0
-
 one_shot = true
 
-[node name="Title" type="Label" parent="."]
-
+[node name="Title" type="Label" parent="." unique_id=2141861634]
 offset_left = 1320.0
-
 offset_top = 30.0
-
 offset_right = 1880.0
-
 offset_bottom = 60.0
-
-theme_override_font_sizes/font_size = 22
-
 theme_override_colors/font_color = Color(0.95, 0.85, 0.2, 1)
-
+theme_override_font_sizes/font_size = 22
 text = "UNDERWORLD ENTRANCE - ZIGZAG, STAIRS AND CHASING SOULS"
-
 horizontal_alignment = 1
