@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 
@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" path="res://assets/level1/platform_tile.png" id="10_platform"]
 [ext_resource type="Texture2D" path="res://assets/level1/wall.png" id="11_wall"]
 [ext_resource type="Texture2D" path="res://assets/level1/door.png" id="12_door"]
+[ext_resource type="Texture2D" path="res://assets/level1/background.png" id="13_bg"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 
@@ -78,6 +79,15 @@ offset_bottom = 540.0
 
 color = Color(0.08, 0.05, 0.14, 1)
 
+
+[node name="BGArt" type="TextureRect" parent="."]
+offset_left = -300.0
+offset_top = -600.0
+offset_right = 5100.0
+offset_bottom = 540.0
+expand_mode = 1
+stretch_mode = 1
+texture = ExtResource("13_bg")
 [node name="FloorA" type="StaticBody2D" parent="."]
 
 position = Vector2(350, 470)
