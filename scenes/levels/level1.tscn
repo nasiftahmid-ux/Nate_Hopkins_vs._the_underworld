@@ -2,7 +2,6 @@
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/enemies/basic_enemy.tscn" id="2_soul"]
-[ext_resource type="PackedScene" path="res://scenes/levels/hint_zone.tscn" id="3_hint"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4_hud"]
 [ext_resource type="Script" uid="uid://bmqflhfn3ak0b" path="res://scenes/levels/door.gd" id="5_door"]
 [ext_resource type="Script" uid="uid://c6imm5e7uepd2" path="res://scenes/levels/level_base.gd" id="6_level"]
@@ -789,70 +788,4 @@ theme_override_font_sizes/font_size = 14
 text = "EXIT"
 horizontal_alignment = 1
 
-[node name="HintStart" parent="." unique_id=1246115900 instance=ExtResource("3_hint")]
-position = Vector2(180, 400)
-hint = "TIP: Move with A/D. Press W or Space to jump!"
-
-[node name="HintSoul" parent="." unique_id=598950844 instance=ExtResource("3_hint")]
-position = Vector2(380, 440)
-hint = "TIP: A Soul! They hop platforms and gaps to chase you. Press J (or Z) to attack."
-
-[node name="HintCoins" parent="." unique_id=687450987 instance=ExtResource("3_hint")]
-position = Vector2(600, 400)
-hint = "TIP: The platforms zigzag UP and DOWN! Hop the stairs to cross the gaps."
-
-[node name="HintSpike" parent="." unique_id=1651065899 instance=ExtResource("3_hint")]
-position = Vector2(760, 440)
-hint = "TIP: Spikes deal 15 damage. Jump over them!"
-
-[node name="HintHeavy" parent="." unique_id=759311704 instance=ExtResource("3_hint")]
-position = Vector2(900, 440)
-hint = "TIP: K (or X) is your heavy attack - slower, but hits much harder."
-
-[node name="HintSpecial" parent="." unique_id=831952871 instance=ExtResource("3_hint")]
-position = Vector2(1150, 440)
-hint = "TIP: L (or C) is your special attack. Strong, but on a cooldown."
-
-[node name="HintJump" parent="." unique_id=957581327 instance=ExtResource("3_hint")]
-position = Vector2(1420, 380)
-hint = "TIP: A BIG gap ahead - run from the edge, or bounce up through the maze above!"
-
-[node name="HintExit" parent="." unique_id=1770841441 instance=ExtResource("3_hint")]
-position = Vector2(3350, 330)
-hint = "TIP: Climb the high stairs, drop back down, beat the 5 guards, then take the last stairs to the EXIT."
-
 [node name="HUD" parent="." unique_id=1974628891 instance=ExtResource("4_hud")]
-
-[node name="HintLayer" type="CanvasLayer" parent="." unique_id=698658788]
-
-[node name="HintPanel" type="ColorRect" parent="HintLayer" unique_id=1250376027]
-visible = false
-offset_left = 140.0
-offset_top = 640.0
-offset_right = 1140.0
-offset_bottom = 706.0
-color = Color(0.1, 0.08, 0.2, 0.88)
-
-[node name="HintLabel" type="Label" parent="HintLayer" unique_id=241633320]
-offset_left = 160.0
-offset_top = 656.0
-offset_right = 1120.0
-offset_bottom = 690.0
-theme_override_colors/font_color = Color(0.95, 0.85, 0.45, 1)
-theme_override_font_sizes/font_size = 20
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="HintTimer" type="Timer" parent="HintLayer" unique_id=1098016829]
-wait_time = 4.0
-one_shot = true
-
-[node name="Title" type="Label" parent="." unique_id=2141861634]
-offset_left = 1320.0
-offset_top = 30.0
-offset_right = 1880.0
-offset_bottom = 60.0
-theme_override_colors/font_color = Color(0.95, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 22
-text = "UNDERWORLD ENTRANCE - ZIGZAG, STAIRS AND CHASING SOULS"
-horizontal_alignment = 1

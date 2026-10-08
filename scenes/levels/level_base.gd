@@ -3,7 +3,7 @@ extends Node2D
 # via the Inspector exports on the root node.
 
 @export var camera_limit_right := 4900
-@export var has_hints := true
+@export var has_hints := false
 
 @onready var camera: Camera2D = $Player/Camera2D
 var hint_panel: ColorRect

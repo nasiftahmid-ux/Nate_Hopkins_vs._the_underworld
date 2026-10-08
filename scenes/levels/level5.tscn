@@ -311,21 +311,3 @@ text = "EXIT"
 horizontal_alignment = 1
 
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
-
-[node name="Title" type="Label" parent="."]
-
-offset_left = 920.0
-
-offset_top = 30.0
-
-offset_right = 1480.0
-
-offset_bottom = 60.0
-
-theme_override_font_sizes/font_size = 22
-
-theme_override_colors/font_color = Color(0.9, 0.92, 1, 1)
-
-text = "MEMORY PALACE - only echoes remain"
-
-horizontal_alignment = 1
