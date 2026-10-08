@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 
@@ -17,6 +17,16 @@
 [ext_resource type="PackedScene" path="res://scenes/items/spikes.tscn" id="8_spike"]
 
 [ext_resource type="Script" path="res://scenes/levels/moving_platform.gd" id="9_moving_platform"]
+
+[ext_resource type="Texture2D" path="res://assets/level2/floor_tile.png" id="10_floor"]
+
+[ext_resource type="Texture2D" path="res://assets/level2/platform_tile.png" id="11_platform"]
+
+[ext_resource type="Texture2D" path="res://assets/level2/wall.png" id="12_wall"]
+
+[ext_resource type="Texture2D" path="res://assets/level2/door.png" id="13_door"]
+
+[ext_resource type="Texture2D" path="res://assets/level2/background.png" id="14_bg"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 
@@ -80,6 +90,22 @@ offset_bottom = 540.0
 
 color = Color(0.04, 0.13, 0.2, 1)
 
+[node name="BGArt" type="TextureRect" parent="."]
+
+offset_left = -300.0
+
+offset_top = -600.0
+
+offset_right = 8150.0
+
+offset_bottom = 540.0
+
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_bg")
+
 [node name="FloorA" type="StaticBody2D" parent="."]
 
 position = Vector2(450, 470)
@@ -88,7 +114,7 @@ position = Vector2(450, 470)
 
 shape = SubResource("floor_shape")
 
-[node name="Vis" type="ColorRect" parent="FloorA"]
+[node name="Vis" type="TextureRect" parent="FloorA"]
 
 offset_left = -450
 
@@ -98,7 +124,11 @@ offset_right = 450
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="FloorB" type="StaticBody2D" parent="."]
 
@@ -108,7 +138,7 @@ position = Vector2(1400, 470)
 
 shape = SubResource("floor_shape")
 
-[node name="Vis" type="ColorRect" parent="FloorB"]
+[node name="Vis" type="TextureRect" parent="FloorB"]
 
 offset_left = -450
 
@@ -118,7 +148,11 @@ offset_right = 450
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="FloorC" type="StaticBody2D" parent="."]
 
@@ -128,7 +162,7 @@ position = Vector2(2700, 470)
 
 shape = SubResource("floor_shape")
 
-[node name="Vis" type="ColorRect" parent="FloorC"]
+[node name="Vis" type="TextureRect" parent="FloorC"]
 
 offset_left = -450
 
@@ -138,7 +172,11 @@ offset_right = 450
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="FloorD" type="StaticBody2D" parent="."]
 
@@ -148,7 +186,7 @@ position = Vector2(3600, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorD"]
+[node name="Vis" type="TextureRect" parent="FloorD"]
 
 offset_left = -550
 
@@ -158,7 +196,11 @@ offset_right = 550
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="FloorE" type="StaticBody2D" parent="."]
 
@@ -168,7 +210,7 @@ position = Vector2(4750, 470)
 
 shape = SubResource("floor_shape")
 
-[node name="Vis" type="ColorRect" parent="FloorE"]
+[node name="Vis" type="TextureRect" parent="FloorE"]
 
 offset_left = -450
 
@@ -178,7 +220,11 @@ offset_right = 450
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="FloorF" type="StaticBody2D" parent="."]
 
@@ -188,7 +234,7 @@ position = Vector2(5950, 470)
 
 shape = SubResource("floor_shape3")
 
-[node name="Vis" type="ColorRect" parent="FloorF"]
+[node name="Vis" type="TextureRect" parent="FloorF"]
 
 offset_left = -500
 
@@ -198,7 +244,11 @@ offset_right = 500
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="FloorG" type="StaticBody2D" parent="."]
 
@@ -208,7 +258,7 @@ position = Vector2(7250, 470)
 
 shape = SubResource("floor_shape4")
 
-[node name="Vis" type="ColorRect" parent="FloorG"]
+[node name="Vis" type="TextureRect" parent="FloorG"]
 
 offset_left = -750
 
@@ -218,7 +268,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.12, 0.3, 0.38, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("10_floor")
 
 [node name="WallL" type="StaticBody2D" parent="."]
 
@@ -228,7 +282,7 @@ position = Vector2(-20, 0)
 
 shape = SubResource("wall_shape")
 
-[node name="Vis" type="ColorRect" parent="WallL"]
+[node name="Vis" type="TextureRect" parent="WallL"]
 
 offset_left = -20.0
 
@@ -238,7 +292,11 @@ offset_right = 20.0
 
 offset_bottom = 400.0
 
-color = Color(0.16, 0.34, 0.44, 1)
+expand_mode = 1
+
+stretch_mode = 0
+
+texture = ExtResource("12_wall")
 
 [node name="WallR" type="StaticBody2D" parent="."]
 
@@ -248,7 +306,7 @@ position = Vector2(7980, 0)
 
 shape = SubResource("wall_shape")
 
-[node name="Vis" type="ColorRect" parent="WallR"]
+[node name="Vis" type="TextureRect" parent="WallR"]
 
 offset_left = -20.0
 
@@ -258,7 +316,11 @@ offset_right = 20.0
 
 offset_bottom = 400.0
 
-color = Color(0.16, 0.34, 0.44, 1)
+expand_mode = 1
+
+stretch_mode = 0
+
+texture = ExtResource("12_wall")
 
 [node name="GapStone1" type="StaticBody2D" parent="."]
 
@@ -268,7 +330,7 @@ position = Vector2(1900, 520)
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="GapStone1"]
+[node name="Vis" type="TextureRect" parent="GapStone1"]
 
 offset_left = -100
 
@@ -278,7 +340,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.16, 0.24, 0.36, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="GapStone2" type="StaticBody2D" parent="."]
 
@@ -288,7 +354,7 @@ position = Vector2(2125, 520)
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="GapStone2"]
+[node name="Vis" type="TextureRect" parent="GapStone2"]
 
 offset_left = -100
 
@@ -298,7 +364,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.16, 0.24, 0.36, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="GapStone3" type="StaticBody2D" parent="."]
 
@@ -308,7 +378,7 @@ position = Vector2(5250, 540)
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="GapStone3"]
+[node name="Vis" type="TextureRect" parent="GapStone3"]
 
 offset_left = -100
 
@@ -318,7 +388,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.16, 0.24, 0.36, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="GapStone4" type="StaticBody2D" parent="."]
 
@@ -328,7 +402,7 @@ position = Vector2(5360, 560)
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="GapStone4"]
+[node name="Vis" type="TextureRect" parent="GapStone4"]
 
 offset_left = -100
 
@@ -338,7 +412,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.16, 0.24, 0.36, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="GapStone5" type="StaticBody2D" parent="."]
 
@@ -348,7 +426,7 @@ position = Vector2(5470, 540)
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="GapStone5"]
+[node name="Vis" type="TextureRect" parent="GapStone5"]
 
 offset_left = -100
 
@@ -358,7 +436,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.16, 0.24, 0.36, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat1a" type="AnimatableBody2D" parent="."]
 
@@ -376,7 +458,7 @@ speed = 315.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat1a"]
+[node name="Vis" type="TextureRect" parent="Plat1a"]
 
 offset_left = -110
 
@@ -386,7 +468,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat1b" type="AnimatableBody2D" parent="."]
 
@@ -404,7 +490,7 @@ speed = 345.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat1b"]
+[node name="Vis" type="TextureRect" parent="Plat1b"]
 
 offset_left = -120
 
@@ -414,7 +500,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat1c" type="AnimatableBody2D" parent="."]
 
@@ -432,7 +522,7 @@ speed = 225.0
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="Plat1c"]
+[node name="Vis" type="TextureRect" parent="Plat1c"]
 
 offset_left = -100
 
@@ -442,7 +532,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat1d" type="AnimatableBody2D" parent="."]
 
@@ -460,7 +554,7 @@ speed = 255.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat1d"]
+[node name="Vis" type="TextureRect" parent="Plat1d"]
 
 offset_left = -110
 
@@ -470,7 +564,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat1e" type="AnimatableBody2D" parent="."]
 
@@ -488,7 +586,7 @@ speed = 285.0
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="Plat1e"]
+[node name="Vis" type="TextureRect" parent="Plat1e"]
 
 offset_left = -100
 
@@ -498,7 +596,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat2a" type="AnimatableBody2D" parent="."]
 
@@ -516,7 +618,7 @@ speed = 315.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat2a"]
+[node name="Vis" type="TextureRect" parent="Plat2a"]
 
 offset_left = -110
 
@@ -526,7 +628,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat2b" type="AnimatableBody2D" parent="."]
 
@@ -544,7 +650,7 @@ speed = 345.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat2b"]
+[node name="Vis" type="TextureRect" parent="Plat2b"]
 
 offset_left = -110
 
@@ -554,7 +660,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat2c" type="AnimatableBody2D" parent="."]
 
@@ -572,7 +682,7 @@ speed = 225.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat2c"]
+[node name="Vis" type="TextureRect" parent="Plat2c"]
 
 offset_left = -120
 
@@ -582,7 +692,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat2d" type="AnimatableBody2D" parent="."]
 
@@ -600,7 +714,7 @@ speed = 105.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat2d"]
+[node name="Vis" type="TextureRect" parent="Plat2d"]
 
 offset_left = -110
 
@@ -610,7 +724,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat2e" type="AnimatableBody2D" parent="."]
 
@@ -628,7 +746,7 @@ speed = 285.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat2e"]
+[node name="Vis" type="TextureRect" parent="Plat2e"]
 
 offset_left = -120
 
@@ -638,7 +756,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat2f" type="AnimatableBody2D" parent="."]
 
@@ -656,7 +778,7 @@ speed = 315.0
 
 shape = SubResource("platform_shape2")
 
-[node name="Vis" type="ColorRect" parent="Plat2f"]
+[node name="Vis" type="TextureRect" parent="Plat2f"]
 
 offset_left = -100
 
@@ -666,7 +788,11 @@ offset_right = 100
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat3a" type="AnimatableBody2D" parent="."]
 
@@ -684,7 +810,7 @@ speed = 315.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat3a"]
+[node name="Vis" type="TextureRect" parent="Plat3a"]
 
 offset_left = -120
 
@@ -694,7 +820,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat3b" type="AnimatableBody2D" parent="."]
 
@@ -712,7 +842,7 @@ speed = 345.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat3b"]
+[node name="Vis" type="TextureRect" parent="Plat3b"]
 
 offset_left = -110
 
@@ -722,7 +852,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat3c" type="AnimatableBody2D" parent="."]
 
@@ -740,7 +874,7 @@ speed = 82.5
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat3c"]
+[node name="Vis" type="TextureRect" parent="Plat3c"]
 
 offset_left = -120
 
@@ -750,7 +884,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat3d" type="AnimatableBody2D" parent="."]
 
@@ -768,7 +906,7 @@ speed = 255.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat3d"]
+[node name="Vis" type="TextureRect" parent="Plat3d"]
 
 offset_left = -110
 
@@ -778,7 +916,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat3e" type="AnimatableBody2D" parent="."]
 
@@ -796,7 +938,7 @@ speed = 285.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat3e"]
+[node name="Vis" type="TextureRect" parent="Plat3e"]
 
 offset_left = -120
 
@@ -806,7 +948,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4a" type="AnimatableBody2D" parent="."]
 
@@ -824,7 +970,7 @@ speed = 315.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat4a"]
+[node name="Vis" type="TextureRect" parent="Plat4a"]
 
 offset_left = -120
 
@@ -834,7 +980,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4b" type="AnimatableBody2D" parent="."]
 
@@ -852,7 +1002,7 @@ speed = 345.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat4b"]
+[node name="Vis" type="TextureRect" parent="Plat4b"]
 
 offset_left = -110
 
@@ -862,7 +1012,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4c" type="AnimatableBody2D" parent="."]
 
@@ -880,7 +1034,7 @@ speed = 225.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat4c"]
+[node name="Vis" type="TextureRect" parent="Plat4c"]
 
 offset_left = -120
 
@@ -890,7 +1044,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4d" type="AnimatableBody2D" parent="."]
 
@@ -908,7 +1066,7 @@ speed = 255.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat4d"]
+[node name="Vis" type="TextureRect" parent="Plat4d"]
 
 offset_left = -110
 
@@ -918,7 +1076,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4e" type="AnimatableBody2D" parent="."]
 
@@ -936,7 +1098,7 @@ speed = 90.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat4e"]
+[node name="Vis" type="TextureRect" parent="Plat4e"]
 
 offset_left = -120
 
@@ -946,7 +1108,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4f" type="AnimatableBody2D" parent="."]
 
@@ -964,7 +1130,7 @@ speed = 315.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat4f"]
+[node name="Vis" type="TextureRect" parent="Plat4f"]
 
 offset_left = -120
 
@@ -974,7 +1140,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat4g" type="AnimatableBody2D" parent="."]
 
@@ -992,7 +1162,7 @@ speed = 345.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat4g"]
+[node name="Vis" type="TextureRect" parent="Plat4g"]
 
 offset_left = -120
 
@@ -1002,7 +1172,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5a" type="AnimatableBody2D" parent="."]
 
@@ -1020,7 +1194,7 @@ speed = 165.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat5a"]
+[node name="Vis" type="TextureRect" parent="Plat5a"]
 
 offset_left = -120
 
@@ -1030,7 +1204,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5b" type="AnimatableBody2D" parent="."]
 
@@ -1048,7 +1226,7 @@ speed = 142.5
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat5b"]
+[node name="Vis" type="TextureRect" parent="Plat5b"]
 
 offset_left = -110
 
@@ -1058,7 +1236,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5c" type="AnimatableBody2D" parent="."]
 
@@ -1076,7 +1258,7 @@ speed = 187.5
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat5c"]
+[node name="Vis" type="TextureRect" parent="Plat5c"]
 
 offset_left = -120
 
@@ -1086,7 +1268,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5d" type="AnimatableBody2D" parent="."]
 
@@ -1104,7 +1290,7 @@ speed = 150.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat5d"]
+[node name="Vis" type="TextureRect" parent="Plat5d"]
 
 offset_left = -110
 
@@ -1114,7 +1300,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5e" type="AnimatableBody2D" parent="."]
 
@@ -1132,7 +1322,7 @@ speed = 180.0
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat5e"]
+[node name="Vis" type="TextureRect" parent="Plat5e"]
 
 offset_left = -110
 
@@ -1142,7 +1332,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5f" type="AnimatableBody2D" parent="."]
 
@@ -1160,7 +1354,7 @@ speed = 195.0
 
 shape = SubResource("platform_shape4")
 
-[node name="Vis" type="ColorRect" parent="Plat5f"]
+[node name="Vis" type="TextureRect" parent="Plat5f"]
 
 offset_left = -120
 
@@ -1170,7 +1364,11 @@ offset_right = 120
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Plat5g" type="AnimatableBody2D" parent="."]
 
@@ -1188,7 +1386,7 @@ speed = 157.5
 
 shape = SubResource("platform_shape3")
 
-[node name="Vis" type="ColorRect" parent="Plat5g"]
+[node name="Vis" type="TextureRect" parent="Plat5g"]
 
 offset_left = -110
 
@@ -1198,7 +1396,11 @@ offset_right = 110
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="PlatDoor" type="StaticBody2D" parent="."]
 
@@ -1208,7 +1410,7 @@ position = Vector2(7640, 110)
 
 shape = SubResource("platform_shape5")
 
-[node name="Vis" type="ColorRect" parent="PlatDoor"]
+[node name="Vis" type="TextureRect" parent="PlatDoor"]
 
 offset_left = -130
 
@@ -1218,7 +1420,11 @@ offset_right = 130
 
 offset_bottom = 12.0
 
-color = Color(0.2, 0.42, 0.5, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("11_platform")
 
 [node name="Shooter1" parent="." instance=ExtResource("3_shooter")]
 
@@ -1356,7 +1562,7 @@ next_scene = "res://scenes/levels/level3.tscn"
 
 shape = SubResource("door_shape")
 
-[node name="Vis" type="ColorRect" parent="Door"]
+[node name="Vis" type="TextureRect" parent="Door"]
 
 offset_left = -28.0
 
@@ -1366,7 +1572,11 @@ offset_right = 28.0
 
 offset_bottom = 32.0
 
-color = Color(0.95, 0.85, 0.2, 0.85)
+expand_mode = 1
+
+stretch_mode = 0
+
+texture = ExtResource("13_door")
 
 [node name="Label" type="Label" parent="Door"]
 
