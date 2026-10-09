@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=27 format=3]
 
 
 
@@ -39,9 +39,12 @@
 
 
 [ext_resource type="Script" path="res://scenes/levels/moving_platform.gd" id="11_moving_platform"]
+[ext_resource type="Script" path="res://scenes/levels/moving_platform_island.gd" id="15_island"]
+[ext_resource type="Script" path="res://scenes/levels/level4_ground.gd" id="16_ground"]
 
 [ext_resource type="PackedScene" path="res://scenes/items/lava.tscn" id="12_lava"]
 [ext_resource type="PackedScene" path="res://scenes/items/rock_fall.tscn" id="13_rockfall"]
+[ext_resource type="Texture2D" path="res://assets/level4/background_panorama.png" id="14_bg"]
 
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
@@ -159,10 +162,44 @@ offset_bottom = 540.0
 
 
 color = Color(0.15, 0.03, 0.05, 1)
+[node name="BGArt" type="TextureRect" parent="."]
+
+
+
+
+offset_left = -300.0
+
+
+
+
+offset_top = -600.0
+
+
+
+
+offset_right = 15450.0
+
+
+
+
+offset_bottom = 540.0
+
+
+
+
+expand_mode = 1
+
+
+
+
+stretch_mode = 1
+texture = ExtResource("14_bg")
 
 
 
 [node name="FloorA" type="StaticBody2D" parent="."]
+
+script = ExtResource("16_ground")
 
 
 
@@ -204,6 +241,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorB" type="StaticBody2D" parent="."]
 
+script = ExtResource("16_ground")
+
 
 
 position = Vector2(2200, 470)
@@ -243,6 +282,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 
 [node name="FloorC" type="StaticBody2D" parent="."]
+
+script = ExtResource("16_ground")
 
 
 
@@ -284,6 +325,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorD" type="StaticBody2D" parent="."]
 
+script = ExtResource("16_ground")
+
 
 
 position = Vector2(5700, 470)
@@ -323,6 +366,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 
 [node name="FloorE" type="StaticBody2D" parent="."]
+
+script = ExtResource("16_ground")
 
 
 
@@ -364,6 +409,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorF" type="StaticBody2D" parent="."]
 
+script = ExtResource("16_ground")
+
 
 
 position = Vector2(9300, 470)
@@ -403,6 +450,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 
 [node name="FloorG" type="StaticBody2D" parent="."]
+
+script = ExtResource("16_ground")
 
 
 
@@ -444,6 +493,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="FloorH" type="StaticBody2D" parent="."]
 
+script = ExtResource("16_ground")
+
 
 
 position = Vector2(12600, 470)
@@ -483,6 +534,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 
 [node name="FloorI" type="StaticBody2D" parent="."]
+
+script = ExtResource("16_ground")
 
 
 
@@ -524,6 +577,8 @@ color = Color(0.38, 0.1, 0.14, 1)
 
 [node name="WallL" type="StaticBody2D" parent="."]
 
+script = ExtResource("16_ground")
+
 
 
 position = Vector2(-20, 0)
@@ -563,6 +618,8 @@ color = Color(0.44, 0.12, 0.18, 1)
 
 
 [node name="WallR" type="StaticBody2D" parent="."]
+
+script = ExtResource("16_ground")
 
 
 
@@ -806,7 +863,7 @@ color = Color(0.42, 0.18, 0.3, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -862,7 +919,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -918,7 +975,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -974,7 +1031,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1030,7 +1087,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1086,7 +1143,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1142,7 +1199,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1198,7 +1255,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1254,7 +1311,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1310,7 +1367,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1366,7 +1423,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1422,7 +1479,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1478,7 +1535,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1534,7 +1591,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1590,7 +1647,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1646,7 +1703,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1702,7 +1759,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1758,7 +1815,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1814,7 +1871,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1870,7 +1927,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1926,7 +1983,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -1982,7 +2039,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2038,7 +2095,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2094,7 +2151,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2150,7 +2207,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2206,7 +2263,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2262,7 +2319,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2318,7 +2375,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2374,7 +2431,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2430,7 +2487,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2486,7 +2543,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2542,7 +2599,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2598,7 +2655,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2654,7 +2711,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2710,7 +2767,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2766,7 +2823,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2822,7 +2879,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2878,7 +2935,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2934,7 +2991,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -2990,7 +3047,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3046,7 +3103,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3102,7 +3159,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3158,7 +3215,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3214,7 +3271,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3270,7 +3327,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3326,7 +3383,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3382,7 +3439,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3438,7 +3495,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3494,7 +3551,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3550,7 +3607,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3606,7 +3663,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3662,7 +3719,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3718,7 +3775,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3774,7 +3831,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3830,7 +3887,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3886,7 +3943,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3942,7 +3999,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -3998,7 +4055,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -4054,7 +4111,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -4110,7 +4167,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -4166,7 +4223,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -4222,7 +4279,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -4278,7 +4335,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
@@ -4334,7 +4391,7 @@ color = Color(0.5, 0.16, 0.22, 1)
 
 
 
-script = ExtResource("11_moving_platform")
+script = ExtResource("15_island")
 
 
 
