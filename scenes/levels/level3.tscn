@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=53 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 
@@ -33,6 +33,56 @@
 [ext_resource type="Texture2D" path="res://assets/level3/wall_right.png" id="17_wall_r"]
 
 [ext_resource type="Texture2D" path="res://assets/level3/door.png" id="18_door"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_01.png" id="d01"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_02.png" id="d02"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_03.png" id="d03"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_04.png" id="d04"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_05.png" id="d05"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_06.png" id="d06"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_07.png" id="d07"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_08.png" id="d08"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_09.png" id="d09"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_10.png" id="d10"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_11.png" id="d11"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_12.png" id="d12"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_13.png" id="d13"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_14.png" id="d14"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_15.png" id="d15"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_16.png" id="d16"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_17.png" id="d17"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_18.png" id="d18"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_19.png" id="d19"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_20.png" id="d20"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_21.png" id="d21"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_22.png" id="d22"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_23.png" id="d23"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_24.png" id="d24"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/decor/dec_25.png" id="d25"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 
@@ -275,6 +325,208 @@ expand_mode = 1
 stretch_mode = 1
 
 texture = ExtResource("14_floor")
+
+[node name="Decor" type="Node2D" parent="."]
+
+[node name="Dec01" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(266, 291)
+
+texture = ExtResource("d01")
+
+[node name="Dec02" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(551, 359)
+
+texture = ExtResource("d02")
+
+[node name="Dec03" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(810, 388)
+
+texture = ExtResource("d03")
+
+[node name="Dec04" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(1068, 350)
+
+texture = ExtResource("d04")
+
+[node name="Dec05" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(1648, 286)
+
+texture = ExtResource("d05")
+
+[node name="Dec06" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(1976, 376)
+
+texture = ExtResource("d06")
+
+[node name="Dec07" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(2294, 419)
+
+texture = ExtResource("d07")
+
+[node name="Dec08" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(2585, 323)
+
+texture = ExtResource("d08")
+
+[node name="Dec09" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(3202, 365)
+
+texture = ExtResource("d09")
+
+[node name="Dec10" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(3540, 420)
+
+texture = ExtResource("d10")
+
+[node name="Dec11" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(3834, 398)
+
+texture = ExtResource("d11")
+
+[node name="Dec12" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(4143, 287)
+
+texture = ExtResource("d12")
+
+[node name="Dec13" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(5040, 322)
+
+texture = ExtResource("d13")
+
+[node name="Dec14" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(5387, 413)
+
+texture = ExtResource("d14")
+
+[node name="Dec15" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(5660, 276)
+
+texture = ExtResource("d15")
+
+[node name="Dec16" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(5987, 356)
+
+texture = ExtResource("d16")
+
+[node name="Dec17" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(6671, 409)
+
+texture = ExtResource("d17")
+
+[node name="Dec18" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(7090, 414)
+
+texture = ExtResource("d18")
+
+[node name="Dec19" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(7466, 290)
+
+texture = ExtResource("d19")
+
+[node name="Dec20" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(8560, 336)
+
+texture = ExtResource("d20")
+
+[node name="Dec21" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(8986, 402)
+
+texture = ExtResource("d21")
+
+[node name="Dec22" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(9331, 347)
+
+texture = ExtResource("d22")
+
+[node name="Dec23" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(10032, 401)
+
+texture = ExtResource("d23")
+
+[node name="Dec24" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(10360, 415)
+
+texture = ExtResource("d24")
+
+[node name="Dec25" type="Sprite2D" parent="Decor"]
+
+centered = false
+
+position = Vector2(10666, 386)
+
+texture = ExtResource("d25")
 
 [node name="WallL" type="StaticBody2D" parent="."]
 
@@ -2126,11 +2378,11 @@ shape = SubResource("door_shape")
 
 [node name="Vis" type="TextureRect" parent="Door"]
 
-offset_left = -28.0
+offset_left = -35.0
 
-offset_top = -32.0
+offset_top = -48.0
 
-offset_right = 28.0
+offset_right = 35.0
 
 offset_bottom = 32.0
 
@@ -2142,13 +2394,13 @@ texture = ExtResource("18_door")
 
 [node name="Label" type="Label" parent="Door"]
 
-offset_left = -40.0
+offset_left = -45.0
 
-offset_top = -54.0
+offset_top = -74.0
 
-offset_right = 40.0
+offset_right = 45.0
 
-offset_bottom = -34.0
+offset_bottom = -54.0
 
 theme_override_font_sizes/font_size = 14
 
