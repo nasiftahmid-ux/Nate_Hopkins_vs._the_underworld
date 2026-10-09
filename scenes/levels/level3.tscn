@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
 
@@ -21,6 +21,10 @@
 [ext_resource type="PackedScene" path="res://scenes/items/lava.tscn" id="11_lava"]
 
 [ext_resource type="PackedScene" path="res://scenes/items/rock_fall.tscn" id="12_rockfall"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/background.png" id="13_bg"]
+
+[ext_resource type="Texture2D" path="res://assets/level3/floor_tile.png" id="14_floor"]
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
 
@@ -80,6 +84,22 @@ offset_bottom = 540.0
 
 color = Color(0.16, 0.07, 0.03, 1)
 
+[node name="BGArt" type="TextureRect" parent="."]
+
+offset_left = -300.0
+
+offset_top = -600.0
+
+offset_right = 11400.0
+
+offset_bottom = 540.0
+
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("13_bg")
+
 [node name="FloorA" type="StaticBody2D" parent="."]
 
 position = Vector2(700, 470)
@@ -88,7 +108,7 @@ position = Vector2(700, 470)
 
 shape = SubResource("floor_shape")
 
-[node name="Vis" type="ColorRect" parent="FloorA"]
+[node name="Vis" type="TextureRect" parent="FloorA"]
 
 offset_left = -650
 
@@ -98,7 +118,11 @@ offset_right = 650
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="FloorB" type="StaticBody2D" parent="."]
 
@@ -108,7 +132,7 @@ position = Vector2(2150, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorB"]
+[node name="Vis" type="TextureRect" parent="FloorB"]
 
 offset_left = -750
 
@@ -118,7 +142,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="FloorC" type="StaticBody2D" parent="."]
 
@@ -128,7 +156,7 @@ position = Vector2(3700, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorC"]
+[node name="Vis" type="TextureRect" parent="FloorC"]
 
 offset_left = -750
 
@@ -138,7 +166,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="FloorD" type="StaticBody2D" parent="."]
 
@@ -148,7 +180,7 @@ position = Vector2(5550, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorD"]
+[node name="Vis" type="TextureRect" parent="FloorD"]
 
 offset_left = -750
 
@@ -158,7 +190,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="FloorE" type="StaticBody2D" parent="."]
 
@@ -168,7 +204,7 @@ position = Vector2(7100, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorE"]
+[node name="Vis" type="TextureRect" parent="FloorE"]
 
 offset_left = -750
 
@@ -178,7 +214,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="FloorF" type="StaticBody2D" parent="."]
 
@@ -188,7 +228,7 @@ position = Vector2(9000, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorF"]
+[node name="Vis" type="TextureRect" parent="FloorF"]
 
 offset_left = -750
 
@@ -198,7 +238,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="FloorG" type="StaticBody2D" parent="."]
 
@@ -208,7 +252,7 @@ position = Vector2(10500, 470)
 
 shape = SubResource("floor_shape2")
 
-[node name="Vis" type="ColorRect" parent="FloorG"]
+[node name="Vis" type="TextureRect" parent="FloorG"]
 
 offset_left = -750
 
@@ -218,7 +262,11 @@ offset_right = 750
 
 offset_bottom = 30.0
 
-color = Color(0.4, 0.2, 0.08, 1)
+expand_mode = 1
+
+stretch_mode = 1
+
+texture = ExtResource("14_floor")
 
 [node name="WallL" type="StaticBody2D" parent="."]
 
