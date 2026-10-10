@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=29 format=3]
 
 
 
@@ -45,6 +45,8 @@
 [ext_resource type="PackedScene" path="res://scenes/items/lava.tscn" id="12_lava"]
 [ext_resource type="PackedScene" path="res://scenes/items/rock_fall.tscn" id="13_rockfall"]
 [ext_resource type="Texture2D" path="res://assets/level4/background_panorama.png" id="14_bg"]
+[ext_resource type="Texture2D" path="res://assets/level4/plat_300.png" id="17_plat300"]
+[ext_resource type="Texture2D" path="res://assets/level4/boss_door.png" id="18_bossdoor"]
 
 
 [sub_resource type="RectangleShape2D" id="floor_shape"]
@@ -4401,11 +4403,11 @@ shape = SubResource("platform_shape6")
 
 
 
-[node name="Vis" type="ColorRect" parent="PlatDoor"]
+[node name="Vis" type="TextureRect" parent="PlatDoor"]
 
 
 
-offset_left = -150
+offset_left = -178
 
 
 
@@ -4413,15 +4415,17 @@ offset_top = -12.0
 
 
 
-offset_right = 150
+offset_right = 178
 
 
 
-offset_bottom = 12.0
+offset_bottom = 120.0
 
+expand_mode = 1
 
+stretch_mode = 0
 
-color = Color(0.5, 0.16, 0.22, 1)
+texture = ExtResource("17_plat300")
 
 
 
@@ -4889,27 +4893,29 @@ shape = SubResource("door_shape")
 
 
 
-[node name="Vis" type="ColorRect" parent="Door"]
+[node name="Vis" type="TextureRect" parent="Door"]
 
 
 
-offset_left = -28.0
+offset_left = -40.0
 
 
 
-offset_top = -32.0
+offset_top = -90.0
 
 
 
-offset_right = 28.0
+offset_right = 40.0
 
 
 
-offset_bottom = 32.0
+offset_bottom = 22.0
 
+expand_mode = 1
 
+stretch_mode = 0
 
-color = Color(0.95, 0.85, 0.2, 0.85)
+texture = ExtResource("18_bossdoor")
 
 
 
