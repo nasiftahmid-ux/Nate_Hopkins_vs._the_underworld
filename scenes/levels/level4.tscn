@@ -167,17 +167,16 @@ color = Color(0.15, 0.03, 0.05, 1)
 
 
 
-offset_left = -300.0
 
+offset_left = 12179.0
 
 
 
 offset_top = -600.0
 
 
+offset_right = 15350.0
 
-
-offset_right = 15450.0
 
 
 
@@ -187,12 +186,13 @@ offset_bottom = 540.0
 
 
 
+
 expand_mode = 1
 
 
 
 
-stretch_mode = 1
+stretch_mode = 0
 texture = ExtResource("14_bg")
 
 
