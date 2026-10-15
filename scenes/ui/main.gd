@@ -39,7 +39,7 @@ var level_select: Array[Dictionary] = [
 
 func _ready() -> void:
 	_apply_pixel_theme()
-	Music.play(Music.MENU_TRACK)
+	Music.play_menu()
 	_add_vignette()
 	_add_embers()
 	_animate_backdrop()
