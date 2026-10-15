@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://45ffydvc627e"
+path="res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-003.wav-97c553668ef8d66673604bc284b16bc8.sample"
+
+[deps]
+
+source_file="res://assets/audio/FGHTImpt_HIT-Strong Smack_HY_PC-003.wav"
+dest_files=["res://.godot/imported/FGHTImpt_HIT-Strong Smack_HY_PC-003.wav-97c553668ef8d66673604bc284b16bc8.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
