@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/ui/main.gd" id="1_main"]
+[ext_resource type="Texture2D" path="res://assets/level1/background.png" id="2_bg"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -11,61 +12,155 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_main")
 
-[node name="BG" type="ColorRect" parent="."]
+[node name="Backdrop" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.14, 1)
+mouse_filter = 2
+
+[node name="BG" type="TextureRect" parent="Backdrop"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BGNext" type="TextureRect" parent="Backdrop"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Shade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0.02, 0.08, 0.5)
+
+[node name="TitleGroup" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 84.0
+offset_bottom = 280.0
+grow_horizontal = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="TitleGroup"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.09, 0.13, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.01, 0.02, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 5
+theme_override_font_sizes/font_size = 72
+text = "NATE HOPKINS"
+horizontal_alignment = 1
+
+[node name="VsLabel" type="Label" parent="TitleGroup"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.02, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 36
+text = "vs."
+horizontal_alignment = 1
+
+[node name="VsSpacer" type="Control" parent="TitleGroup"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="Subtitle" type="Label" parent="TitleGroup"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.66, 0.24, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.02, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 52
+text = "THE UNDERWORLD"
+horizontal_alignment = 1
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -196.0
+offset_bottom = -96.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
 [node name="VBox" type="VBoxContainer" parent="Center"]
 layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="Title" type="Label" parent="Center/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 44
-text = "NATE HOPKINS\nVS THE UNDERWORLD"
-horizontal_alignment = 1
-
-[node name="Spacer" type="Control" parent="Center/VBox"]
-layout_mode = 2
-custom_minimum_size = Vector2(0, 30)
+theme_override_constants/separation = 16
+alignment = 1
 
 [node name="StartButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(220, 40)
 layout_mode = 2
-custom_minimum_size = Vector2(220, 50)
 text = "START"
 
 [node name="QuitButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(220, 40)
 layout_mode = 2
-custom_minimum_size = Vector2(220, 50)
 text = "QUIT"
 
-[node name="DevLabel" type="Label" parent="Center/VBox"]
+[node name="DevPanel" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -66.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="DevLabel" type="Label" parent="DevPanel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.95, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 12
 text = "DEV LEVEL SELECT"
 horizontal_alignment = 1
 
-[node name="LevelRow" type="HBoxContainer" parent="Center/VBox"]
+[node name="LevelRow" type="HBoxContainer" parent="DevPanel"]
 layout_mode = 2
 theme_override_constants/separation = 8
+alignment = 1
 
-[node name="Hint" type="Label" parent="Center/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.6, 0.6, 0.65, 1)
-text = "Move: A/D/WASD | Jump: W/Space | Light: J/Z | Heavy: K/X | Special: L/C"
-horizontal_alignment = 1
+[node name="Version" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 10.0
+offset_right = -16.0
+offset_bottom = 30.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.56, 1)
+theme_override_font_sizes/font_size = 9
+text = "DEV BUILD"
+horizontal_alignment = 2
