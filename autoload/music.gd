@@ -4,7 +4,7 @@ extends Node
 ## so a track keeps playing across scene changes until a scene stops or swaps it.
 ## Scenes decide when music plays; the main menu starts the menu theme itself.
 
-const MENU_TRACK := "res://assets/audio/music/reverence_endless.ogg"
+const MENU_TRACK := "res://assets/audio/music/exploration.ogg"
 const DEFAULT_VOLUME_DB := -8.0
 
 var _player: AudioStreamPlayer
