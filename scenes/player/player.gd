@@ -200,6 +200,8 @@ func _play_attack_sound() -> void:
 	var vol := -3.0
 	if sound == "uppercut":
 		vol = -5.0
+	elif sound == "punch" or sound == "kick":
+		vol = -5.0
 	Sfx.play(sound, vol, randf_range(0.95, 1.08))
 
 
