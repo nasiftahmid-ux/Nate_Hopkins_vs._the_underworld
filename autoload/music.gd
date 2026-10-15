@@ -8,6 +8,8 @@ const MENU_TRACK := "res://assets/audio/music/exploration.ogg"
 const MENU_TRACK_LAYER := "res://assets/audio/music/_loop_1673064953929.wav"
 const LEVEL_DEFAULT_TRACK := "res://assets/audio/music/Ludum Dare 30 04.ogg"
 const DEFAULT_VOLUME_DB := -8.0
+## Stage music sits a little under the menu theme so effects stand out.
+const LEVEL_VOLUME_DB := -12.0
 
 var _player: AudioStreamPlayer
 var _player_layer: AudioStreamPlayer
@@ -30,7 +32,7 @@ func _ready() -> void:
 ## Play a looping track, replacing whatever is playing. Calling it with the
 ## track that is already playing does nothing (so scene changes don't restart it).
 ## If layer_path is provided, the layer track plays simultaneously (menu layers).
-func play(path: String = MENU_TRACK, layer_path: String = "") -> void:
+func play(path: String = MENU_TRACK, layer_path: String = "", volume_db: float = DEFAULT_VOLUME_DB) -> void:
 	var should_restart := false
 	if path != _current_path or not _player.playing:
 		should_restart = true
@@ -45,6 +47,7 @@ func play(path: String = MENU_TRACK, layer_path: String = "") -> void:
 		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 
 	_player.stream = stream
+	_player.volume_db = volume_db
 	if should_restart:
 		_player.play()
 	_current_path = path
@@ -66,13 +69,19 @@ func play(path: String = MENU_TRACK, layer_path: String = "") -> void:
 		elif lstream is AudioStreamWAV:
 			lstream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 		_player_layer.stream = lstream
+		_player_layer.volume_db = volume_db
 		_player_layer.play()
 		_current_layer_path = layer_path
 
 
 ## Play the layered menu theme (base + extra loop layer).
 func play_menu() -> void:
-	play(MENU_TRACK, MENU_TRACK_LAYER)
+	play(MENU_TRACK, MENU_TRACK_LAYER, DEFAULT_VOLUME_DB)
+
+
+## Play the level theme at the stage volume.
+func play_level() -> void:
+	play(LEVEL_DEFAULT_TRACK, "", LEVEL_VOLUME_DB)
 
 
 func stop() -> void:

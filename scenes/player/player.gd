@@ -36,6 +36,10 @@ var start_pos := Vector2.ZERO
 var _was_on_floor := true
 const INVULN_DURATION := 0.6
 const KILL_PLANE_Y := 640.0
+## Seconds between footstep sounds while running on the ground.
+const STEP_INTERVAL := 0.3
+
+var _step_timer := 0.0
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var hitbox: Area2D = $Hitbox
@@ -78,6 +82,7 @@ func _physics_process(delta: float) -> void:
 	_process_timers(delta)
 	_process_combat(delta)
 	_update_animation(input)
+	_update_footsteps(delta, input != 0.0)
 
 	move_and_slide()
 	_detect_landing()
@@ -107,6 +112,7 @@ func _process_movement(delta: float, input: float) -> void:
 
 	if Input.is_action_just_pressed("jump") and is_on_floor() and not is_blocking:
 		velocity.y = JUMP_VELOCITY
+		Sfx.play("jump", -4.0, randf_range(0.97, 1.03))
 
 
 func _process_timers(delta: float) -> void:
@@ -228,6 +234,18 @@ func _update_animation(input: float) -> void:
 	else:
 		if sprite.animation != "idle":
 			sprite.play("idle")
+
+
+## Plays a footstep at a steady cadence while running along the ground. Stops
+## (and re-arms) whenever the player is idle, airborne, attacking or blocking.
+func _update_footsteps(delta: float, moving: bool) -> void:
+	if not moving or not is_on_floor() or is_attacking or is_blocking:
+		_step_timer = 0.0
+		return
+	_step_timer -= delta
+	if _step_timer <= 0.0:
+		Sfx.play("step", -8.0, randf_range(0.94, 1.06))
+		_step_timer = STEP_INTERVAL
 
 
 func apply_hit() -> void:

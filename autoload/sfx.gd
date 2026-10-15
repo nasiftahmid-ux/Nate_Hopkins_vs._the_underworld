@@ -21,6 +21,8 @@ const SOUND_FILES := {
 	"kick": "kick.wav",
 	"uppercut": "uppercut.wav",
 	"land": "land.wav",
+	"jump": "jump.wav",
+	"step": "step.wav",
 	# Enemy attacks (one per enemy)
 	"attack_basic": "attack_basic.wav",
 	"attack_imp": "attack_imp.wav",
@@ -37,6 +39,10 @@ const SOUND_FILES := {
 ## How many sounds can overlap before the oldest slot is recycled. Generous, so
 ## a burst of hits never cuts itself off.
 const POOL_SIZE := 16
+
+## Loudness nudge applied on top of every one-shot's own volume, so effects sit
+## clearly above the music. One dial to move them all at once.
+const VOLUME_BOOST_DB := 6.0
 
 var _streams := {}
 var _missing := {}
@@ -64,7 +70,7 @@ func play(name: String, volume_db: float = 0.0, pitch: float = 1.0) -> void:
 	var player := _pool[_next]
 	_next = (_next + 1) % _pool.size()
 	player.stream = stream
-	player.volume_db = volume_db
+	player.volume_db = volume_db + VOLUME_BOOST_DB
 	player.pitch_scale = pitch
 	player.play()
 

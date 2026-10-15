@@ -12,7 +12,7 @@ var hint_label: Label
 
 func _ready() -> void:
 	GameState.begin_stage()
-	Music.play(Music.LEVEL_DEFAULT_TRACK)
+	Music.play_level()
 	camera.limit_left = 0
 	camera.limit_top = -400
 	camera.limit_right = camera_limit_right
