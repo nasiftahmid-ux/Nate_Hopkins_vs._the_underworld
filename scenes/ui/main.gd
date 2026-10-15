@@ -17,6 +17,7 @@ var level_select: Array[Dictionary] = [
 
 
 func _ready() -> void:
+	Music.play(Music.MENU_TRACK)
 	start_button.grab_focus()
 	start_button.pressed.connect(_on_start)
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
@@ -33,6 +34,7 @@ func _build_level_select() -> void:
 
 
 func _on_level_selected(entry: Dictionary) -> void:
+	Music.stop()
 	if entry.has("rhythm"):
 		_setup_rhythm(entry["rhythm"])
 	elif entry.has("exes"):
@@ -60,6 +62,7 @@ func _setup_rhythm(phase: int) -> void:
 
 
 func _on_start() -> void:
+	Music.stop()
 	GameState.new_game()
 	GameState.dialogue_lines = [
 		{"speaker": "Narrator", "text": "A Friday night. Another party. Another chance for Nate Hopkins to make questionable life decisions."},
