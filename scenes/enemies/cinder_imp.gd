@@ -27,6 +27,8 @@ func _ready() -> void:
 	death_delay = 0.65
 	knockback_x = 240.0
 	knockback_y = -160.0
+	attack_sound = "attack_imp"
+	death_sound = "death_imp"
 	super._ready()
 	# The Body node is only a stand-in so the shared script has something to tint.
 	# This enemy draws a sprite instead, so keep it out of sight.
@@ -56,6 +58,7 @@ func _physics_process(delta: float) -> void:
 		if dist < 32.0 and attack_cooldown <= 0.0:
 			attack_cooldown = 0.7
 			_play("attack")
+			play_attack_sound()
 			if player.has_method("take_damage"):
 				player.take_damage(damage, true, global_position)
 	velocity.x = move_toward(velocity.x, vx, 900.0 * delta)

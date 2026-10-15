@@ -76,6 +76,8 @@ func _ready() -> void:
 	death_delay = 0.8
 	knockback_x = 100.0
 	knockback_y = -80.0
+	attack_sound = "attack_knight"
+	death_sound = "death_knight"
 	super._ready()
 	_build_arc()
 	# The Body node is only a stand-in so the shared script has something to tint.
@@ -154,6 +156,7 @@ func _advance_attack(delta: float, player: Node2D, dir: float, dist: float) -> v
 			if _state_timer <= 0.0:
 				_state = State.ACTIVE
 				_state_timer = ACTIVE_TIME
+				play_attack_sound()
 				# A small lunge sells the swing. It decays with the normal
 				# move_toward above, so the knight cannot chain it into a slide.
 				velocity.x = dir * 90.0

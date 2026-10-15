@@ -10,6 +10,9 @@ class_name EnemyBase
 @export var death_delay := 0.6
 @export var knockback_x := 220.0
 @export var knockback_y := -180.0
+## Logical Sfx names. Subclasses set these in `_ready()`; empty means silent.
+@export var attack_sound := ""
+@export var death_sound := ""
 
 ## How many coins a kill's payout is broken into, and what that payout is.
 ## Splitting it means a kill scatters several coins that each have to be run
@@ -36,6 +39,14 @@ func _get_player() -> Node2D:
 	return _player
 
 
+## Plays the subclass's attack cue, if it has one. Call this wherever the enemy
+## commits to a swing, shot, or lunge.
+func play_attack_sound() -> void:
+	if attack_sound.is_empty():
+		return
+	Sfx.play(attack_sound, -3.0, randf_range(0.95, 1.06))
+
+
 func take_hit(dmg: float, dir: float) -> void:
 	if not alive:
 		return
@@ -60,6 +71,8 @@ func die() -> void:
 	if not alive:
 		return
 	alive = false
+	if not death_sound.is_empty():
+		Sfx.play(death_sound, -3.0, randf_range(0.94, 1.06))
 	GameState.add_exp(exp_reward)
 	if money_reward > 0:
 		GameState.add_money(money_reward)

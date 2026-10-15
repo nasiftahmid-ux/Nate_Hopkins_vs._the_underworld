@@ -33,6 +33,7 @@ var hit_damage := 0.0
 var special_cooldown := 0.0
 var invuln_time := 0.0
 var start_pos := Vector2.ZERO
+var _was_on_floor := true
 const INVULN_DURATION := 0.6
 const KILL_PLANE_Y := 640.0
 
@@ -79,6 +80,7 @@ func _physics_process(delta: float) -> void:
 	_update_animation(input)
 
 	move_and_slide()
+	_detect_landing()
 
 	if global_position.y > KILL_PLANE_Y:
 		if GameState.dev_god_mode:
@@ -172,6 +174,33 @@ func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:
 				attack_anim = "attack_uppercut" if combo_step == 3 else "attack_punch"
 	hitbox.position.x = facing * ATTACK_REACH
 	hit_delay = 0.03
+	_play_attack_sound()
+
+
+## Picks the swing sound from whatever animation the attack selected. The aerial
+## slam reuses the jump animation and stays silent; its impact is covered by the
+## landing sound instead.
+func _play_attack_sound() -> void:
+	var sound := ""
+	match attack_anim:
+		"attack_punch":
+			sound = "punch"
+		"attack_kick":
+			sound = "kick"
+		"attack_uppercut":
+			sound = "uppercut"
+	if sound.is_empty():
+		return
+	Sfx.play(sound, -3.0, randf_range(0.95, 1.08))
+
+
+## Fires a landing cue on the airborne -> grounded edge, so jumps, drops and the
+## aerial slam all read as a touch down.
+func _detect_landing() -> void:
+	var on_floor := is_on_floor()
+	if on_floor and not _was_on_floor:
+		Sfx.play("land", -4.0, randf_range(0.92, 1.05))
+	_was_on_floor = on_floor
 
 
 ## Applies shop upgrades to a base attack value. `heavy` marks the attacks that

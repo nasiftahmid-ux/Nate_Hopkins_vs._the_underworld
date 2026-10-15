@@ -24,6 +24,8 @@ func _ready() -> void:
 	death_delay = 0.65
 	knockback_x = 200.0
 	knockback_y = -160.0
+	attack_sound = "attack_shooter"
+	death_sound = "death_shooter"
 	super._ready()
 	# The Body node is only a stand-in so the shared script has something to tint.
 	# This enemy draws a sprite instead, so keep it out of sight.
@@ -53,6 +55,7 @@ func _physics_process(delta: float) -> void:
 		if fire_timer <= 0.0 and dist <= FIRE_RANGE:
 			fire_timer = 1.6
 			_play("shoot")
+			play_attack_sound()
 			_fire(player)
 	velocity.x = move_toward(velocity.x, vx, 400.0 * delta)
 	move_and_slide()

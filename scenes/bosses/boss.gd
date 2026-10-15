@@ -865,6 +865,7 @@ func die() -> void:
 		return
 	alive = false
 	invulnerable = true
+	Sfx.play("death_boss", -2.0, randf_range(0.95, 1.02))
 	GameState.add_money(100)
 	GameState.add_exp(200)
 	_clear_hazards()

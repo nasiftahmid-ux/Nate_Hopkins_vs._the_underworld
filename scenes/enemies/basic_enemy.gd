@@ -15,6 +15,8 @@ var attack_cooldown := 0.0
 
 func _ready() -> void:
 	super()
+	attack_sound = "attack_basic"
+	death_sound = "death_basic"
 	# The Base node is only a stand-in so the shared script has something to tint.
 	# This enemy draws a sprite instead, so keep it out of sight.
 	body.visible = false
@@ -45,6 +47,7 @@ func _physics_process(delta: float) -> void:
 		if global_position.distance_to(player.global_position) < 40.0 and attack_cooldown <= 0.0:
 			attack_cooldown = 1.2
 			_play("attack")
+			play_attack_sound()
 			if player.has_method("take_damage"):
 				player.take_damage(damage, true, global_position)
 
