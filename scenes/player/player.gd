@@ -197,7 +197,10 @@ func _play_attack_sound() -> void:
 			sound = "uppercut"
 	if sound.is_empty():
 		return
-	Sfx.play(sound, -3.0, randf_range(0.95, 1.08))
+	var vol := -3.0
+	if sound == "uppercut":
+		vol = -5.0
+	Sfx.play(sound, vol, randf_range(0.95, 1.08))
 
 
 ## Fires a landing cue on the airborne -> grounded edge, so jumps, drops and the
