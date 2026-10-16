@@ -32,6 +32,10 @@ const STUN_DURATION := 1.0
 ## Seconds between footsteps while walking. Matches Nate's cadence exactly, so
 ## every walker in the game paces the same way.
 const STEP_INTERVAL := 0.3
+## Y below which an enemy that fell out of the level is removed. A fall counts
+## as a kill for clearing the stage, but pays nothing: the coins would drop into
+## the void with the enemy.
+const KILL_PLANE_Y := 640.0
 
 var hp: float
 var alive := true
@@ -127,6 +131,27 @@ func _reset_color() -> void:
 
 func _base_color() -> Color:
 	return Color(0.85, 0.2, 0.25, 1)
+
+
+## Watches for the enemy being knocked or shoved off the bottom of the level.
+## Runs on every enemy every frame, but the check is a single float compare, and
+## no subclass defines `_process`, so nothing here is overridden.
+func _process(_delta: float) -> void:
+	if alive and global_position.y > KILL_PLANE_Y:
+		_fall_out()
+
+
+## Removes an enemy that fell out of the level. It counts as cleared (the door
+## checks `alive`), but pays no exp or coins and plays no death sound: the player
+## never saw it land, and any payout would scatter into the void.
+func _fall_out() -> void:
+	if not alive:
+		return
+	alive = false
+	collision_layer = 0
+	collision_mask = 0
+	velocity = Vector2.ZERO
+	queue_free()
 
 
 func die() -> void:
