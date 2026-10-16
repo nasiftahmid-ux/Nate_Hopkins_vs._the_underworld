@@ -60,7 +60,7 @@ func _physics_process(delta: float) -> void:
 			_play("attack")
 			play_attack_sound()
 			if player.has_method("take_damage"):
-				player.take_damage(damage, true, global_position)
+				player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 	velocity.x = move_toward(velocity.x, vx, 900.0 * delta)
 	move_and_slide()
 	if dodging and dodge_time_left <= 0.0:

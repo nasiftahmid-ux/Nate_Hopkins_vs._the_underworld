@@ -10,7 +10,7 @@ const GRAVITY := 1600.0
 const MELEE_MOVE_RANGE := 56.0
 const MELEE_REACH := 76.0
 const SLAM_RADIUS := 130.0
-const TEAR_SCENE := preload("res://scenes/bosses/boss_tear.tscn")
+const BULLET_SCENE := preload("res://scenes/bosses/boss_tear.tscn")
 const SPIKE_SCENE := preload("res://scenes/bosses/boss_spike.tscn")
 const PHANTOM_SCRIPT := preload("res://scenes/bosses/boss_phantom.gd")
 
@@ -28,6 +28,9 @@ const DEATH_RATIO := 0.01
 const SECOND_WIND_RATIO := 0.12
 const SECOND_WIND_HEAL := 0.25
 const VULNERABLE_MULT := 1.8
+## Reaction window for blocking a melee: Q must be pressed within this many
+## seconds of the hit landing for the player's block to count.
+const PARRY_WINDOW := 0.5
 
 const HP_BASE := 900.0
 const HP_PER_EX := 500.0
@@ -60,6 +63,8 @@ var phase := 1
 var invulnerable := false
 var second_wind_used := false
 var vulnerable_time := 0.0
+## Counts down after the player parries a hit; blocks new attacks until 0.
+var block_wait := 0.0
 var chain_pending := false
 var chain_count := 0
 var base_name := "THE ONE YOU HURT"
@@ -151,6 +156,7 @@ func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
 	teleport_cooldown = maxf(teleport_cooldown - delta, 0.0)
 	vulnerable_time = maxf(vulnerable_time - delta, 0.0)
+	block_wait = maxf(block_wait - delta, 0.0)
 	var player := _get_player()
 
 	if not is_on_floor() and body.visible and not (state in NO_GRAVITY):
@@ -224,7 +230,7 @@ func _state_chase(delta: float, player: Node2D) -> void:
 		if absf(player.global_position.x - global_position.x) > MELEE_MOVE_RANGE:
 			vx = dir * chase_speed
 	velocity.x = move_toward(velocity.x, vx, 400.0 * delta)
-	if attack_cooldown <= 0.0 and player:
+	if attack_cooldown <= 0.0 and block_wait <= 0.0 and player:
 		_choose_attack(dist)
 
 
@@ -300,7 +306,7 @@ func _state_melee(player: Node2D) -> void:
 		if not melee_done:
 			melee_done = true
 			if player and _player_in_melee_reach(player):
-				player.take_damage(damage, false, global_position)
+				player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 	else:
 		_end_attack(1.1)
 
@@ -344,7 +350,7 @@ func _state_slam_land(player: Node2D) -> void:
 			_shake(0.38, Vector2.DOWN)
 			if player and absf(player.global_position.x - global_position.x) < SLAM_RADIUS \
 				and absf(player.global_position.y - global_position.y) < 130.0:
-				player.take_damage(damage, false, global_position)
+				player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 	else:
 		_end_attack(1.2)
 
@@ -373,7 +379,7 @@ func _state_charge(_delta: float, player: Node2D) -> void:
 	if player and absf(player.global_position.x - global_position.x) < 42.0 \
 		and absf(player.global_position.y - global_position.y) < 120.0 and not charge_hit:
 		charge_hit = true
-		player.take_damage(damage, false, global_position)
+		player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 	if state_time > 0.8 or is_on_wall():
 		_end_attack(1.0)
 
@@ -471,7 +477,7 @@ func _state_lunge(delta: float, player: Node2D) -> void:
 		and absf(player.global_position.x - global_position.x) < 62.0 \
 		and absf(player.global_position.y - global_position.y) < 130.0:
 		lunge_hits += 1
-		player.take_damage(damage, false, global_position)
+		player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 	if state_time > 0.45 or is_on_wall():
 		velocity.x = 0.0
 		_end_attack(0.9)
@@ -504,6 +510,7 @@ func _spawn_spike_field(player: Node2D) -> void:
 		var spike := SPIKE_SCENE.instantiate()
 		spike.global_position = Vector2(x, global_position.y)
 		spike.damage = damage
+		spike.source = self
 		spike.delay = 0.6 + absf(i - (count - 1) * 0.5) * 0.05
 		spike.modulate = body.color
 		get_tree().current_scene.add_child(spike)
@@ -525,7 +532,7 @@ func _state_barrage(delta: float, player: Node2D) -> void:
 		if player:
 			var origin := global_position + Vector2(0, -60)
 			var aim := (player.global_position - origin).normalized()
-			_spawn_tear(origin, aim.rotated(randf_range(-0.12, 0.12)) * 300.0, damage * 0.45)
+			_spawn_bullet(origin, aim.rotated(randf_range(-0.12, 0.12)) * 300.0, damage * 0.45)
 	if state_time > 1.05:
 		_end_attack(0.9)
 
@@ -554,7 +561,7 @@ func _state_spiral(delta: float, player: Node2D) -> void:
 		var to_player := Vector2.from_angle((player.global_position - origin).angle()) if player else Vector2.UP
 		for arm: int in [0, 1]:
 			var ang := spiral_angle + float(arm) * PI + to_player.angle()
-			_spawn_tear(origin, Vector2.from_angle(ang) * 190.0, damage * 0.4)
+			_spawn_bullet(origin, Vector2.from_angle(ang) * 190.0, damage * 0.4)
 	if state_time > 2.1:
 		velocity.x = 0.0
 		vulnerable_time = 0.9
@@ -587,8 +594,8 @@ func _state_execute(delta: float, player: Node2D) -> void:
 	if player and not execute_hit and absf(player.global_position.x - execute_x) < 130.0 \
 		and absf(player.global_position.y - global_position.y) < 150.0:
 		execute_hit = true
-		player.take_damage(damage * 1.7, false, global_position)
-		_burst_tears(10, 260.0)
+		player.take_damage(damage * 1.7, true, global_position, PARRY_WINDOW, self)
+		_burst_bullets(10, 260.0)
 	if absf(global_position.x - execute_x) < 24.0 or state_time > 1.2 or is_on_wall():
 		velocity.x = 0.0
 		vulnerable_time = 1.0
@@ -626,7 +633,7 @@ func _state_shift(_delta: float) -> void:
 	if state_time < 1.3:
 		return
 	invulnerable = false
-	_burst_tears(12 + phase * 2, 300.0)
+	_burst_bullets(12 + phase * 2, 300.0)
 	_shake(0.55)
 	_end_attack(0.6)
 
@@ -687,27 +694,27 @@ func _fire_spit(player: Node2D) -> void:
 		var base_deg := rad_to_deg((player.global_position - global_position).angle())
 		for i in range(0, shots, 2):
 			var dir := Vector2.from_angle(deg_to_rad(base_deg + i * 16.0 - float(shots / 2) * 16.0))
-			_spawn_tear(origin, dir * 235.0, 8.0)
+			_spawn_bullet(origin, dir * 235.0, 8.0)
 	else:
 		var to_player := (player.global_position - global_position).normalized()
-		_spawn_tear(origin, to_player * 255.0, 8.0)
-		_spawn_tear(origin + Vector2(0, -14), to_player.rotated(0.22) * 235.0, 8.0)
-		_spawn_tear(origin + Vector2(0, -14), to_player.rotated(-0.22) * 235.0, 8.0)
+		_spawn_bullet(origin, to_player * 255.0, 8.0)
+		_spawn_bullet(origin + Vector2(0, -14), to_player.rotated(0.22) * 235.0, 8.0)
+		_spawn_bullet(origin + Vector2(0, -14), to_player.rotated(-0.22) * 235.0, 8.0)
 
 
-func _spawn_tear(at: Vector2, dir: Vector2, dmg: float) -> void:
-	var tear := TEAR_SCENE.instantiate()
-	tear.global_position = at
-	tear.vel = dir
-	tear.damage = dmg
-	get_tree().current_scene.add_child(tear)
+func _spawn_bullet(at: Vector2, dir: Vector2, dmg: float) -> void:
+	var bullet := BULLET_SCENE.instantiate()
+	bullet.global_position = at
+	bullet.vel = dir
+	bullet.damage = dmg
+	get_tree().current_scene.add_child(bullet)
 
 
-func _burst_tears(count: int, speed: float) -> void:
+func _burst_bullets(count: int, speed: float) -> void:
 	var origin := global_position + Vector2(0, -60)
 	for i in range(count):
 		var ang := TAU * float(i) / float(count) + randf_range(-0.1, 0.1)
-		_spawn_tear(origin, Vector2.from_angle(ang) * speed, damage * 0.35)
+		_spawn_bullet(origin, Vector2.from_angle(ang) * speed, damage * 0.35)
 
 
 func _do_rain() -> void:
@@ -731,13 +738,13 @@ func _do_rain() -> void:
 	)
 	for i in range(count):
 		var x := randf_range(ARENA_LEFT, ARENA_RIGHT)
-		var tear := TEAR_SCENE.instantiate()
-		tear.global_position = Vector2(x, global_position.y - 560.0)
-		tear.vel = Vector2(0, 40)
-		tear.damage = 7.0
-		tear.accelerates = true
-		tear.max_speed = 330.0 + 60.0 * float(phase - 1)
-		get_tree().current_scene.add_child(tear)
+		var bullet := BULLET_SCENE.instantiate()
+		bullet.global_position = Vector2(x, global_position.y - 560.0)
+		bullet.vel = Vector2(0, 40)
+		bullet.damage = 7.0
+		bullet.accelerates = true
+		bullet.max_speed = 330.0 + 60.0 * float(phase - 1)
+		get_tree().current_scene.add_child(bullet)
 
 
 func _spawn_shockwave() -> void:
@@ -799,6 +806,12 @@ func _clear_hazards() -> void:
 			hazard.queue_free()
 
 
+## Called by the player when one of this boss's parryable hits is blocked.
+## Stalls the next attack so a successful parry buys the player a beat.
+func on_blocked() -> void:
+	block_wait = 1.5
+
+
 func take_hit(dmg: float, dir: float) -> void:
 	if not alive or invulnerable:
 		return
@@ -823,7 +836,7 @@ func _check_second_wind() -> void:
 	chase_speed += 26.0
 	_update_names()
 	_set_title()
-	_burst_tears(16, 320.0)
+	_burst_bullets(16, 320.0)
 	_shake(0.68)
 	invulnerable = true
 	set_state(State.SHIFT)

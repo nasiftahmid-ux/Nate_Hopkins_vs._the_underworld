@@ -1,9 +1,13 @@
 extends Area2D
 
+const PARRY_WINDOW := 0.5
+
 var delay := 0.65
 var damage := 14.0
 var width := 52.0
 var erupted := false
+## The boss that spawned this spike, so a blocked spike can stall that boss.
+var source: Node = null
 
 @onready var mark: ColorRect = $Mark
 @onready var pillar: ColorRect = $Pillar
@@ -34,7 +38,7 @@ func _erupt() -> void:
 	mark.visible = false
 	var player := get_tree().get_first_node_in_group("player")
 	if player and _overlaps(player):
-		player.take_damage(damage, false, global_position)
+		player.take_damage(damage, true, global_position, PARRY_WINDOW, source)
 
 
 func _on_body_entered(body: Node2D) -> void:
@@ -42,7 +46,7 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if _overlaps(body):
 		erupted = false
-		body.take_damage(damage, false, global_position)
+		body.take_damage(damage, true, global_position, PARRY_WINDOW, source)
 
 
 func _overlaps(target: Node2D) -> bool:

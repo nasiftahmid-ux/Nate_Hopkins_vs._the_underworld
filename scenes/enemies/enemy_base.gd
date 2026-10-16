@@ -20,6 +20,13 @@ class_name EnemyBase
 const COIN_DROP := 5
 const COIN_SPLIT := 3
 
+## Reaction window for a timed parry: the player's block only counts if Q was
+## pressed within this many seconds of the hit landing.
+const PARRY_WINDOW := 0.5
+## How long an enemy holds off attacking after the player parries it, so a
+## successful block actually buys breathing room.
+const BLOCK_RECOVERY := 1.5
+
 var hp: float
 var alive := true
 
@@ -37,6 +44,14 @@ func _get_player() -> Node2D:
 	if not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player")
 	return _player
+
+
+## Called by the player when this enemy's hit is parried. Pushes any pending
+## attack back so the block is rewarded with a pause. Enemies that gate on a
+## different timer (e.g. a ranged fire timer) can override this.
+func on_blocked() -> void:
+	if "attack_cooldown" in self:
+		set("attack_cooldown", maxf(float(get("attack_cooldown")), BLOCK_RECOVERY))
 
 
 ## Plays the subclass's attack cue, if it has one. Call this wherever the enemy

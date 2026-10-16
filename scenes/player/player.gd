@@ -26,6 +26,8 @@ var combo_step := 0
 var combo_timer := 0.0
 var is_attacking := false
 var is_blocking := false
+## Seconds the block has been held continuously; drives the parry window.
+var block_hold := 0.0
 var attack_anim := "attack_punch"
 var attack_left := 0.0
 var hit_delay := 0.0
@@ -77,7 +79,16 @@ func _physics_process(delta: float) -> void:
 		velocity.y += GRAVITY * delta
 
 	var input := Input.get_axis("move_left", "move_right")
-	is_blocking = Input.is_action_pressed("block") and not is_attacking
+	var blocking_now := Input.is_action_pressed("block") and not is_attacking
+	# Restart the parry clock whenever the block is first pressed and only
+	# keep counting while the key stays held, so a fresh Q press can parry.
+	if not blocking_now:
+		block_hold = 0.0
+	elif not is_blocking:
+		block_hold = 0.0
+	else:
+		block_hold += delta
+	is_blocking = blocking_now
 	_process_movement(delta, input)
 	_process_timers(delta)
 	_process_combat(delta)
@@ -274,7 +285,8 @@ func _shake_from_hit(dir: Vector2) -> void:
 
 ## `from_position` is the world position the hit came from; leave it at the
 ## default to fall back to a sideways shake based on facing.
-func take_damage(amount: float, blockable: bool = true, from_position: Vector2 = Vector2.ZERO) -> void:
+func take_damage(amount: float, blockable: bool = true, from_position: Vector2 = Vector2.ZERO,
+		parry_window: float = 0.0, attacker: Node = null) -> void:
 	if invuln_time > 0.0:
 		return
 	# Dev cheat: swallow the hit whole. Returning before `register_damage()`
@@ -285,11 +297,15 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 		GameState.player_health = hp
 		hp_changed.emit(hp, max_hp)
 		return
-	if is_blocking and blockable:
+	if is_blocking and blockable and (parry_window <= 0.0 or block_hold <= parry_window):
 		sprite.modulate = Color(0.7, 0.9, 1.0)
 		invuln_time = 0.25
 		sprite.visible = true
 		get_tree().create_timer(0.12).timeout.connect(reset_color)
+		_show_block_text()
+		# Let the attacker know it was parried so it holds off a beat.
+		if is_instance_valid(attacker) and attacker.has_method("on_blocked"):
+			attacker.on_blocked()
 		return
 	invuln_time = INVULN_DURATION
 	hp = maxf(hp - amount, 0.0)
@@ -308,6 +324,23 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 func reset_color() -> void:
 	if not is_attacking and not is_blocking:
 		sprite.modulate = Color.WHITE
+
+
+## Ticks the tiny "blocked" readout that pops beside Nate on a successful parry.
+func _show_block_text() -> void:
+	var label := Label.new()
+	label.text = "blocked"
+	label.add_theme_font_size_override("font_size", 10)
+	label.add_theme_color_override("font_color", Color(0.75, 0.95, 1.0))
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	label.add_theme_constant_override("outline_size", 3)
+	label.position = Vector2(24, -62)
+	label.z_index = 100
+	add_child(label)
+	var tw := create_tween()
+	tw.tween_property(label, "position:y", -76.0, 0.5)
+	tw.parallel().tween_property(label, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(label.queue_free)
 
 
 ## Pushes the camera away from whatever hit us, so a hit from the right shakes

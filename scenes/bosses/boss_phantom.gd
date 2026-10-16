@@ -1,6 +1,6 @@
 extends Node2D
 
-const TEAR_SCENE := preload("res://scenes/bosses/boss_tear.tscn")
+const BULLET_SCENE := preload("res://scenes/bosses/boss_tear.tscn")
 const COLOR := Color(0.95, 0.3, 0.55)
 const LIFETIME := 5.0
 const FIRE_INTERVAL := 1.35
@@ -62,9 +62,9 @@ func _spit() -> void:
 	if is_instance_valid(_player):
 		dir = (_player.global_position + Vector2(0, -30) - (global_position + Vector2(0, -60))).normalized()
 	dir = dir.rotated(randf_range(-0.25, 0.25))
-	var tear := TEAR_SCENE.instantiate()
-	tear.global_position = global_position + Vector2(0, -60)
-	tear.vel = dir * 150.0
-	tear.damage = fire_damage
-	tear.modulate.a = 0.7
-	get_tree().current_scene.add_child(tear)
+	var bullet := BULLET_SCENE.instantiate()
+	bullet.global_position = global_position + Vector2(0, -60)
+	bullet.vel = dir * 150.0
+	bullet.damage = fire_damage
+	bullet.modulate.a = 0.7
+	get_tree().current_scene.add_child(bullet)

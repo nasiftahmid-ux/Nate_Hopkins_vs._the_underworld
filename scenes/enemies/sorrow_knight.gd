@@ -162,7 +162,7 @@ func _advance_attack(delta: float, player: Node2D, dir: float, dist: float) -> v
 				velocity.x = dir * 90.0
 				if player and is_instance_valid(player) and dist <= ATTACK_RANGE:
 					if player.has_method("take_damage"):
-						player.take_damage(damage, true, global_position)
+						player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 		State.ACTIVE:
 			_state_timer -= delta
 			if _state_timer <= 0.0:
