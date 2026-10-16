@@ -8,6 +8,7 @@ extends Control
 @onready var list: VBoxContainer = $Margin/Rows/Scroll/List
 @onready var leave_button: Button = $Margin/Rows/LeaveButton
 @onready var speech_label: Label = $Margin/Speech
+@onready var _title_label: Label = $Margin/Title
 
 var _buttons := {}
 var _opening := true
@@ -21,6 +22,7 @@ func _ready() -> void:
 	leave_button.pressed.connect(_on_leave)
 	_build_rows()
 	_refresh()
+	_animate_title()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -114,6 +116,20 @@ func _refresh() -> void:
 	if _opening or not leave_button.has_focus():
 		leave_button.grab_focus()
 	_opening = false
+
+
+## A small introductory flourish: the shop title fades in and its letters reveal
+## themselves, giving the phrase "Welcome to Aphrodite's Shop" a little weight.
+func _animate_title() -> void:
+	if not _title_label:
+		return
+	_title_label.modulate.a = 0.0
+	_title_label.visible_ratio = 0.0
+	var tw := create_tween()
+	tw.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tw.tween_property(_title_label, "modulate:a", 1.0, 0.6)
+	tw.parallel().tween_property(_title_label, "visible_ratio", 1.0, 1.0)
+	tw.tween_interval(0.4)
 
 
 func _on_buy(id: String) -> void:
