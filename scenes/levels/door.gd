@@ -95,8 +95,9 @@ func _go() -> void:
 	_done = true
 	set_deferred("monitoring", false)
 	GameState.finish_stage()
-	# Route through Aphrodite's shop. The next scene is stashed in GameState
-	# rather than navigated to directly, and the shop grants the single
-	# purchase this visit allows.
+	# Route through Aphrodite's shop, but by way of the blackout curtain so the
+	# stage ends on the sting. The shop is stashed in GameState rather than
+	# navigated to directly, and grants the single purchase this visit allows.
 	GameState.shop_next_scene = next_scene
-	get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/shop.tscn")
+	GameState.to_blackout("res://scenes/ui/shop.tscn")
+	get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")

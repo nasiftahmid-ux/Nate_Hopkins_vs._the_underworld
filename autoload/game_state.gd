@@ -155,6 +155,10 @@ var defeated_exes := 0
 var shop_ranks := {}
 var purchases_this_visit := 0
 var shop_next_scene := ""
+## Where the blackout curtain hands off once its sting has played. A cleared
+## level queues the shop here and a defeated boss queues its cutscene, so both
+## share one end-of-stage beat.
+var blackout_next_scene := ""
 ## Warcry ranks bought but not yet spent. They convert to `warcry_active` the
 ## next time a stage opens, so the boost lasts exactly one stage.
 var warcry_charges := 0
@@ -442,6 +446,19 @@ func close_stage() -> void:
 		return
 	stage_damage.append(damage_taken)
 	_stage_open = false
+
+
+## Sets the destination the blackout curtain should hand off to, then the caller
+## switches to `scenes/ui/blackout.tscn`. Reading it clears the slot, so a stale
+## destination can never survive into a retry or a fresh run.
+func to_blackout(scene: String) -> void:
+	blackout_next_scene = scene
+
+
+func consume_blackout_scene() -> String:
+	var next := blackout_next_scene
+	blackout_next_scene = ""
+	return next
 
 
 ## Called when a stage is genuinely cleared, as opposed to retried. A retry

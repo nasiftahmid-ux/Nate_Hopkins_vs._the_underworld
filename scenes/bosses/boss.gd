@@ -1011,4 +1011,5 @@ func die() -> void:
 		GameState.rhythm_followup_lines = []
 		GameState.rhythm_followup_scene = "res://scenes/levels/level5.tscn"
 		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
-	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
+	GameState.to_blackout("res://scenes/dialogue/dialogue.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/blackout.tscn")
