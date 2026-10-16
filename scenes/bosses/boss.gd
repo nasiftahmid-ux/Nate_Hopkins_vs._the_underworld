@@ -31,9 +31,9 @@ const VULNERABLE_MULT := 1.8
 
 const HP_BASE := 900.0
 const HP_PER_EX := 500.0
-const PHASE_DAMAGE := [0.0, 0.0, 5.0, 12.0]
+const PHASE_DAMAGE := [0.0, 0.0, 3.0, 8.0]
 const PHASE_CHASE := [0.0, 0.0, 20.0, 48.0]
-const PHASE_COOLDOWN := [1.0, 1.0, 0.82, 0.55]
+const PHASE_COOLDOWN := [1.0, 1.0, 0.92, 0.72]
 const PHASE_CHAIN := [0.0, 0.0, 0.45, 0.7]
 const CHAIN_CAP := [0, 0, 2, 3]
 const NO_GRAVITY := [State.CHARGE, State.EXECUTE, State.TELEPORT, State.SHIFT]
