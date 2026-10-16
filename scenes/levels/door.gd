@@ -96,8 +96,25 @@ func _go() -> void:
 	set_deferred("monitoring", false)
 	GameState.finish_stage()
 	# Route through Aphrodite's shop, but by way of the blackout curtain so the
-	# stage ends on the sting. The shop is stashed in GameState rather than
-	# navigated to directly, and grants the single purchase this visit allows.
+	# stage ends on a "LEVEL X COMPLETED" beat. The shop is stashed in GameState
+	# rather than navigated to directly, and grants the single purchase allowed.
 	GameState.shop_next_scene = next_scene
-	GameState.to_blackout("res://scenes/ui/shop.tscn")
+	var stage := _stage_number()
+	var caption := ("LEVEL %d COMPLETED" % stage) if stage > 0 else ""
+	GameState.to_blackout("res://scenes/ui/shop.tscn", caption)
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
+
+
+## The stage's number, read from the level scene's file name (level3.tscn -> 3),
+## so the caption reads right without every door needing to be configured. The
+## door's `owner` is the level root, which still holds the path when a level is
+## nested inside another scene (as the tests do).
+func _stage_number() -> int:
+	var path := owner.scene_file_path if owner else ""
+	if path.is_empty():
+		path = scene_file_path
+	if path.is_empty():
+		var current := get_tree().current_scene
+		path = current.scene_file_path if current else ""
+	var digits := path.get_file().get_basename().trim_prefix("level")
+	return int(digits) if digits.is_valid_int() else 0

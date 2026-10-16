@@ -159,6 +159,9 @@ var shop_next_scene := ""
 ## level queues the shop here and a defeated boss queues its cutscene, so both
 ## share one end-of-stage beat.
 var blackout_next_scene := ""
+## Optional headline the curtain shows over the black (e.g. "LEVEL 3 COMPLETED").
+## Levels set one; an ending that needs no text leaves it empty.
+var blackout_caption := ""
 ## Warcry ranks bought but not yet spent. They convert to `warcry_active` the
 ## next time a stage opens, so the boost lasts exactly one stage.
 var warcry_charges := 0
@@ -450,9 +453,11 @@ func close_stage() -> void:
 
 ## Sets the destination the blackout curtain should hand off to, then the caller
 ## switches to `scenes/ui/blackout.tscn`. Reading it clears the slot, so a stale
-## destination can never survive into a retry or a fresh run.
-func to_blackout(scene: String) -> void:
+## destination can never survive into a retry or a fresh run. `caption`, if given,
+## is shown over the black before the hand-off.
+func to_blackout(scene: String, caption: String = "") -> void:
 	blackout_next_scene = scene
+	blackout_caption = caption
 
 
 func consume_blackout_scene() -> String:
