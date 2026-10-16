@@ -3,7 +3,7 @@ extends CharacterBody2D
 enum BossKind { BROKEN, SWEETHEART }
 enum State {
 	CHASE, MELEE, SLAM_WINDUP, SLAM_AIR, SLAM_LAND, CHARGE_WINDUP, CHARGE, SPIT, TELEPORT, RAIN,
-	LUNGE_WINDUP, LUNGE, SPIKES, BARRAGE, SPIRAL, EXECUTE_WINDUP, EXECUTE, PHANTOMS, SHIFT,
+	LUNGE_WINDUP, LUNGE, SPIKES, BARRAGE, SPIRAL, EXECUTE_WINDUP, EXECUTE, PHANTOMS, SHIFT, STUN,
 }
 
 const GRAVITY := 1600.0
@@ -31,6 +31,13 @@ const VULNERABLE_MULT := 1.8
 ## Reaction window for blocking a melee: Q must be pressed within this many
 ## seconds of the hit landing for the player's block to count.
 const PARRY_WINDOW := 0.5
+## Landing the player's uppercut staggers the boss for this long, during which
+## every hit it takes is multiplied by STUN_DAMAGE_MULT.
+const STUN_DURATION := 2.0
+const STUN_DAMAGE_MULT := 2.0
+const STUN_COLOR := Color(0.65, 0.8, 1.0)
+## Dizzy spiral drawn over the boss's head while it is staggered.
+const SPIRAL_COLOR := Color(1.0, 0.95, 0.55)
 
 const HP_BASE := 900.0
 const HP_PER_EX := 500.0
@@ -65,6 +72,11 @@ var second_wind_used := false
 var vulnerable_time := 0.0
 ## Counts down after the player parries a hit; blocks new attacks until 0.
 var block_wait := 0.0
+## Counts down while staggered by an uppercut; hits are doubled until it hits 0.
+var stun_time := 0.0
+## Angle of the dizzy spiral above the head while stunned.
+var _spiral_phase := 0.0
+var _spiral_shown := false
 var chain_pending := false
 var chain_count := 0
 var base_name := "THE ONE YOU HURT"
@@ -157,6 +169,7 @@ func _physics_process(delta: float) -> void:
 	teleport_cooldown = maxf(teleport_cooldown - delta, 0.0)
 	vulnerable_time = maxf(vulnerable_time - delta, 0.0)
 	block_wait = maxf(block_wait - delta, 0.0)
+	stun_time = maxf(stun_time - delta, 0.0)
 	var player := _get_player()
 
 	if not is_on_floor() and body.visible and not (state in NO_GRAVITY):
@@ -201,6 +214,8 @@ func _physics_process(delta: float) -> void:
 			_state_phantoms(delta, player)
 		State.SHIFT:
 			_state_shift(delta)
+		State.STUN:
+			_state_stun(delta)
 
 	if player and state in [State.CHASE, State.MELEE, State.CHARGE_WINDUP, State.SPIT, State.RAIN,
 			State.SLAM_WINDUP, State.LUNGE_WINDUP, State.BARRAGE, State.SPIKES, State.EXECUTE_WINDUP]:
@@ -812,10 +827,65 @@ func on_blocked() -> void:
 	block_wait = 1.5
 
 
+## Called by the player when its special (uppercut) connects. Freezes the boss
+## for `duration` seconds; while staggered every hit lands at double damage.
+func on_uppercut(duration: float = STUN_DURATION) -> void:
+	if not alive or invulnerable:
+		return
+	stun_time = maxf(stun_time, duration)
+	body.visible = true
+	body.modulate.a = 1.0
+	velocity.x = 0.0
+	_clear_hazards()
+	set_state(State.STUN)
+
+
+func _state_stun(delta: float) -> void:
+	velocity.x = move_toward(velocity.x, 0.0, 2000.0 * delta)
+	body.color = STUN_COLOR
+	telegraph.visible = false
+	if stun_time <= 0.0:
+		_end_attack(0.5)
+
+
+## Spins the dizzy spiral while staggered, and repaints once when it stops so
+## the spiral is cleared.
+func _process(delta: float) -> void:
+	var shown := stun_time > 0.0
+	if shown:
+		_spiral_phase += delta * 6.0
+	if shown or _spiral_shown:
+		queue_redraw()
+	_spiral_shown = shown
+
+
+## Draws a small rotating spiral (plus orbiting sparks) above the head while
+## the boss is stunned.
+func _draw() -> void:
+	if stun_time <= 0.0:
+		return
+	var center := Vector2(0, -60)
+	var turns := 2.5
+	var steps := 64
+	var max_r := 14.0
+	var pts := PackedVector2Array()
+	for i in range(steps + 1):
+		var t := float(i) / float(steps)
+		var ang := _spiral_phase + t * turns * TAU
+		pts.append(center + Vector2.from_angle(ang) * (max_r * t))
+	draw_polyline(pts, SPIRAL_COLOR, 2.5, true)
+	for k in range(4):
+		var a := _spiral_phase * 1.5 + TAU * float(k) / 4.0
+		draw_circle(center + Vector2.from_angle(a) * (max_r + 5.0), 1.8, SPIRAL_COLOR)
+
+
 func take_hit(dmg: float, dir: float) -> void:
 	if not alive or invulnerable:
 		return
-	var dealt := dmg * (VULNERABLE_MULT if vulnerable_time > 0.0 else 1.0)
+	var mult := VULNERABLE_MULT if vulnerable_time > 0.0 else 1.0
+	if stun_time > 0.0:
+		mult = maxf(mult, STUN_DAMAGE_MULT)
+	var dealt := dmg * mult
 	hp -= dealt
 	velocity.x = dir * 140.0
 	velocity.y = -110.0

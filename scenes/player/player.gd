@@ -29,6 +29,9 @@ var is_blocking := false
 ## Seconds the block has been held continuously; drives the parry window.
 var block_hold := 0.0
 var attack_anim := "attack_punch"
+## True while the in-flight attack is the special (uppercut), so a landed hit
+## can stagger a boss that reacts to uppercuts.
+var attack_special := false
 var attack_left := 0.0
 var hit_delay := 0.0
 var hit_damage := 0.0
@@ -161,6 +164,7 @@ func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:
 		return
 	is_attacking = true
 	attack_left = SPECIAL_DURATION if special else ATTACK_DURATION
+	attack_special = special
 	if special:
 		special_cooldown = GameState.special_cooldown_value()
 		combo_step = 0
@@ -269,6 +273,10 @@ func apply_hit() -> void:
 	for target in hitbox.get_overlapping_bodies():
 		if target.is_in_group("enemy") and target.has_method("take_hit"):
 			target.take_hit(hit_damage, facing)
+			# An uppercut that connects staggers the boss (and only the boss;
+			# regular enemies have no on_uppercut).
+			if attack_special and target.has_method("on_uppercut"):
+				target.on_uppercut()
 			landed = true
 	# Once per swing, not once per target, so a jab that clips three enemies does
 	# not read as a heavy hit.
@@ -322,8 +330,9 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 
 
 func reset_color() -> void:
-	if not is_attacking and not is_blocking:
-		sprite.modulate = Color.WHITE
+	# Clear the hurt/parry flash unconditionally. Gating on is_blocking left Nate
+	# stuck red when a block landed late (badly timed) and he kept holding Q.
+	sprite.modulate = Color.WHITE
 
 
 ## Ticks the tiny "blocked" readout that pops beside Nate on a successful parry.
