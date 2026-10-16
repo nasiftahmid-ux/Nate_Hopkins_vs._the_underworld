@@ -38,6 +38,8 @@ const STUN_DAMAGE_MULT := 2.0
 const STUN_COLOR := Color(0.65, 0.8, 1.0)
 ## Dizzy spiral drawn over the boss's head while it is staggered.
 const SPIRAL_COLOR := Color(1.0, 0.95, 0.55)
+## Footstep cadence, kept identical to Nate's so the boss walks to the same beat.
+const STEP_INTERVAL := 0.3
 
 const HP_BASE := 900.0
 const HP_PER_EX := 500.0
@@ -77,6 +79,8 @@ var stun_time := 0.0
 ## Angle of the dizzy spiral above the head while stunned.
 var _spiral_phase := 0.0
 var _spiral_shown := false
+## Footstep cadence clock, reset whenever the boss is not actually walking.
+var _step_timer := 0.0
 var chain_pending := false
 var chain_count := 0
 var base_name := "THE ONE YOU HURT"
@@ -223,6 +227,7 @@ func _physics_process(delta: float) -> void:
 			body.scale.x = signf(player.global_position.x - global_position.x)
 
 	move_and_slide()
+	_update_footsteps(delta, absf(velocity.x) > 1.0)
 
 	if global_position.y > ARENA_FLOOR - BODY_HALF_HEIGHT + 40.0 or global_position.y < ARENA_TOP:
 		global_position.y = ARENA_FLOOR - BODY_HALF_HEIGHT
@@ -846,6 +851,18 @@ func _state_stun(delta: float) -> void:
 	telegraph.visible = false
 	if stun_time <= 0.0:
 		_end_attack(0.5)
+
+
+## Plays a footstep at Nate's cadence while the boss actually walks along the
+## ground, so a charge or a chase reads with the same pace as the player.
+func _update_footsteps(delta: float, moving: bool) -> void:
+	if not moving or not is_on_floor():
+		_step_timer = 0.0
+		return
+	_step_timer -= delta
+	if _step_timer <= 0.0:
+		Sfx.play("step", -18.0, randf_range(0.94, 1.06))
+		_step_timer = STEP_INTERVAL
 
 
 ## Spins the dizzy spiral while staggered, and repaints once when it stops so

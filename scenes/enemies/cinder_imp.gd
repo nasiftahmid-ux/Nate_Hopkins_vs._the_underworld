@@ -40,6 +40,10 @@ func _physics_process(delta: float) -> void:
 		return
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
+	# Staggered by an uppercut: hold the hurt pose and skip AI and dodging.
+	if _stun_tick(delta):
+		_play("hurt")
+		return
 	attack_cooldown -= delta
 	dodge_cooldown -= delta
 	var player := _get_player()
@@ -63,6 +67,7 @@ func _physics_process(delta: float) -> void:
 				player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
 	velocity.x = move_toward(velocity.x, vx, 900.0 * delta)
 	move_and_slide()
+	_update_footsteps(delta, absf(vx) > 0.0)
 	if dodging and dodge_time_left <= 0.0:
 		dodging = false
 		sprite.modulate = Color.WHITE
@@ -90,6 +95,14 @@ func take_hit(dmg: float, dir: float) -> void:
 	_play("hurt")
 	_flash()
 	super.take_hit(dmg, dir)
+
+
+## A dodging imp is untouchable, so an uppercut that meets it mid-dodge must
+## not stagger it either. `take_hit` already ignores that hit.
+func on_uppercut(duration: float = STUN_DURATION) -> void:
+	if dodging:
+		return
+	super.on_uppercut(duration)
 
 
 func die() -> void:

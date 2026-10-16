@@ -26,9 +26,19 @@ const PARRY_WINDOW := 0.5
 ## How long an enemy holds off attacking after the player parries it, so a
 ## successful block actually buys breathing room.
 const BLOCK_RECOVERY := 1.5
+## How long an enemy is staggered by the player's uppercut. Shorter than the
+## boss's stun: against a regular enemy this is a punish, not a phase.
+const STUN_DURATION := 1.0
+## Seconds between footsteps while walking. Matches Nate's cadence exactly, so
+## every walker in the game paces the same way.
+const STEP_INTERVAL := 0.3
 
 var hp: float
 var alive := true
+## Seconds left in an uppercut stagger; while it runs the enemy skips its AI.
+var stun_time := 0.0
+## Footstep cadence clock, reset whenever the enemy is not actually walking.
+var _step_timer := 0.0
 
 @onready var body: ColorRect = $Body
 
@@ -52,6 +62,43 @@ func _get_player() -> Node2D:
 func on_blocked() -> void:
 	if "attack_cooldown" in self:
 		set("attack_cooldown", maxf(float(get("attack_cooldown")), BLOCK_RECOVERY))
+
+
+## Called by the player when an uppercut connects. Staggers this enemy for
+## `duration` seconds: it stops walking, attacking and dodging, and holds its
+## hurt pose so the window is readable. Already-dead enemies ignore it.
+func on_uppercut(duration: float = STUN_DURATION) -> void:
+	if not alive:
+		return
+	stun_time = maxf(stun_time, duration)
+
+
+## Ticks the stagger clock and holds the enemy in place. Returns true while the
+## enemy is staggered, in which case the caller skips its AI for that frame.
+## Gravity is applied by the caller before this runs, so a staggered enemy
+## still falls out of a jump instead of hanging in the air.
+func _stun_tick(delta: float) -> bool:
+	if stun_time <= 0.0:
+		return false
+	stun_time -= delta
+	# Let any knockback from the hit slide and settle rather than freezing it.
+	velocity.x = move_toward(velocity.x, 0.0, 700.0 * delta)
+	move_and_slide()
+	return true
+
+
+## Plays a footstep at Nate's cadence while the enemy is actually walking on
+## the ground. Call it with the enemy's *intended* movement (the speed its AI
+## asked for), not its velocity, so a knockback from a hit never counts as a
+## step. Silent while airborne, idle or staggered.
+func _update_footsteps(delta: float, moving: bool) -> void:
+	if not moving or not is_on_floor():
+		_step_timer = 0.0
+		return
+	_step_timer -= delta
+	if _step_timer <= 0.0:
+		Sfx.play("step", -18.0, randf_range(0.94, 1.06))
+		_step_timer = STEP_INTERVAL
 
 
 ## Plays the subclass's attack cue, if it has one. Call this wherever the enemy

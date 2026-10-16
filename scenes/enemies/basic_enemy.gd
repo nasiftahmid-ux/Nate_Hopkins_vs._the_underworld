@@ -27,6 +27,10 @@ func _physics_process(delta: float) -> void:
 		return
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
+	# Staggered by an uppercut: hold the hurt pose and skip the AI.
+	if _stun_tick(delta):
+		_play("hurt")
+		return
 	attack_cooldown -= delta
 
 	var player := _get_player()
@@ -53,6 +57,7 @@ func _physics_process(delta: float) -> void:
 
 	velocity.x = move_toward(velocity.x, vx, 500.0 * delta)
 	move_and_slide()
+	_update_footsteps(delta, absf(vx) > 0.0)
 
 	# Don't cut a one-shot short (an attack, a hit reaction, a death).
 	if not _one_shot_playing():

@@ -9,7 +9,7 @@ const MENU_TRACK_LAYER := "res://assets/audio/music/_loop_1673064953929.wav"
 const LEVEL_DEFAULT_TRACK := "res://assets/audio/music/Ludum Dare 30 04.ogg"
 const DEFAULT_VOLUME_DB := -8.0
 ## Stage music sits a little under the menu theme so effects stand out.
-const LEVEL_VOLUME_DB := -12.0
+const LEVEL_VOLUME_DB := -10.0
 
 var _player: AudioStreamPlayer
 var _player_layer: AudioStreamPlayer

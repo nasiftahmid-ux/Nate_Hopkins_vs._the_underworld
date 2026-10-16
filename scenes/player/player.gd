@@ -264,7 +264,7 @@ func _update_footsteps(delta: float, moving: bool) -> void:
 		return
 	_step_timer -= delta
 	if _step_timer <= 0.0:
-		Sfx.play("step", -8.0, randf_range(0.94, 1.06))
+		Sfx.play("step", -13.0, randf_range(0.94, 1.06))
 		_step_timer = STEP_INTERVAL
 
 
@@ -273,8 +273,8 @@ func apply_hit() -> void:
 	for target in hitbox.get_overlapping_bodies():
 		if target.is_in_group("enemy") and target.has_method("take_hit"):
 			target.take_hit(hit_damage, facing)
-			# An uppercut that connects staggers the boss (and only the boss;
-			# regular enemies have no on_uppercut).
+			# An uppercut that connects staggers the target. An enemy one-shot by
+			# the hit is already dead, so it never reaches the stagger.
 			if attack_special and target.has_method("on_uppercut"):
 				target.on_uppercut()
 			landed = true

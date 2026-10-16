@@ -110,6 +110,10 @@ func _physics_process(delta: float) -> void:
 		return
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
+	# Staggered by an uppercut: hold the hurt pose and freeze the telegraph.
+	if _stun_tick(delta):
+		_play("hurt")
+		return
 	attack_cooldown -= delta
 	_hit_flash_left = maxf(_hit_flash_left - delta, 0.0)
 
@@ -142,6 +146,7 @@ func _physics_process(delta: float) -> void:
 
 	velocity.x = move_toward(velocity.x, vx, 300.0 * delta)
 	move_and_slide()
+	_update_footsteps(delta, absf(vx) > 0.0)
 	_update_visual()
 
 
@@ -291,6 +296,17 @@ func take_hit(dmg: float, dir: float) -> void:
 	_hold = "hurt"
 	_play("hurt")
 	super.take_hit(dmg, dir)
+
+
+## A staggered knight abandons a committed swing and drops its guard: the
+## telegraph must not resume out of nowhere once the punish window closes.
+func on_uppercut(duration: float = STUN_DURATION) -> void:
+	super.on_uppercut(duration)
+	if not alive:
+		return
+	_state = State.NORMAL
+	_state_timer = 0.0
+	blocking = false
 
 
 func die() -> void:
