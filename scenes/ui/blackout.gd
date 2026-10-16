@@ -16,16 +16,19 @@ const FALLBACK_SCENE := "res://scenes/ui/main.tscn"
 var _sting: AudioStreamPlayer
 
 @onready var _caption: Label = get_node_or_null("Caption")
+@onready var _subtitle: Label = get_node_or_null("Subtitle")
 
 
 func _ready() -> void:
 	_apply_pixel_theme()
 	Music.stop()
 	_start_sting()
-	var caption := GameState.blackout_caption
+	var caption: String = GameState.blackout_caption
+	var subtitle: String = GameState.blackout_subtitle
 	GameState.blackout_caption = ""
+	GameState.blackout_subtitle = ""
 	if not caption.is_empty():
-		_show_caption(caption)
+		_show_caption(caption, subtitle)
 	await get_tree().create_timer(STING_SECONDS).timeout
 	_advance()
 
@@ -58,7 +61,7 @@ func _start_sting() -> void:
 
 ## Reveals the headline the way a slide would appear: it fades up as the letters
 ## type themselves in, holds a beat, then fades back out before the hand-off.
-func _show_caption(text: String) -> void:
+func _show_caption(text: String, subtitle: String = "") -> void:
 	if _caption == null:
 		return
 	_caption.text = text
@@ -70,10 +73,18 @@ func _show_caption(text: String) -> void:
 	tw.parallel().tween_property(_caption, "visible_ratio", 1.0, 1.0)
 	tw.tween_interval(1.2)
 	tw.tween_property(_caption, "modulate:a", 0.0, 0.4)
+	if _subtitle and not subtitle.is_empty():
+		_subtitle.text = subtitle
+		_subtitle.modulate.a = 0.0
+		_subtitle.visible_ratio = 0.0
+		tw.parallel().tween_property(_subtitle, "modulate:a", 1.0, 0.4)
+		tw.parallel().tween_property(_subtitle, "visible_ratio", 1.0, 0.9)
+		tw.tween_interval(0.2)
+		tw.tween_property(_subtitle, "modulate:a", 0.0, 0.4)
 
 
 func _advance() -> void:
 	if _sting:
 		_sting.stop()
-	var next := GameState.consume_blackout_scene()
+	var next: String = GameState.consume_blackout_scene()
 	get_tree().change_scene_to_file(next if not next.is_empty() else FALLBACK_SCENE)

@@ -101,7 +101,8 @@ func _go() -> void:
 	GameState.shop_next_scene = next_scene
 	var stage := _stage_number()
 	var caption := ("LEVEL %d COMPLETED" % stage) if stage > 0 else ""
-	GameState.to_blackout("res://scenes/ui/shop.tscn", caption)
+	var subtitle := "WELCOME TO APHRODITE'S UNDERWORLD SHOP"
+	GameState.to_blackout("res://scenes/ui/shop.tscn", caption, subtitle)
 	get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
 
 
