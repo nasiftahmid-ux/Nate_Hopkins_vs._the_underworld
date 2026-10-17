@@ -282,6 +282,9 @@ func apply_hit() -> void:
 	# not read as a heavy hit.
 	if landed:
 		_shake_from_hit(Vector2(facing, 0.0))
+		# A little extra oomph for the uppercut, to show the vertical impact.
+		if attack_special and camera.has_method("add_trauma"):
+			camera.add_trauma(0.48, Vector2(0.0, 1.0))
 
 
 ## Player offence gets a small shake scaled to the attack's damage, so a light
