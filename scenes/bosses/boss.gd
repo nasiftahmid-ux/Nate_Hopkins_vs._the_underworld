@@ -101,6 +101,7 @@ var charge_hit := false
 var slam_landed := false
 var lunge_hits := 0
 var execute_hit := false
+var execute_thud_pending := false
 var burst_done := false
 var landing_x := 0.0
 var lunge_x := 0.0
@@ -227,6 +228,11 @@ func _physics_process(delta: float) -> void:
 			body.scale.x = signf(player.global_position.x - global_position.x)
 
 	move_and_slide()
+	# The dive exits its state while still in the air, so the thud waits for the
+	# boss to actually touch down instead of firing when the attack ends.
+	if execute_thud_pending and state != State.EXECUTE and is_on_floor():
+		execute_thud_pending = false
+		Sfx.play("boss_thud", -4.0, randf_range(0.95, 1.05))
 	_update_footsteps(delta, absf(velocity.x) > 1.0)
 
 	if global_position.y > ARENA_FLOOR - BODY_HALF_HEIGHT + 40.0 or global_position.y < ARENA_TOP:
@@ -366,6 +372,7 @@ func _state_slam_land(player: Node2D) -> void:
 	if state_time < 0.5:
 		if not slam_landed:
 			slam_landed = true
+			Sfx.play("boss_thud", -4.0, randf_range(0.95, 1.05))
 			_spawn_shockwave()
 			_shake(0.38, Vector2.DOWN)
 			if player and absf(player.global_position.x - global_position.x) < SLAM_RADIUS \
@@ -688,6 +695,7 @@ func set_state(new_state: State) -> void:
 			spit_timer = 0.0
 		State.EXECUTE:
 			execute_hit = false
+			execute_thud_pending = true
 
 
 func _end_attack(cooldown: float) -> void:

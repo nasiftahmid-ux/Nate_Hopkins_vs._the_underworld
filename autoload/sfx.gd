@@ -34,6 +34,8 @@ const SOUND_FILES := {
 	"death_shooter": "death_shooter.wav",
 	"death_knight": "death_knight.wav",
 	"death_boss": "death_boss.wav",
+	# Boss
+	"boss_thud": "boss_thud.mp3",
 	"monster_growl": "monster_growl.mp3",
 }
 
