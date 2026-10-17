@@ -3,7 +3,7 @@ extends AnimatableBody2D
 const CRUSH_DAMAGE_PERCENT := 0.3
 const BLOCK_SEARCH_DIST := 14.0
 
-const MOVE_VOLUME_DB := -10.0
+const MOVE_VOLUME_DB := -20.0
 const MOVE_PITCH_MIN := 0.94
 const MOVE_PITCH_MAX := 1.06
 
