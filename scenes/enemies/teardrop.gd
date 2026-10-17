@@ -18,6 +18,7 @@ func _physics_process(delta: float) -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player") and body.has_method("take_damage"):
+		Sfx.play("tear_splash", -6.0, randf_range(0.96, 1.04))
 		body.take_damage(DAMAGE, false, global_position)
 		queue_free()
 	elif body is StaticBody2D:

@@ -28,6 +28,7 @@ const SOUND_FILES := {
 	"attack_imp": "attack_imp.wav",
 	"attack_shooter": "attack_shooter.wav",
 	"attack_knight": "attack_knight.wav",
+	"tear_splash": "tear_splash.mp3",
 	# Enemy death moans (one per enemy + the boss)
 	"death_basic": "death_basic.wav",
 	"death_imp": "death_imp.wav",
@@ -75,7 +76,8 @@ func play(name: String, volume_db: float = 0.0, pitch: float = 1.0) -> void:
 	player.stream = stream
 	player.volume_db = volume_db + VOLUME_BOOST_DB
 	player.pitch_scale = pitch
-	player.play()
+	if player.stream != null:
+		player.play()
 
 
 ## Returns the cached stream for a name, or null when the file is absent. A
