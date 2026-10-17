@@ -3,6 +3,12 @@ extends AnimatableBody2D
 const CRUSH_DAMAGE_PERCENT := 0.3
 const BLOCK_SEARCH_DIST := 14.0
 
+const MOVE_VOLUME_DB := -10.0
+const MOVE_PITCH_MIN := 0.94
+const MOVE_PITCH_MAX := 1.06
+
+var _move_player: AudioStreamPlayer2D
+
 @export var axis := 0
 @export var travel := 160.0
 @export var speed := 70.0
@@ -25,12 +31,27 @@ func _get_player() -> Node2D:
 
 func _ready() -> void:
 	_start_pos = global_position
+	_move_player = AudioStreamPlayer2D.new()
+	_move_player.bus = &"Master"
+	_move_player.volume_db = MOVE_VOLUME_DB
+	_move_player.attenuation = 1.2
+	add_child(_move_player)
+	var stream := load("res://assets/audio/platform_move.mp3")
+	if stream is AudioStream:
+		if stream is AudioStreamOggVorbis or stream is AudioStreamMP3:
+			stream.loop = true
+		elif stream is AudioStreamWAV:
+			stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+		_move_player.stream = stream
 
 
 func _physics_process(delta: float) -> void:
 	if not _activated:
 		_try_activate()
 		return
+	if not _move_player.playing and is_instance_valid(_move_player) and _move_player.stream != null:
+		_move_player.pitch_scale = randf_range(MOVE_PITCH_MIN, MOVE_PITCH_MAX)
+		_move_player.play()
 	_progress += speed * delta * _dir
 	if _progress >= travel:
 		_progress = travel
@@ -38,6 +59,8 @@ func _physics_process(delta: float) -> void:
 	elif _progress <= 0.0:
 		_progress = 0.0
 		_dir = 1.0
+		if _move_player.playing:
+			_move_player.stop()
 	var offset := Vector2(_progress if axis == 0 else 0.0, _progress if axis == 1 else 0.0)
 	global_position = _start_pos + offset
 	_check_crush()

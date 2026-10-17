@@ -30,6 +30,7 @@ const SOUND_FILES := {
 	"attack_shooter": "attack_shooter.wav",
 	"attack_knight": "attack_knight.wav",
 	"tear_splash": "tear_splash.mp3",
+	"platform_move": "platform_move.mp3",
 	# Enemy death moans (one per enemy + the boss)
 	"death_basic": "death_basic.wav",
 	"death_imp": "death_imp.wav",
