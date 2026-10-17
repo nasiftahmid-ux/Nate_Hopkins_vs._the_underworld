@@ -34,6 +34,7 @@ const SOUND_FILES := {
 	"death_shooter": "death_shooter.wav",
 	"death_knight": "death_knight.wav",
 	"death_boss": "death_boss.wav",
+	"monster_growl": "monster_growl.mp3",
 }
 
 ## How many sounds can overlap before the oldest slot is recycled. Generous, so

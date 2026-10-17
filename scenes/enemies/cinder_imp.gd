@@ -1,38 +1,30 @@
 extends EnemyBase
 # A small fire spirit that closes on the player and hits on contact.
 # It reads the player's attack state and dodges sideways, so its tell is the
-# purple flash plus the dodge burst: purple means "committed, cannot be hit".
+# small hop before slipping out of range.
 
 const GRAVITY := 1600.0
 
-var speed := 175.0
-var damage := 5.0
+var speed := 120.0
+var damage := 10.0
 var attack_cooldown := 0.0
-var dodge_cooldown := 0.0
-var dodge_time_left := 0.0
 var dodging := false
+var dodge_time_left := 0.0
+var dodge_cooldown := 0.0
+var _growl_cooldown := 0.0
 
-const DODGE_DURATION := 0.3
-const DODGE_INVULN := 0.35
-## The invulnerability tell. Purple while dodging, back to normal when it ends.
-const DODGE_TINT := Color(0.6, 0.35, 1.0)
+const DODGE_DURATION := 0.22
+const DODGE_SPEED_MULT := 1.6
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 
 
 func _ready() -> void:
-	max_hp = 16.0
-	exp_reward = 15
-	# Long enough for the 5-frame death animation at 8 fps to finish.
-	death_delay = 0.65
-	knockback_x = 240.0
-	knockback_y = -160.0
+	super()
 	attack_sound = "attack_imp"
 	death_sound = "death_imp"
-	super._ready()
-	# The Body node is only a stand-in so the shared script has something to tint.
-	# This enemy draws a sprite instead, so keep it out of sight.
-	body.visible = false
+	hp = 16.0
+	_growl_cooldown = randf_range(2.0, 5.0)
 
 
 func _physics_process(delta: float) -> void:
@@ -40,17 +32,21 @@ func _physics_process(delta: float) -> void:
 		return
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
-	# Staggered by an uppercut: hold the hurt pose and skip AI and dodging.
+	# Staggered by an uppercut: hold the hurt pose and skip the AI.
 	if _stun_tick(delta):
 		_play("hurt")
 		return
 	attack_cooldown -= delta
 	dodge_cooldown -= delta
+	_growl_cooldown -= delta
 	var player := _get_player()
 	var vx := 0.0
 	if player:
 		var dir := signf(player.global_position.x - global_position.x)
 		var dist := global_position.distance_to(player.global_position)
+		if dist < 160.0 and _growl_cooldown <= 0.0:
+			Sfx.play("monster_growl", -12.0, randf_range(0.92, 1.08))
+			_growl_cooldown = randf_range(3.0, 6.0)
 		if dodging:
 			vx = -dir * speed * 1.6
 		elif absf(player.global_position.x - global_position.x) > 26.0:
@@ -82,27 +78,27 @@ func _start_dodge() -> void:
 	dodge_time_left = DODGE_DURATION
 	dodge_cooldown = 1.6
 	velocity.x = -signf(_get_player().global_position.x - global_position.x) * speed * 1.6
-	velocity.y = -240.0
-	_play("dodge")
-	sprite.modulate = DODGE_TINT
+	sprite.modulate = Color(0.8, 0.9, 1.2)
+
+
+func on_uppercut(duration: float = STUN_DURATION) -> void:
+	if dodging:
+		return
+	super.on_uppercut(duration)
+
+
+func _process(delta: float) -> void:
+	super._process(delta)
+	if dodging:
+		dodge_time_left -= delta
 
 
 func take_hit(dmg: float, dir: float) -> void:
 	if not alive:
 		return
-	if dodging:
-		return
 	_play("hurt")
 	_flash()
 	super.take_hit(dmg, dir)
-
-
-## A dodging imp is untouchable, so an uppercut that meets it mid-dodge must
-## not stagger it either. `take_hit` already ignores that hit.
-func on_uppercut(duration: float = STUN_DURATION) -> void:
-	if dodging:
-		return
-	super.on_uppercut(duration)
 
 
 func die() -> void:
@@ -121,7 +117,7 @@ func _play(anim: String) -> void:
 	sprite.play(anim)
 
 
-## True while a non-looping animation (attack/dodge/hurt/death) is still running.
+## True while a non-looping animation (attack/hurt/death) is still running.
 func _one_shot_playing() -> bool:
 	if not sprite.is_playing():
 		return false

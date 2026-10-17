@@ -8,6 +8,7 @@ var speed := 80.0
 var damage := 8.0
 
 var attack_cooldown := 0.0
+var _growl_cooldown := 0.0
 
 @onready var floor_ahead: RayCast2D = $FloorAhead
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -17,6 +18,7 @@ func _ready() -> void:
 	super()
 	attack_sound = "attack_basic"
 	death_sound = "death_basic"
+	_growl_cooldown = randf_range(2.0, 5.0)
 	# The Base node is only a stand-in so the shared script has something to tint.
 	# This enemy draws a sprite instead, so keep it out of sight.
 	body.visible = false
@@ -32,10 +34,15 @@ func _physics_process(delta: float) -> void:
 		_play("hurt")
 		return
 	attack_cooldown -= delta
+	_growl_cooldown -= delta
 
 	var player := _get_player()
 	var vx := 0.0
 	if player:
+		var dist := global_position.distance_to(player.global_position)
+		if dist < 160.0 and _growl_cooldown <= 0.0:
+			Sfx.play("monster_growl", -12.0, randf_range(0.92, 1.08))
+			_growl_cooldown = randf_range(3.0, 6.0)
 		var dir := signf(player.global_position.x - global_position.x)
 		if absf(player.global_position.x - global_position.x) > 30.0:
 			vx = dir * speed
