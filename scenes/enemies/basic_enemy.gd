@@ -16,7 +16,7 @@ var _growl_cooldown := 0.0
 
 func _ready() -> void:
 	super()
-	attack_sound = "attack_basic"
+	attack_sound = "attack_slash"
 	death_sound = "death_basic"
 	_growl_cooldown = randf_range(2.0, 5.0)
 	# The Base node is only a stand-in so the shared script has something to tint.

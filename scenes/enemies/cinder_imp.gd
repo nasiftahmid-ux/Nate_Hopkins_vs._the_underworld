@@ -21,7 +21,7 @@ const DODGE_SPEED_MULT := 1.6
 
 func _ready() -> void:
 	super()
-	attack_sound = "attack_imp"
+	attack_sound = "attack_slash"
 	death_sound = "death_imp"
 	hp = 16.0
 	_growl_cooldown = randf_range(2.0, 5.0)

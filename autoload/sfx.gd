@@ -25,6 +25,7 @@ const SOUND_FILES := {
 	"step": "step.wav",
 	# Enemy attacks (one per enemy)
 	"attack_basic": "attack_basic.wav",
+	"attack_slash": "attack_slash.mp3",
 	"attack_imp": "attack_imp.wav",
 	"attack_shooter": "attack_shooter.wav",
 	"attack_knight": "attack_knight.wav",
