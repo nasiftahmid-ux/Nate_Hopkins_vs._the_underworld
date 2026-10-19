@@ -13,6 +13,8 @@ class_name EnemyBase
 ## Logical Sfx names. Subclasses set these in `_ready()`; empty means silent.
 @export var attack_sound := ""
 @export var death_sound := ""
+## A peaceful enemy still walks and can be hit, but never attacks the player.
+@export var peaceful := false
 
 ## How many coins a kill's payout is broken into, and what that payout is.
 ## Splitting it means a kill scatters several coins that each have to be run

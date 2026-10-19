@@ -137,7 +137,7 @@ func _physics_process(delta: float) -> void:
 			block_timer -= delta
 			if block_timer <= 0.0:
 				blocking = false
-		elif _can_act() and dist < BLOCK_RANGE and player.get("is_attacking") == true:
+		elif not peaceful and _can_act() and dist < BLOCK_RANGE and player.get("is_attacking") == true:
 			blocking = true
 			block_timer = 0.7
 			velocity.x = 0.0
@@ -178,7 +178,7 @@ func _advance_attack(delta: float, player: Node2D, dir: float, dist: float) -> v
 			if _state_timer <= 0.0:
 				_state = State.NORMAL
 		_:
-			if _can_act() and dist > 0.0 and dist <= ATTACK_RANGE and attack_cooldown <= 0.0:
+			if not peaceful and _can_act() and dist > 0.0 and dist <= ATTACK_RANGE and attack_cooldown <= 0.0:
 				_state = State.WINDUP
 				_state_timer = WINDUP_TIME
 				attack_cooldown = ATTACK_COOLDOWN

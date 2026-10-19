@@ -6,6 +6,10 @@ extends Area2D
 # through Aphrodite's shop.
 
 @export var next_scene := "res://scenes/bosses/boss_arena.tscn"
+## When false the door opens as soon as the player reaches it, no matter how
+## many enemies are still standing. Levels that are about exploration rather than
+## clearing turn this off.
+@export var requires_clear := true
 
 const UNLOCKED_COLOR := Color(1, 1, 1, 1)
 const LOCKED_COLOR := Color(0.45, 0.45, 0.5, 1)
@@ -50,6 +54,8 @@ func _on_body_entered(body: Node2D) -> void:
 ## false the moment it goes down, so it drops out of this count immediately
 ## rather than lingering through its death animation.
 func _enemies_left() -> int:
+	if not requires_clear:
+		return 0
 	var left := 0
 	for e in get_tree().get_nodes_in_group("enemy"):
 		if is_instance_valid(e) and e.get("alive") == true:

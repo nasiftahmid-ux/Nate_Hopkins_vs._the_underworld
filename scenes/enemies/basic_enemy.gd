@@ -55,7 +55,7 @@ func _physics_process(delta: float) -> void:
 		if dir != 0.0:
 			body.scale.x = dir
 			sprite.flip_h = dir < 0.0
-		if global_position.distance_to(player.global_position) < 40.0 and attack_cooldown <= 0.0:
+		if not peaceful and global_position.distance_to(player.global_position) < 40.0 and attack_cooldown <= 0.0:
 			attack_cooldown = 1.2
 			_play("attack")
 			play_attack_sound()

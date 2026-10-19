@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 		elif dist > FIRE_RANGE + 40.0:
 			vx = dir * speed
 		fire_timer -= delta
-		if fire_timer <= 0.0 and dist <= FIRE_RANGE:
+		if not peaceful and fire_timer <= 0.0 and dist <= FIRE_RANGE:
 			fire_timer = 1.6
 			_play("shoot")
 			play_attack_sound()

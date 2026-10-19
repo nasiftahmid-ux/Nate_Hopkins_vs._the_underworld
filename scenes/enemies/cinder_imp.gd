@@ -55,7 +55,7 @@ func _physics_process(delta: float) -> void:
 			sprite.flip_h = dir < 0.0
 		if player.get("is_attacking") == true and dist < 90.0 and dodge_cooldown <= 0.0:
 			_start_dodge()
-		if dist < 32.0 and attack_cooldown <= 0.0:
+		if not peaceful and dist < 32.0 and attack_cooldown <= 0.0:
 			attack_cooldown = 0.7
 			_play("attack")
 			play_attack_sound()
