@@ -41,26 +41,20 @@ func _physics_process(delta: float) -> void:
 	if _stun_tick(delta):
 		_play("hurt")
 		return
-	var player := _get_player()
+	_update_awareness(delta)
 	var vx := 0.0
 	_retreating = false
-	if player:
-		var dx: float = player.global_position.x - global_position.x
-		var dir := signf(dx)
+	if _in_combat():
+		vx = _fight(delta)
+	elif awareness == Awareness.ALERTED:
+		# Sees the player but will not commit: hold position and track them.
+		var dir := _aware_player_dir()
 		if dir != 0.0:
 			sprite.flip_h = dir < 0.0
-		var dist := global_position.distance_to(player.global_position)
-		if absf(dx) < MIN_RANGE:
-			vx = -dir * speed
-			_retreating = true
-		elif dist > FIRE_RANGE + 40.0:
-			vx = dir * speed
-		fire_timer -= delta
-		if not peaceful and fire_timer <= 0.0 and dist <= FIRE_RANGE:
-			fire_timer = 1.6
-			_play("shoot")
-			play_attack_sound()
-			_fire(player)
+	else:
+		vx = _idle_velocity(delta, speed)
+		if absf(vx) > 1.0:
+			sprite.flip_h = vx < 0.0
 	velocity.x = move_toward(velocity.x, vx, 400.0 * delta)
 	move_and_slide()
 	_update_footsteps(delta, absf(vx) > 0.0)
@@ -71,6 +65,35 @@ func _physics_process(delta: float) -> void:
 			_play("retreat")
 		else:
 			_play("run" if absf(velocity.x) > 1.0 else "idle")
+
+
+## Keeps the player at range and lobs teardrops. Returns the desired vx.
+func _fight(delta: float) -> float:
+	var player := _get_player()
+	if player == null or not is_instance_valid(player):
+		return 0.0
+	var dx: float = player.global_position.x - global_position.x
+	var dir := signf(dx)
+	if dir != 0.0:
+		sprite.flip_h = dir < 0.0
+	var dist := global_position.distance_to(player.global_position)
+	var vx := 0.0
+	if absf(dx) < MIN_RANGE:
+		vx = -dir * speed
+		_retreating = true
+	elif dist > FIRE_RANGE + 40.0:
+		vx = dir * speed
+	fire_timer -= delta
+	if fire_timer <= 0.0 and dist <= FIRE_RANGE:
+		fire_timer = 1.6
+		_play("shoot")
+		play_attack_sound()
+		_fire(player)
+	return vx
+
+
+func awareness_facing() -> float:
+	return -1.0 if sprite.flip_h else 1.0
 
 
 func _fire(player: Node2D) -> void:

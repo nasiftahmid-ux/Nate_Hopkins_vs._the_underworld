@@ -114,17 +114,39 @@ func _physics_process(delta: float) -> void:
 	if _stun_tick(delta):
 		_play("hurt")
 		return
+	_update_awareness(delta)
 	attack_cooldown -= delta
 	_hit_flash_left = maxf(_hit_flash_left - delta, 0.0)
 
+	var vx := 0.0
+	if _in_combat():
+		vx = _combat(delta)
+	else:
+		# Out of the fight: drop any commit, then amble or head home.
+		_disengage()
+		if awareness == Awareness.RETURNING:
+			vx = _return_velocity(speed)
+		elif awareness == Awareness.UNAWARE:
+			vx = _idle_velocity(delta, speed)
+		if absf(vx) > 1.0:
+			_facing = 1 if vx > 0.0 else -1
+
+	velocity.x = move_toward(velocity.x, vx, 300.0 * delta)
+	move_and_slide()
+	_update_footsteps(delta, absf(vx) > 0.0)
+	_update_visual()
+
+
+## The full combat read: face the player, guard their swings, close to guard
+## range, and run the windup -> impact -> recovery state machine.
+func _combat(delta: float) -> float:
 	var player := _get_player()
-	var dir := 0.0
-	var dist := 0.0
-	if player and is_instance_valid(player):
-		dir = signf(player.global_position.x - global_position.x)
-		dist = global_position.distance_to(player.global_position)
-		if dir != 0.0:
-			_facing = 1 if dir > 0.0 else -1
+	if player == null or not is_instance_valid(player):
+		return 0.0
+	var dir := signf(player.global_position.x - global_position.x)
+	var dist := global_position.distance_to(player.global_position)
+	if dir != 0.0:
+		_facing = 1 if dir > 0.0 else -1
 
 	_advance_attack(delta, player, dir, dist)
 
@@ -132,22 +154,31 @@ func _physics_process(delta: float) -> void:
 	# knight is planted: letting it slide or start blocking mid-telegraph would
 	# let the tell vanish after the player had already reacted to it.
 	var vx := 0.0
-	if player and is_instance_valid(player):
-		if blocking:
-			block_timer -= delta
-			if block_timer <= 0.0:
-				blocking = false
-		elif not peaceful and _can_act() and dist < BLOCK_RANGE and player.get("is_attacking") == true:
-			blocking = true
-			block_timer = 0.7
-			velocity.x = 0.0
-		if absf(player.global_position.x - global_position.x) > CLOSE_RANGE and not blocking and _can_act():
-			vx = dir * speed
+	if blocking:
+		block_timer -= delta
+		if block_timer <= 0.0:
+			blocking = false
+	elif not peaceful and _can_act() and dist < BLOCK_RANGE and player.get("is_attacking") == true:
+		blocking = true
+		block_timer = 0.7
+		velocity.x = 0.0
+	if absf(player.global_position.x - global_position.x) > CLOSE_RANGE and not blocking and _can_act():
+		vx = dir * speed
+	return vx
 
-	velocity.x = move_toward(velocity.x, vx, 300.0 * delta)
-	move_and_slide()
-	_update_footsteps(delta, absf(vx) > 0.0)
-	_update_visual()
+
+## Abandons a committed swing and drops the guard when there is nothing left to
+## fight, so the telegraph never resumes out of nowhere after the player leaves.
+func _disengage() -> void:
+	blocking = false
+	block_timer = 0.0
+	if _state != State.NORMAL:
+		_state = State.NORMAL
+		_state_timer = 0.0
+
+
+func awareness_facing() -> float:
+	return float(_facing)
 
 
 ## Runs the windup -> impact -> recovery state machine. Damage is applied once,

@@ -36,31 +36,25 @@ func _physics_process(delta: float) -> void:
 	if _stun_tick(delta):
 		_play("hurt")
 		return
+	_update_awareness(delta)
 	attack_cooldown -= delta
 	dodge_cooldown -= delta
 	_growl_cooldown -= delta
-	var player := _get_player()
 	var vx := 0.0
-	if player:
-		var dir := signf(player.global_position.x - global_position.x)
-		var dist := global_position.distance_to(player.global_position)
-		if dist < 160.0 and _growl_cooldown <= 0.0:
-			Sfx.play("monster_growl", -12.0, randf_range(0.92, 1.08))
-			_growl_cooldown = randf_range(3.0, 6.0)
-		if dodging:
-			vx = -dir * speed * 1.6
-		elif absf(player.global_position.x - global_position.x) > 26.0:
-			vx = dir * speed
+	if _in_combat():
+		vx = _chase()
+	elif awareness == Awareness.ALERTED:
+		# Poised and watching, not yet committed: stand and face the player.
+		var dir := _aware_player_dir()
 		if dir != 0.0:
 			sprite.flip_h = dir < 0.0
-		if player.get("is_attacking") == true and dist < 90.0 and dodge_cooldown <= 0.0:
-			_start_dodge()
-		if not peaceful and dist < 32.0 and attack_cooldown <= 0.0:
-			attack_cooldown = 0.7
-			_play("attack")
-			play_attack_sound()
-			if player.has_method("take_damage"):
-				player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
+	else:
+		if dodging:
+			dodging = false
+			sprite.modulate = Color.WHITE
+		vx = _idle_velocity(delta, speed)
+		if absf(vx) > 1.0:
+			sprite.flip_h = vx < 0.0
 	velocity.x = move_toward(velocity.x, vx, 900.0 * delta)
 	move_and_slide()
 	_update_footsteps(delta, absf(vx) > 0.0)
@@ -71,6 +65,38 @@ func _physics_process(delta: float) -> void:
 	# Don't cut a one-shot short (an attack, a dodge, a hit, a death).
 	if not _one_shot_playing():
 		_play("run" if absf(velocity.x) > 1.0 else "idle")
+
+
+## Closes on the player, hits on contact, and side-hops when the player swings.
+func _chase() -> float:
+	var player := _get_player()
+	if player == null or not is_instance_valid(player):
+		return 0.0
+	var dir := signf(player.global_position.x - global_position.x)
+	var dist := global_position.distance_to(player.global_position)
+	if dist < 160.0 and _growl_cooldown <= 0.0:
+		Sfx.play("monster_growl", -12.0, randf_range(0.92, 1.08))
+		_growl_cooldown = randf_range(3.0, 6.0)
+	var vx := 0.0
+	if dodging:
+		vx = -dir * speed * DODGE_SPEED_MULT
+	elif absf(player.global_position.x - global_position.x) > 26.0:
+		vx = dir * speed
+	if dir != 0.0:
+		sprite.flip_h = dir < 0.0
+	if player.get("is_attacking") == true and dist < 90.0 and dodge_cooldown <= 0.0:
+		_start_dodge()
+	if dist < 32.0 and attack_cooldown <= 0.0:
+		attack_cooldown = 0.7
+		_play("attack")
+		play_attack_sound()
+		if player.has_method("take_damage"):
+			player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
+	return vx
+
+
+func awareness_facing() -> float:
+	return -1.0 if sprite.flip_h else 1.0
 
 
 func _start_dodge() -> void:
