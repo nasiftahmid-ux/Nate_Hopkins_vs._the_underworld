@@ -19,12 +19,12 @@ var _current_layer_path := ""
 
 func _ready() -> void:
 	_player = AudioStreamPlayer.new()
-	_player.bus = &"Master"
+	_player.bus = &"Music"
 	_player.volume_db = DEFAULT_VOLUME_DB
 	add_child(_player)
 
 	_player_layer = AudioStreamPlayer.new()
-	_player_layer.bus = &"Master"
+	_player_layer.bus = &"Music"
 	_player_layer.volume_db = DEFAULT_VOLUME_DB
 	add_child(_player_layer)
 

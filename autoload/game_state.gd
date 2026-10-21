@@ -357,33 +357,45 @@ func reset_shop_visit() -> void:
 	save_game()
 
 
-func save_game() -> void:
-	var data := {
-		"player_max_hp": player_max_hp,
-		"money": money,
-		"exp": exp,
-		"level": level,
-		"defeated_exes": defeated_exes,
-		"run_damage_taken": run_damage_taken,
-		"run_deaths": run_deaths,
-		"stage_damage": stage_damage,
-		"shop_ranks": shop_ranks,
-		"warcry_charges": warcry_charges,
-		"warcry_active": warcry_active,
-		"revives_left": revives_left,
-	}
+func _load_save_data() -> Dictionary:
+	if not FileAccess.file_exists(SAVE_PATH):
+		return {}
+	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
+	if not file:
+		return {}
+	var parsed = JSON.parse_string(file.get_as_text())
+	if parsed is Dictionary:
+		return parsed
+	return {}
+
+
+func _save_data(data: Dictionary) -> void:
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
 	if file:
 		file.store_string(JSON.stringify(data))
 
 
+func save_game() -> void:
+	var data := _load_save_data()
+	data["player_max_hp"] = player_max_hp
+	data["money"] = money
+	data["exp"] = exp
+	data["level"] = level
+	data["defeated_exes"] = defeated_exes
+	data["run_damage_taken"] = run_damage_taken
+	data["run_deaths"] = run_deaths
+	data["stage_damage"] = stage_damage
+	data["shop_ranks"] = shop_ranks
+	data["warcry_charges"] = warcry_charges
+	data["warcry_active"] = warcry_active
+	data["revives_left"] = revives_left
+	_save_data(data)
+
+
 func load_game() -> bool:
-	if not FileAccess.file_exists(SAVE_PATH):
+	var parsed := _load_save_data()
+	if parsed.is_empty() and not FileAccess.file_exists(SAVE_PATH):
 		return false
-	var file := FileAccess.open(SAVE_PATH, FileAccess.READ)
-	if not file:
-		return false
-	var parsed = JSON.parse_string(file.get_as_text())
 	if not parsed is Dictionary:
 		return false
 	player_max_hp = parsed.get("player_max_hp", player_max_hp)

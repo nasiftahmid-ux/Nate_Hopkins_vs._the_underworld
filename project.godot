@@ -22,6 +22,7 @@ config/features=PackedStringArray("4.7")
 
 GameState="*res://autoload/game_state.gd"
 InputSetup="*res://autoload/input_setup.gd"
+AudioSettings="*res://autoload/audio_settings.gd"
 Sfx="*res://autoload/sfx.gd"
 Music="*res://autoload/music.gd"
 PauseMenu="*res://scenes/ui/pause_panel.tscn"
