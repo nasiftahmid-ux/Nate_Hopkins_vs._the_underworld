@@ -769,6 +769,7 @@ func _test_boss() -> void:
 	_eq_f("boss starts at base HP", boss.hp, boss.max_hp)
 	_eq_f("boss base HP", boss.max_hp, boss.HP_BASE)
 	_eq_i("boss starts in phase 1", boss.phase, 1)
+	_check("first boss hides the default insult name", boss.base_name == "")
 	_check("boss is not invulnerable at spawn", not boss.invulnerable)
 
 	# HP scales with how many exes are already down.

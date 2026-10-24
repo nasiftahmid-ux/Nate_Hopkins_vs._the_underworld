@@ -83,7 +83,7 @@ var _spiral_shown := false
 var _step_timer := 0.0
 var chain_pending := false
 var chain_count := 0
-var base_name := "THE ONE YOU HURT"
+var base_name := ""
 
 var attack_cooldown := 1.2
 var teleport_cooldown := 0.0
@@ -111,7 +111,7 @@ var charge_speed := 520.0
 var spit_timer := 0.0
 var spiral_angle := 0.0
 
-@onready var body: ColorRect = $Body
+@onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var name_label: Label = $NameLabel
 @onready var telegraph: ColorRect = $Telegraph
 
@@ -126,6 +126,8 @@ var _camera: Camera2D
 func _get_player() -> Node2D:
 	if not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player")
+		if _player == null:
+			_player = get_tree().current_scene.find_child("Player")
 		if _player is PhysicsBody2D:
 			add_collision_exception_with(_player)
 	return _player
@@ -144,7 +146,7 @@ func _ready() -> void:
 	max_hp = hp
 	boss_kind = BossKind.BROKEN if GameState.defeated_exes == 0 else BossKind.SWEETHEART
 	if boss_kind == BossKind.BROKEN:
-		base_name = "THE ONE YOU HURT"
+		base_name = ""
 		base_chase = 72.0
 		base_damage = 17.0
 	else:
@@ -152,6 +154,8 @@ func _ready() -> void:
 		base_chase = 96.0
 		base_damage = 15.0
 	_apply_phase_stats()
+	if sprite:
+		sprite.play("idle")
 	_restore_body_color()
 	var hud := get_parent().get_node_or_null("BossHUD")
 	if hud:
@@ -177,7 +181,7 @@ func _physics_process(delta: float) -> void:
 	stun_time = maxf(stun_time - delta, 0.0)
 	var player := _get_player()
 
-	if not is_on_floor() and body.visible and not (state in NO_GRAVITY):
+	if not is_on_floor() and not (state in NO_GRAVITY):
 		velocity.y += GRAVITY * delta
 
 	match state:
@@ -225,7 +229,9 @@ func _physics_process(delta: float) -> void:
 	if player and state in [State.CHASE, State.MELEE, State.CHARGE_WINDUP, State.SPIT, State.RAIN,
 			State.SLAM_WINDUP, State.LUNGE_WINDUP, State.BARRAGE, State.SPIKES, State.EXECUTE_WINDUP]:
 		if absf(player.global_position.x - global_position.x) > 1.0:
-			body.scale.x = signf(player.global_position.x - global_position.x)
+			var dirf := signf(player.global_position.x - global_position.x)
+			if sprite:
+				sprite.scale.x = dirf * 0.55
 
 	move_and_slide()
 	# The dive exits its state while still in the air, so the thud waits for the
@@ -240,14 +246,25 @@ func _physics_process(delta: float) -> void:
 		velocity.y = 0.0
 	global_position.x = clampf(global_position.x, ARENA_LEFT - 40.0, ARENA_RIGHT + 40.0)
 
+	# Hide the boss attack telegraph entirely during the fight.
+	if telegraph:
+		telegraph.visible = false
+
 	if hit_flash > 0.0:
 		hit_flash = maxf(hit_flash - delta, 0.0)
-		body.color = Color(1.0, 0.95, 0.95)
+		if sprite:
+			sprite.modulate = Color(1.0, 0.95, 0.95)
+		else:
+			pass
 
 
 func _state_chase(delta: float, player: Node2D) -> void:
 	_restore_body_color()
 	telegraph.visible = false
+	if sprite and sprite.animation != "walk" and absf(velocity.x) > 1.0:
+		sprite.play("walk")
+	elif sprite and sprite.animation != "idle" and absf(velocity.x) <= 1.0:
+		sprite.play("idle")
 	var vx := 0.0
 	var dist := INF
 	if player:
@@ -326,8 +343,10 @@ func _choose_attack(dist: float) -> void:
 
 func _state_melee(player: Node2D) -> void:
 	velocity.x = 0.0
+	if sprite and sprite.animation != "melee_shoot_spit":
+		sprite.play("melee_shoot_spit")
 	if state_time < 0.26:
-		body.color = Color(1.0, 1.0, 0.4)
+		pass
 	elif state_time < 0.56:
 		if not melee_done:
 			melee_done = true
@@ -339,7 +358,8 @@ func _state_melee(player: Node2D) -> void:
 
 func _state_slam_windup(delta: float, player: Node2D) -> void:
 	velocity.x = 0.0
-	body.color = Color(1.0, 0.55, 0.2)
+	if sprite and sprite.animation != "slam":
+		sprite.play("slam")
 	telegraph.visible = true
 	telegraph.position = Vector2(-16, -12)
 	telegraph.size = Vector2(32 + state_time * 240.0, 10)
@@ -354,7 +374,8 @@ func _state_slam_windup(delta: float, player: Node2D) -> void:
 
 func _state_slam_air(delta: float) -> void:
 	telegraph.visible = false
-	body.color = Color(1.0, 0.7, 0.4)
+	if sprite and sprite.animation != "slam":
+		sprite.play("slam")
 	var diff := landing_x - global_position.x
 	var target := signf(diff) * 180.0
 	velocity.x = move_toward(velocity.x, target, 600.0 * delta)
@@ -366,7 +387,8 @@ func _state_slam_air(delta: float) -> void:
 
 func _state_slam_land(player: Node2D) -> void:
 	velocity.x = 0.0
-	body.color = Color(1.0, 0.4, 0.2)
+	if sprite and sprite.animation != "slam":
+		sprite.play("slam")
 	if state_time < 0.18:
 		return
 	if state_time < 0.5:
@@ -384,15 +406,15 @@ func _state_slam_land(player: Node2D) -> void:
 
 func _state_charge_windup(delta: float, player: Node2D) -> void:
 	velocity.x = 0.0
-	body.color = Color(1.0, 0.3, 0.8)
+	if sprite and sprite.animation != "lunge":
+		sprite.play("lunge")
 	if player:
 		var dir := signf(player.global_position.x - global_position.x)
 		if dir != 0.0:
 			charge_dir = dir
-			body.scale.x = dir
-	telegraph.visible = true
-	telegraph.position = Vector2(6.0 if charge_dir > 0.0 else -226.0, -12)
-	telegraph.size = Vector2(220.0, 6)
+			if sprite:
+				sprite.scale.x = dir * 0.55
+	telegraph.visible = false
 	if state_time < 0.5 - float(phase - 1) * 0.08:
 		return
 	telegraph.visible = false
@@ -400,9 +422,10 @@ func _state_charge_windup(delta: float, player: Node2D) -> void:
 
 
 func _state_charge(_delta: float, player: Node2D) -> void:
+	if sprite and sprite.animation != "lunge":
+		sprite.play("lunge")
 	velocity.x = charge_dir * charge_speed
 	velocity.y = 0.0
-	body.color = Color(1.0, 0.6, 0.9)
 	if player and absf(player.global_position.x - global_position.x) < 42.0 \
 		and absf(player.global_position.y - global_position.y) < 120.0 and not charge_hit:
 		charge_hit = true
@@ -413,7 +436,8 @@ func _state_charge(_delta: float, player: Node2D) -> void:
 
 func _state_spit(delta: float, player: Node2D) -> void:
 	velocity.x = 0.0
-	body.color = Color(0.9, 0.4, 1.0)
+	if sprite and sprite.animation != "melee_shoot_spit":
+		sprite.play("melee_shoot_spit")
 	if state_time < 0.35:
 		return
 	if not spit_done:
@@ -428,14 +452,17 @@ func _state_spit(delta: float, player: Node2D) -> void:
 func _state_teleport(delta: float, player: Node2D) -> void:
 	velocity.x = 0.0
 	velocity.y = 0.0
+	if sprite and sprite.animation != "idle":
+		sprite.play("idle")
 	if state_time < 0.25:
 		_restore_body_color()
-		body.color = body.color.lightened(0.5)
-		body.modulate.a = 0.4 + 0.6 * fmod(Time.get_ticks_msec() / 120.0, 2.0)
+		if sprite:
+			sprite.modulate.a = 0.4 + 0.6 * fmod(Time.get_ticks_msec() / 120.0, 2.0)
 		return
 	if state_time < 0.3:
-		body.visible = false
-		body.modulate.a = 1.0
+		if sprite:
+			sprite.visible = false
+			sprite.modulate.a = 1.0
 		collision_layer = 0
 		collision_mask = 0
 		return
@@ -448,16 +475,13 @@ func _state_teleport(delta: float, player: Node2D) -> void:
 					side = 1.0
 				global_position = player.global_position + Vector2(side * 250.0, 0.0)
 				global_position.x = clampf(global_position.x, ARENA_LEFT, ARENA_RIGHT)
-				# A teleport writes global_position directly, so it never goes
-				# through move_and_slide and inherits no collision correction.
-				# Copying the player's y therefore buries the boss in the floor
-				# whenever the player is standing. Snap to the floor line instead.
 				global_position.y = ARENA_FLOOR - BODY_HALF_HEIGHT
 			teleport_cooldown = 4.0
 		return
 	collision_layer = 1
 	collision_mask = 1
-	body.visible = true
+	if sprite:
+		sprite.visible = true
 	_restore_body_color()
 	if phase >= 2 and randf() < 0.7:
 		set_state(State.BARRAGE)
@@ -467,7 +491,8 @@ func _state_teleport(delta: float, player: Node2D) -> void:
 
 func _state_rain(_delta: float) -> void:
 	velocity.x = 0.0
-	body.color = Color(0.5, 0.4, 1.0)
+	if sprite and sprite.animation != "barrage":
+		sprite.play("barrage")
 	if state_time < 0.5:
 		return
 	if not rain_done:
@@ -479,17 +504,17 @@ func _state_rain(_delta: float) -> void:
 
 func _state_lunge_windup(delta: float, player: Node2D) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 1400.0 * delta)
-	body.color = Color(1.0, 0.45, 0.25)
+	if sprite and sprite.animation != "lunge":
+		sprite.play("lunge")
 	if state_time < 0.1:
 		if player:
 			charge_dir = signf(player.global_position.x - global_position.x)
 			if charge_dir == 0.0:
 				charge_dir = 1.0
-			body.scale.x = charge_dir
+			if sprite:
+				sprite.scale.x = charge_dir * 0.55
 		lunge_x = global_position.x + charge_dir * 260.0
-		telegraph.visible = true
-		telegraph.position = Vector2(6.0 if charge_dir > 0.0 else -266.0, -30)
-		telegraph.size = Vector2(260.0, 8)
+		telegraph.visible = false
 		return
 	if state_time < 0.42:
 		return
@@ -498,8 +523,9 @@ func _state_lunge_windup(delta: float, player: Node2D) -> void:
 
 
 func _state_lunge(delta: float, player: Node2D) -> void:
+	if sprite and sprite.animation != "lunge":
+		sprite.play("lunge")
 	velocity.x = charge_dir * 960.0
-	body.color = Color(1.0, 0.65, 0.35)
 	if player and lunge_hits < _lunge_hit_count() \
 		and absf(player.global_position.x - global_position.x) < 62.0 \
 		and absf(player.global_position.y - global_position.y) < 130.0:
@@ -516,7 +542,8 @@ func _lunge_hit_count() -> int:
 
 func _state_spikes(delta: float, player: Node2D) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
-	body.color = Color(1.0, 0.8, 0.3)
+	if sprite and sprite.animation != "slam":
+		sprite.play("slam")
 	if state_time < 0.3:
 		return
 	if not burst_done:
@@ -539,13 +566,14 @@ func _spawn_spike_field(player: Node2D) -> void:
 		spike.damage = damage
 		spike.source = self
 		spike.delay = 0.6 + absf(i - (count - 1) * 0.5) * 0.05
-		spike.modulate = body.color
+		spike.modulate = sprite.modulate if sprite else Color.WHITE
 		get_tree().current_scene.add_child(spike)
 	_shake(0.26)
 
 
 func _state_barrage(delta: float, player: Node2D) -> void:
-	body.color = Color(0.95, 0.55, 1.0)
+	if sprite and sprite.animation != "barrage":
+		sprite.play("barrage")
 	if state_time < 0.25:
 		velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
 		return
@@ -566,8 +594,9 @@ func _state_barrage(delta: float, player: Node2D) -> void:
 
 func _state_spiral(delta: float, player: Node2D) -> void:
 	if state_time < 0.4:
+		if sprite and sprite.animation != "barrage":
+			sprite.play("barrage")
 		velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
-		body.color = Color(0.6, 0.35, 1.0)
 		telegraph.visible = true
 		telegraph.position = Vector2(-90, -90)
 		telegraph.size = Vector2(180, 8)
@@ -575,7 +604,8 @@ func _state_spiral(delta: float, player: Node2D) -> void:
 			telegraph.visible = false
 		return
 	telegraph.visible = false
-	body.color = Color(0.75, 0.45, 1.0)
+	if sprite and sprite.animation != "barrage":
+		sprite.play("barrage")
 	var vx := 0.0
 	if player:
 		vx = signf(player.global_position.x - global_position.x) * chase_speed * 0.3
@@ -597,7 +627,8 @@ func _state_spiral(delta: float, player: Node2D) -> void:
 
 func _state_execute_windup(delta: float, player: Node2D) -> void:
 	velocity.x = 0.0
-	body.color = Color(1.0, 0.25, 0.25)
+	if sprite and sprite.animation != "slam":
+		sprite.play("slam")
 	if state_time < 0.12 and player:
 		execute_x = clampf(player.global_position.x, ARENA_LEFT + 60.0, ARENA_RIGHT - 60.0)
 		telegraph.visible = true
@@ -613,7 +644,8 @@ func _state_execute_windup(delta: float, player: Node2D) -> void:
 
 
 func _state_execute(delta: float, player: Node2D) -> void:
-	body.color = Color(1.0, 0.35, 0.3)
+	if sprite and sprite.animation != "slam":
+		sprite.play("slam")
 	velocity.x = signf(execute_x - global_position.x) * 900.0
 	if state_time < 0.18:
 		velocity.y = -760.0
@@ -631,7 +663,8 @@ func _state_execute(delta: float, player: Node2D) -> void:
 
 func _state_phantoms(delta: float, player: Node2D) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 900.0 * delta)
-	body.color = Color(0.55, 0.3, 0.7)
+	if sprite and sprite.animation != "barrage":
+		sprite.play("barrage")
 	if state_time < 0.35:
 		return
 	if not burst_done:
@@ -645,7 +678,7 @@ func _spawn_phantoms() -> void:
 	for i in range(2):
 		var phantom := Node2D.new()
 		phantom.set_script(PHANTOM_SCRIPT)
-		phantom.set("base_color", body.color)
+		phantom.set("base_color", sprite.modulate if sprite else Color.WHITE)
 		phantom.set("fire_damage", damage * 0.4)
 		phantom.global_position = Vector2(clampf(global_position.x + (60.0 + 70.0 * float(i)) * (1.0 if i == 0 else -1.0), ARENA_LEFT, ARENA_RIGHT), global_position.y)
 		get_tree().current_scene.add_child(phantom)
@@ -655,8 +688,8 @@ func _spawn_phantoms() -> void:
 func _state_shift(_delta: float) -> void:
 	velocity.x = 0.0
 	telegraph.visible = false
-	var pulse := absf(sin(state_time * 16.0))
-	body.color = (ENRAGED_COLOR if phase == 3 else _base_color()).lerp(Color(1, 1, 1), pulse * 0.7)
+	if sprite and sprite.animation != "idle":
+		sprite.play("idle")
 	if state_time < 1.3:
 		return
 	invulnerable = false
@@ -671,31 +704,76 @@ func set_state(new_state: State) -> void:
 	match new_state:
 		State.MELEE:
 			melee_done = false
+			if sprite:
+				sprite.play("melee_shoot_spit")
 		State.SPIT:
 			spit_done = false
+			if sprite:
+				sprite.play("melee_shoot_spit")
 		State.RAIN:
 			rain_done = false
+			if sprite:
+				sprite.play("barrage")
 		State.TELEPORT:
 			tele_moved = false
+			if sprite:
+				sprite.visible = true
+				sprite.play("idle")
 		State.CHARGE_WINDUP:
-			charge_dir = -body.scale.x if body.scale.x != 0.0 else 1.0
+			charge_dir = -sprite.scale.x / 0.55 if sprite and sprite.scale.x != 0.0 else 1.0
+			if sprite:
+				sprite.play("lunge")
 		State.CHARGE:
 			charge_hit = false
+			if sprite:
+				sprite.play("lunge")
 			charge_speed = (520.0 if boss_kind == BossKind.BROKEN else 640.0) * (1.0 + 0.18 * float(phase - 1))
 		State.SLAM_WINDUP:
 			slam_landed = false
+			if sprite:
+				sprite.play("slam")
 			telegraph.visible = true
 		State.SLAM_LAND:
 			slam_landed = false
+			if sprite:
+				sprite.play("slam")
+		State.LUNGE_WINDUP:
+			if sprite:
+				sprite.play("lunge")
 		State.LUNGE:
 			lunge_hits = 0
-		State.SPIKES, State.PHANTOMS:
+			if sprite:
+				sprite.play("lunge")
+		State.SPIKES:
 			burst_done = false
-		State.BARRAGE, State.SPIRAL:
+			if sprite:
+				sprite.play("slam")
+		State.PHANTOMS:
+			burst_done = false
+			if sprite:
+				sprite.play("barrage")
+		State.BARRAGE:
 			spit_timer = 0.0
+			if sprite:
+				sprite.play("barrage")
+		State.SPIRAL:
+			spit_timer = 0.0
+			if sprite:
+				sprite.play("barrage")
+		State.EXECUTE_WINDUP:
+			if sprite:
+				sprite.play("slam")
 		State.EXECUTE:
 			execute_hit = false
 			execute_thud_pending = true
+			if sprite:
+				sprite.play("slam")
+		State.STUN:
+			if sprite:
+				sprite.play("slam")
+		State.SHIFT:
+			if sprite:
+				sprite.play("idle")
 
 
 func _end_attack(cooldown: float) -> void:
@@ -706,8 +784,9 @@ func _end_attack(cooldown: float) -> void:
 		attack_cooldown = 0.18
 	else:
 		chain_count = 0
-	body.visible = true
-	body.modulate.a = 1.0
+	if sprite:
+		sprite.visible = true
+		sprite.modulate.a = 1.0
 	collision_layer = 1
 	collision_mask = 1
 	telegraph.visible = false
@@ -798,7 +877,8 @@ func _base_color() -> Color:
 
 
 func _restore_body_color() -> void:
-	body.color = VULNERABLE_COLOR if vulnerable_time > 0.0 else _base_color()
+	if sprite:
+		sprite.modulate = Color.WHITE
 
 
 func _set_title() -> void:
@@ -846,8 +926,9 @@ func on_uppercut(duration: float = STUN_DURATION) -> void:
 	if not alive or invulnerable:
 		return
 	stun_time = maxf(stun_time, duration)
-	body.visible = true
-	body.modulate.a = 1.0
+	if sprite:
+		sprite.visible = true
+		sprite.modulate.a = 1.0
 	velocity.x = 0.0
 	_clear_hazards()
 	set_state(State.STUN)
@@ -855,7 +936,9 @@ func on_uppercut(duration: float = STUN_DURATION) -> void:
 
 func _state_stun(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 2000.0 * delta)
-	body.color = STUN_COLOR
+	if sprite:
+		if sprite.animation != "slam":
+			sprite.play("slam")
 	telegraph.visible = false
 	if stun_time <= 0.0:
 		_end_attack(0.5)
@@ -981,6 +1064,8 @@ func die() -> void:
 	collision_mask = 0
 	velocity = Vector2.ZERO
 	telegraph.visible = false
+	if sprite and sprite.animation != "idle":
+		sprite.play("idle")
 	name_label.text = "DEFEATED"
 	if title_label:
 		title_label.text = "NOW SING FOR YOUR SOUL" if GameState.defeated_exes + 1 >= 2 else "ONE HEART DOWN"
