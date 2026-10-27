@@ -18,6 +18,14 @@ const MIN_RHYTHM_NOTES := 8
 ## exit is the whole point: the run only offers five decisions, so each one has
 ## to hurt a little.
 const SHOP_PURCHASES_PER_VISIT := 1
+## Short roguelite run route: 3 levels, boss 1, finale.
+const RUN_ROUTE: Array[String] = [
+	"res://scenes/levels/level1.tscn",
+	"res://scenes/levels/level2.tscn",
+	"res://scenes/levels/level3.tscn",
+	"res://scenes/bosses/boss_arena.tscn",
+	"res://scenes/bosses/final_rhythm.tscn",
+]
 ## Per-rank effects for the stat upgrades.
 const SHOP_HP_PER_RANK := 10.0
 const SHOP_HEAVY_PER_RANK := 3.0
@@ -149,6 +157,16 @@ var exp := 0
 var level := 1
 var defeated_exes := 0
 
+## Meta / run tracking for the roguelite loop.
+var best_score := 0
+var heartbreak := 0
+var perm_upgrades := {}
+var run_stage_index := 0
+var negative_mode := false
+var negative_visits := 0
+var return_stage := ""
+var clock_seconds := 60.0
+
 ## Aphrodite's Underworld Shop. Purchased ranks are permanent for the run; the
 ## scene holding the shop is `scenes/ui/shop.tscn`, which is entered from the
 ## level door and charges this state.
@@ -192,7 +210,7 @@ func _ready() -> void:
 	_register_dev_actions()
 
 
-func new_game() -> void:
+func start_new_run() -> void:
 	damage_taken = 0.0
 	run_damage_taken = 0.0
 	run_deaths = 0
@@ -206,11 +224,12 @@ func new_game() -> void:
 	shop_ranks.clear()
 	purchases_this_visit = 0
 	shop_next_scene = ""
+	blackout_next_scene = ""
+	blackout_caption = ""
+	blackout_subtitle = ""
 	warcry_charges = 0
 	warcry_active = 0
 	revives_left = 0
-	# Level and shop state must already be reset before deriving max HP, or a
-	# new run inherits the previous run's Vitality bonus.
 	player_max_hp = total_max_hp()
 	player_health = player_max_hp
 	dialogue_lines = []
@@ -223,6 +242,16 @@ func new_game() -> void:
 	rhythm_base_notes = 24
 	rhythm_grade = ""
 	rhythm_streak_limit = 2
+	run_stage_index = 0
+	negative_mode = false
+	negative_visits = 0
+	return_stage = ""
+	clock_seconds = 60.0
+	save_game()
+
+
+func new_game() -> void:
+	start_new_run()
 
 
 func max_hp_for_level(target_level: int) -> float:
@@ -388,7 +417,9 @@ func save_game() -> void:
 	data["shop_ranks"] = shop_ranks
 	data["warcry_charges"] = warcry_charges
 	data["warcry_active"] = warcry_active
-	data["revives_left"] = revives_left
+	data["best_score"] = best_score
+	data["heartbreak"] = heartbreak
+	data["perm_upgrades"] = perm_upgrades
 	_save_data(data)
 
 
@@ -418,6 +449,11 @@ func load_game() -> bool:
 	warcry_charges = int(parsed.get("warcry_charges", 0))
 	warcry_active = int(parsed.get("warcry_active", 0))
 	revives_left = int(parsed.get("revives_left", 0))
+	best_score = int(parsed.get("best_score", 0))
+	heartbreak = int(parsed.get("heartbreak", 0))
+	var pu = parsed.get("perm_upgrades", {})
+	if pu is Dictionary:
+		perm_upgrades = pu
 	# Max HP is recomputed from the level curve plus shop bonuses, so a purchase
 	# survives a reload instead of being clobbered by the authoritative curve.
 	player_max_hp = total_max_hp()

@@ -93,7 +93,7 @@ func _setup_rhythm(phase: int) -> void:
 
 func _on_start() -> void:
 	Music.stop()
-	GameState.new_game()
+	GameState.start_new_run()
 	GameState.dialogue_lines = [
 		{"speaker": "Narrator", "text": "A Friday night. Another party. Another chance for Nate Hopkins to make questionable life decisions."},
 		{"speaker": "Nate", "text": "Hey Tracy, who's that girl? The one by the punch bowl."},
