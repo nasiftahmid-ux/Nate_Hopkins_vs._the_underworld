@@ -371,33 +371,26 @@ func _damage_direction(from_position: Vector2) -> Vector2:
 func die() -> void:
 	if not is_physics_processing():
 		return
-	# Negative world entry: first clock-zero on a regular level.
-	if not GameState.negative_mode and not get_tree().current_scene.scene_file_path.contains("boss") and GameState.negative_visits < GameState.negative_max_visits:
+	var scene_path := get_tree().current_scene.scene_file_path
+	# Negative world entry: clock-zero on a regular level while visits remain.
+	if (not GameState.negative_mode) and (not scene_path.contains("boss")) and GameState.negative_visits < GameState.negative_max_visits:
 		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
 		GameState.enter_negative()
 		get_tree().paused = false
-		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else "res://scenes/levels/level1.tscn")
-		# return_stage should be current scene; but we set before. Fix below.
+		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
 		return
-	# Negative world clock-zero: return to normal world.
+	# Negative world clock-zero (or no visits left / boss): return to normal world, loop.
+	print("Clock 0: returning to normal world (loop)")
+	var target := scene_path
 	if GameState.negative_mode:
-		print("Clock 0 in negative: returning to normal world")
-		var target := GameState.return_stage
+		target = GameState.return_stage
 		GameState.exit_negative(false)
-		GameState.player_max_hp = 60.0
-		GameState.player_health = 25.0
-		GameState.player_damage_mult = 1.0
-		get_tree().paused = false
-		get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
-		return
-	if (get_tree().current_scene.scene_file_path.contains("boss") or GameState.negative_visits >= GameState.negative_max_visits) and not GameState.negative_mode:
-		print("Clock 0: ending run (boss=%s, visits=%d/%d)" % [str(get_tree().current_scene.scene_file_path.contains("boss")), GameState.negative_visits, GameState.negative_max_visits])
-	if GameState.consume_revive():
-		_revive()
-		return
-	GameState.register_death()
-	set_physics_process(false)
-	get_tree().paused = true
+	GameState.player_max_hp = 60.0
+	GameState.player_health = 25.0
+	GameState.player_damage_mult = 1.0
+	get_tree().paused = false
+	get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
+	return
 	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
 	sprite.modulate = Color.WHITE
 	is_attacking = false
