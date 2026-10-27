@@ -320,6 +320,8 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 		return
 	invuln_time = INVULN_DURATION
 	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
+	if GameState.negative_mode:
+		cost *= float(GameState.NEGATIVE_ENEMIES["enemy_damage_mult"])
 	hp = maxf(hp - cost, 0.0)
 	GameState.player_health = hp
 	GameState.register_damage(cost)
@@ -369,8 +371,23 @@ func _damage_direction(from_position: Vector2) -> Vector2:
 func die() -> void:
 	if not is_physics_processing():
 		return
-	# A stored Second Chance intercepts before anything irreversible happens: no
-	# death animation, no death screen, no death recorded for grading.
+	# Negative world entry: first clock-zero on a regular level.
+	if not GameState.negative_mode and not get_tree().current_scene.scene_file_path.contains("boss") and GameState.negative_visits < GameState.negative_max_visits:
+		GameState.enter_negative()
+		get_tree().paused = false
+		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else "res://scenes/levels/level1.tscn")
+		# return_stage should be current scene; but we set before. Fix below.
+		return
+	# Negative world clock-zero: return to normal world.
+	if GameState.negative_mode:
+		var target := GameState.return_stage
+		GameState.exit_negative(false)
+		GameState.player_max_hp = 60.0
+		GameState.player_health = 25.0
+		GameState.player_damage_mult = 1.0
+		get_tree().paused = false
+		get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
+		return
 	if GameState.consume_revive():
 		_revive()
 		return

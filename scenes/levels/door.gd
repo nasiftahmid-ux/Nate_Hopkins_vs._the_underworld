@@ -100,6 +100,19 @@ func _go() -> void:
 		return
 	_done = true
 	set_deferred("monitoring", false)
+	if GameState.negative_mode:
+		var target := GameState.return_stage
+		var new_clock := GameState.player_health + 10.0
+		if new_clock < float(GameState.NEGATIVE_ENEMIES["return_clock_min"]):
+			new_clock = float(GameState.NEGATIVE_ENEMIES["return_clock_min"])
+		GameState.negative_mode = false
+		GameState.player_max_hp = 60.0
+		GameState.player_health = new_clock
+		GameState.player_damage_mult = 1.0
+		GameState.return_stage = ""
+		GameState.clock_running = false
+		get_tree().call_deferred("change_scene_to_file", target if target != "" else "res://scenes/levels/level1.tscn")
+		return
 	GameState.finish_stage()
 	# Route through Aphrodite's shop, but by way of the blackout curtain so the
 	# stage ends on a "LEVEL X COMPLETED" beat. The shop is stashed in GameState

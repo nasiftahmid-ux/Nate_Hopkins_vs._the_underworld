@@ -42,6 +42,17 @@ const CLOCK_CONFIG := {
 	"level_up_bonus": 5.0,
 	"level_up_damage_mult": 0.05,
 }
+const NEGATIVE_ENEMIES := {
+	"negative_start": 30.0,
+	"return_clock_min": 25.0,
+	"player_damage_mult": 2.5,
+	"enemy_damage_mult": 1.5,
+	"kill_time_mult": 0.5,
+	"xp_mult": 2.0,
+	"score_mult": 2.0,
+	"max_visits": 2,
+	"max_alive": 12,
+}
 ## Short roguelite run route: 3 levels, boss 1, finale.
 const RUN_ROUTE: Array[String] = [
 	"res://scenes/levels/level1.tscn",
@@ -192,6 +203,7 @@ var perm_upgrades := {}
 var run_stage_index := 0
 var negative_mode := false
 var negative_visits := 0
+var negative_max_visits := 2
 var return_stage := ""
 var clock_seconds := 60.0
 
@@ -498,17 +510,23 @@ func load_game() -> bool:
 
 
 func add_money(value: int) -> void:
+	if negative_mode:
+		value = int(round(value * float(NEGATIVE_ENEMIES["score_mult"])))
 	money += value
 	save_game()
 	money_changed.emit(money)
 
 
 func add_clock(seconds: float) -> void:
+	if negative_mode:
+		seconds *= float(NEGATIVE_ENEMIES["kill_time_mult"])
 	player_health = minf(player_health + seconds, player_max_hp)
 	GameState.clock_seconds = player_health
 
 
 func add_exp(value: int) -> void:
+	if negative_mode:
+		value = int(round(value * float(NEGATIVE_ENEMIES["xp_mult"])))
 	exp += value
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
@@ -587,8 +605,23 @@ func register_kill() -> void:
 	kills_this_run += 1
 
 
-func register_room_cleared() -> void:
-	rooms_cleared += 1
+func enter_negative() -> void:
+	negative_mode = true
+	var cur := ""
+	if is_inside_tree() and get_tree().current_scene:
+		cur = get_tree().current_scene.scene_file_path
+	return_stage = cur
+	negative_visits += 1
+	player_max_hp = float(NEGATIVE_ENEMIES["negative_start"])
+	player_health = player_max_hp
+	player_damage_mult = float(NEGATIVE_ENEMIES["player_damage_mult"])
+	clock_running = false
+
+
+func exit_negative(clock_zero: bool) -> void:
+	negative_mode = false
+	# caller sets clock
+	player_damage_mult = 1.0
 
 
 ## 1.0 means the whole run was fought without being hit, 0.0 means the player was
