@@ -397,10 +397,7 @@ func die() -> void:
 		GameState.exit_negative(false)
 		GameState.return_stage = ""
 	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-	if was_negative_death:
-		GameState.player_health = float(GameState.CLOCK_CONFIG["return_clock_min"])
-	else:
-		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+	GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
 	GameState.player_damage_mult = GameState.player_negative_damage_bonus
 	get_tree().paused = false
 	GameState.enemy_damage_scale *= 1.25

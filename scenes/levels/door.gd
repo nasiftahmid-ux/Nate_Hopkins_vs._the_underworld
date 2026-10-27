@@ -126,10 +126,7 @@ func _go() -> void:
 			GameState.return_stage = ""
 			GameState.in_boss_fight = true
 			GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-			var nc := maxf(remaining + bonus, float(GameState.CLOCK_CONFIG["return_clock_min"]))
-			if nc > GameState.player_max_hp:
-				nc = GameState.player_max_hp
-			GameState.player_health = nc
+			GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
 			GameState.player_damage_mult = GameState.player_negative_damage_bonus
 			GameState.clock_running = false
 			GameState.enemy_damage_scale *= 1.25
