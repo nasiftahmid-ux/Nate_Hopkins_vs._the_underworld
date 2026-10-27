@@ -18,6 +18,15 @@ const MIN_RHYTHM_NOTES := 8
 ## exit is the whole point: the run only offers five decisions, so each one has
 ## to hurt a little.
 const SHOP_PURCHASES_PER_VISIT := 1
+const SCORE_CONFIG := {
+	"per_kill": 10,
+	"per_room": 500,
+	"boss1": 2000,
+	"grade_flawless": 2000,
+	"grade_clean": 1000,
+	"grade_bloodied": 500,
+	"grade_mangled": 0,
+}
 const CLOCK_CONFIG := {
 	"start": 60.0,
 	"drain_per_sec": 1.0,
@@ -171,6 +180,8 @@ var money := 0
 var exp := 0
 var level := 1
 var defeated_exes := 0
+var kills_this_run := 0
+var rooms_cleared := 0
 var player_damage_mult := 1.0
 var clock_running := true
 
@@ -238,7 +249,8 @@ func start_new_run() -> void:
 	exp = 0
 	level = 1
 	defeated_exes = 0
-	shop_ranks.clear()
+	kills_this_run = 0
+	rooms_cleared = 0
 	purchases_this_visit = 0
 	shop_next_scene = ""
 	blackout_next_scene = ""
@@ -571,6 +583,14 @@ func register_death() -> void:
 	run_deaths += 1
 
 
+func register_kill() -> void:
+	kills_this_run += 1
+
+
+func register_room_cleared() -> void:
+	rooms_cleared += 1
+
+
 ## 1.0 means the whole run was fought without being hit, 0.0 means the player was
 ## carried through it. Measured as total damage against one full health bar per
 ## completed stage, then penalised per death.
@@ -596,6 +616,25 @@ func combat_grade() -> Dictionary:
 		if ratio >= float(rule["min_ratio"]):
 			return rule
 	return GRADE_TABLE[GRADE_TABLE.size() - 1]
+
+
+func calculate_run_score() -> int:
+	var score := money + int(SCORE_CONFIG["per_kill"]) * kills_this_run + int(SCORE_CONFIG["per_room"]) * rooms_cleared
+	if defeated_exes >= 1:
+		score += int(SCORE_CONFIG["boss1"])
+	match grade_id():
+		"FLAWLESS":
+			score += int(SCORE_CONFIG["grade_flawless"])
+		"CLEAN":
+			score += int(SCORE_CONFIG["grade_clean"])
+		"BLOODIED":
+			score += int(SCORE_CONFIG["grade_bloodied"])
+		"MANGLED":
+			score += int(SCORE_CONFIG["grade_mangled"])
+	if score > best_score:
+		best_score = score
+		save_game()
+	return score
 
 
 func grade_id() -> String:
