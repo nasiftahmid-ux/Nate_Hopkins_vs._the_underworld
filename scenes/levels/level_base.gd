@@ -15,6 +15,9 @@ extends Node2D
 var hint_panel: ColorRect
 var hint_label: Label
 
+var _gray_material: ShaderMaterial
+var _gray_count := 0
+
 
 func _ready() -> void:
 	GameState.begin_stage()
@@ -51,7 +54,7 @@ func _spawn_negative_extras() -> void:
 		for k in range(2):
 			if get_tree().get_nodes_in_group("enemy").size() >= int(GameState.NEGATIVE_ENEMIES["max_alive"]):
 				return
-			var scene_path := extras[(idx + k) % extras.size()]
+			var scene_path: String = extras[(idx + k) % extras.size()]
 			var packed := load(scene_path)
 			if packed == null:
 				continue
@@ -61,35 +64,63 @@ func _spawn_negative_extras() -> void:
 			inst.global_position = e.global_position + Vector2(40.0 * (k + 1), 0.0)
 			add_child(inst)
 			idx += 1
-	# Fallback full-screen grayscale shader (tell: used fallback).
-	var layer := CanvasLayer.new()
-	layer.layer = 0
-	var rect := ColorRect.new()
-	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var shader := Shader.new()
-	shader.code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nuniform float strength = 0.9;\nvoid fragment(){ vec4 c = texture(screen_texture, SCREEN_UV); float g = dot(c.rgb, vec3(0.299,0.587,0.114)); COLOR = vec4(mix(c.rgb, vec3(g), strength), c.a); }"
-	var mat := ShaderMaterial.new()
-	mat.shader = shader
-	rect.material = mat
-	layer.add_child(rect)
-	add_child(layer)
-	# vignette
-	var vlayer := CanvasLayer.new()
-	var vrect := ColorRect.new()
-	vrect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vrect.color = Color(0,0,0,0.35)
-	vlayer.add_child(vrect)
-	add_child(vlayer)
 
 
-## Builds the level's enemy director. Created in code rather than pinned into
-## every level scene so all five stages share one populator, and so a level can
-## opt out with `spawn_enemies = false`.
 func _spawn_enemy_director() -> void:
 	var director := preload("res://scenes/levels/enemy_director.gd").new()
 	director.name = "EnemyDirector"
 	director.debug_seed = enemy_seed
 	add_child(director)
+
+
+func _apply_negative_visuals() -> void:
+	if not GameState.NEGATIVE_ENEMIES.get("gray_actors", true):
+		return
+	var shader := Shader.new()
+	shader.code = "shader_type canvas_item;\nvoid fragment() { float g = dot(COLOR.rgb, vec3(0.299, 0.587, 0.114)); COLOR.rgb = vec3(g); }"
+	_gray_material = ShaderMaterial.new()
+	_gray_material.shader = shader
+	_gray_count = 0
+	_apply_gray_recursive(self)
+	get_tree().node_added.connect(_on_node_added)
+	print("NEGATIVE GRAYSCALE: applied to %d nodes" % _gray_count)
+
+
+func _is_ui_node(node: Node) -> bool:
+	if node == null:
+		return false
+	if node.name == "HUD" or node.name == "HintLayer":
+		return true
+	var p := node.get_parent()
+	while p != null:
+		if p.name == "HUD" or p.name == "HintLayer":
+			return true
+		p = p.get_parent()
+	return false
+
+
+func _apply_gray_recursive(node: Node) -> void:
+	if node == null or not is_instance_valid(node):
+		return
+	if _is_ui_node(node):
+		return
+	if node is CanvasItem:
+		# If a node already has its own ShaderMaterial, replace it in negative mode only.
+		node.material = _gray_material
+		_gray_count += 1
+	for child in node.get_children():
+		_apply_gray_recursive(child)
+
+
+func _on_node_added(node: Node) -> void:
+	if not GameState.negative_mode:
+		return
+	if node == null or not is_instance_valid(node):
+		return
+	if _is_ui_node(node):
+		return
+	if node is CanvasItem:
+		node.material = _gray_material
 
 
 func show_hint(text: String) -> void:
@@ -102,20 +133,3 @@ func show_hint(text: String) -> void:
 
 func _on_hint_timer_timeout() -> void:
 	hint_panel.visible = false
-
-
-func _apply_negative_visuals() -> void:
-	var layer := CanvasLayer.new()
-	layer.layer = 0
-	var bbc := BackBufferCopy.new()
-	bbc.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT
-	layer.add_child(bbc)
-	var rect := ColorRect.new()
-	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	var shader := Shader.new()
-	shader.code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nvoid fragment(){ vec4 c = texture(screen_texture, SCREEN_UV); float g = dot(c.rgb, vec3(0.299,0.587,0.114)); COLOR = vec4(vec3(g), c.a); }"
-	var mat := ShaderMaterial.new()
-	mat.shader = shader
-	rect.material = mat
-	layer.add_child(rect)
-	add_child(layer)

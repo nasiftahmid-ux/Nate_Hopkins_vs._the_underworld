@@ -373,6 +373,7 @@ func die() -> void:
 		return
 	# Negative world entry: first clock-zero on a regular level.
 	if not GameState.negative_mode and not get_tree().current_scene.scene_file_path.contains("boss") and GameState.negative_visits < GameState.negative_max_visits:
+		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
 		GameState.enter_negative()
 		get_tree().paused = false
 		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else "res://scenes/levels/level1.tscn")
@@ -380,6 +381,7 @@ func die() -> void:
 		return
 	# Negative world clock-zero: return to normal world.
 	if GameState.negative_mode:
+		print("Clock 0 in negative: returning to normal world")
 		var target := GameState.return_stage
 		GameState.exit_negative(false)
 		GameState.player_max_hp = 60.0
@@ -388,6 +390,8 @@ func die() -> void:
 		get_tree().paused = false
 		get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
 		return
+	if (get_tree().current_scene.scene_file_path.contains("boss") or GameState.negative_visits >= GameState.negative_max_visits) and not GameState.negative_mode:
+		print("Clock 0: ending run (boss=%s, visits=%d/%d)" % [str(get_tree().current_scene.scene_file_path.contains("boss")), GameState.negative_visits, GameState.negative_max_visits])
 	if GameState.consume_revive():
 		_revive()
 		return
