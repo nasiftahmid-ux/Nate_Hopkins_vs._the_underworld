@@ -104,11 +104,11 @@ func _on_hint_timer_timeout() -> void:
 
 
 func _apply_negative_visuals() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 10
 	var bbc := BackBufferCopy.new()
 	bbc.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT
-	add_child(bbc)
-	var layer := CanvasLayer.new()
-	layer.layer = 0
+	layer.add_child(bbc)
 	var rect := ColorRect.new()
 	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	var shader := Shader.new()
@@ -118,9 +118,3 @@ func _apply_negative_visuals() -> void:
 	rect.material = mat
 	layer.add_child(rect)
 	add_child(layer)
-	var vlayer := CanvasLayer.new()
-	var vrect := ColorRect.new()
-	vrect.set_anchors_preset(Control.PRESET_FULL_RECT)
-	vrect.color = Color(0,0,0,0.25)
-	vlayer.add_child(vrect)
-	add_child(vlayer)
