@@ -8,6 +8,7 @@ var idx := 0
 
 
 func _ready() -> void:
+	GameState.clock_running = false
 	show_line()
 
 
@@ -33,6 +34,7 @@ func advance() -> void:
 		if next == "":
 			get_tree().quit()
 		else:
+			GameState.clock_running = true
 			get_tree().change_scene_to_file(next)
 	else:
 		show_line()

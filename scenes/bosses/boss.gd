@@ -693,6 +693,7 @@ func _state_shift(_delta: float) -> void:
 	if state_time < 1.3:
 		return
 	invulnerable = false
+	GameState.clock_running = true
 	_burst_bullets(12 + phase * 2, 300.0)
 	_shake(0.55)
 	_end_attack(0.6)
@@ -1018,6 +1019,7 @@ func _check_second_wind() -> void:
 	_shake(0.68)
 	invulnerable = true
 	set_state(State.SHIFT)
+	GameState.clock_running = false
 
 
 func _check_phase() -> void:
@@ -1042,6 +1044,7 @@ func _apply_phase_stats() -> void:
 
 
 func _begin_shift() -> void:
+	GameState.clock_running = false
 	invulnerable = true
 	vulnerable_time = 0.0
 	chain_pending = false
@@ -1059,6 +1062,9 @@ func die() -> void:
 	Sfx.play("death_boss", -2.0, randf_range(0.95, 1.02))
 	GameState.add_money(100)
 	GameState.add_exp(200)
+	GameState.add_clock(15.0)
+	GameState.enemy_damage_scale *= 1.25
+	GameState.enemy_health_scale *= 1.15
 	_clear_hazards()
 	collision_layer = 0
 	collision_mask = 0

@@ -13,6 +13,8 @@ class_name EnemyBase
 ## Logical Sfx names. Subclasses set these in `_ready()`; empty means silent.
 @export var attack_sound := ""
 @export var death_sound := ""
+## Seconds added to the clock on kill.
+@export var time_reward := 3.0
 ## A peaceful enemy still walks and can be hit, but never attacks the player.
 @export var peaceful := false
 
@@ -95,6 +97,7 @@ var _player: Node2D
 
 
 func _ready() -> void:
+	max_hp *= GameState.enemy_health_scale
 	hp = max_hp
 	add_to_group("enemy")
 	# Idle wherever the level author dropped us unless the director re-homes us.
@@ -214,6 +217,13 @@ func die() -> void:
 	GameState.add_exp(exp_reward)
 	if money_reward > 0:
 		GameState.add_money(money_reward)
+	if GameState.negative_mode:
+		GameState.add_clock(10.0)
+	else:
+		GameState.add_clock(5.0)
+	GameState.register_kill()
+	if GameState.negative_mode:
+		GameState.negative_kills += 1
 	_spawn_coin()
 	collision_layer = 0
 	collision_mask = 0

@@ -18,6 +18,49 @@ const MIN_RHYTHM_NOTES := 8
 ## exit is the whole point: the run only offers five decisions, so each one has
 ## to hurt a little.
 const SHOP_PURCHASES_PER_VISIT := 1
+const SCORE_CONFIG := {
+	"per_kill": 10,
+	"per_room": 500,
+	"boss1": 2000,
+	"grade_flawless": 2000,
+	"grade_clean": 1000,
+	"grade_bloodied": 500,
+	"grade_mangled": 0,
+}
+const CLOCK_CONFIG := {
+	"start": 59.0,
+	"drain_per_sec": 1.0,
+	"light_hit_cost": 5.0,
+	"heavy_hit_cost": 10.0,
+	"boss_hit_cost": 10.0,
+	"kill_basic": 3.0,
+	"kill_cinder": 3.0,
+	"kill_teardrop": 4.0,
+	"kill_sorrow": 6.0,
+	"kill_boss": 15.0,
+	"coin_value": 1.0,
+	"level_up_bonus": 5.0,
+	"level_up_damage_mult": 0.05,
+}
+var NEGATIVE_ENEMIES := {
+	"negative_start": 30.0,
+	"return_clock_min": 25.0,
+	"player_damage_mult": 2.5,
+	"enemy_damage_mult": 1.5,
+	"kill_time_mult": 0.5,
+	"xp_mult": 2.0,
+	"score_mult": 2.0,
+	"max_visits": 2,
+	"max_alive": 12,
+}
+## Short roguelite run route: 3 levels, boss 1, finale.
+const RUN_ROUTE: Array[String] = [
+	"res://scenes/levels/level1.tscn",
+	"res://scenes/levels/level2.tscn",
+	"res://scenes/levels/level3.tscn",
+	"res://scenes/bosses/boss_arena.tscn",
+	"res://scenes/bosses/final_rhythm.tscn",
+]
 ## Per-rank effects for the stat upgrades.
 const SHOP_HP_PER_RANK := 10.0
 const SHOP_HEAVY_PER_RANK := 3.0
@@ -148,6 +191,26 @@ var money := 0
 var exp := 0
 var level := 1
 var defeated_exes := 0
+var kills_this_run := 0
+var rooms_cleared := 0
+var player_damage_mult := 1.0
+var clock_running := true
+
+## Meta / run tracking for the roguelite loop.
+var best_score := 0
+var heartbreak := 0
+var perm_upgrades := {}
+var run_stage_index := 0
+var negative_mode := false
+var negative_visits := 0
+var negative_max_visits := 2
+var enemy_damage_scale := 1.0
+var enemy_health_scale := 1.0
+var negative_kills := 0
+var negative_total := 0
+var player_negative_damage_bonus := 1.0
+var return_stage := ""
+var clock_seconds := 60.0
 
 ## Aphrodite's Underworld Shop. Purchased ranks are permanent for the run; the
 ## scene holding the shop is `scenes/ui/shop.tscn`, which is entered from the
@@ -192,7 +255,7 @@ func _ready() -> void:
 	_register_dev_actions()
 
 
-func new_game() -> void:
+func start_new_run() -> void:
 	damage_taken = 0.0
 	run_damage_taken = 0.0
 	run_deaths = 0
@@ -204,14 +267,17 @@ func new_game() -> void:
 	level = 1
 	defeated_exes = 0
 	shop_ranks.clear()
+	kills_this_run = 0
+	rooms_cleared = 0
 	purchases_this_visit = 0
 	shop_next_scene = ""
+	blackout_next_scene = ""
+	blackout_caption = ""
+	blackout_subtitle = ""
 	warcry_charges = 0
 	warcry_active = 0
 	revives_left = 0
-	# Level and shop state must already be reset before deriving max HP, or a
-	# new run inherits the previous run's Vitality bonus.
-	player_max_hp = total_max_hp()
+	player_max_hp = float(CLOCK_CONFIG["start"]) + 5.0 * float(perm_upgrades.get("clock", 0))
 	player_health = player_max_hp
 	dialogue_lines = []
 	scene_after_dialogue = ""
@@ -223,10 +289,46 @@ func new_game() -> void:
 	rhythm_base_notes = 24
 	rhythm_grade = ""
 	rhythm_streak_limit = 2
+	run_stage_index = 0
+	negative_mode = false
+	negative_visits = 0
+	NEGATIVE_ENEMIES["negative_start"] = 30.0
+	enemy_damage_scale = 1.0
+	enemy_health_scale = 1.0
+	negative_kills = 0
+	negative_total = 0
+	player_negative_damage_bonus = 1.0
+	return_stage = ""
+	clock_seconds = 60.0
+	player_damage_mult = 1.0
+	save_game()
+
+
+func new_game() -> void:
+	start_new_run()
+
+
+func _process(delta: float) -> void:
+	if not clock_running:
+		return
+	if get_tree() != null and get_tree().paused:
+		return
+	if player_health <= 0.0:
+		return
+	player_health = maxf(0.0, player_health - float(CLOCK_CONFIG["drain_per_sec"]) * delta)
+	clock_seconds = player_health
+	if player_health <= 0.0:
+		clock_running = false
+		var player := _dev_player()
+		if player != null:
+			if player.get("hp") != null:
+				player.set("hp", 0.0)
+			if player.has_method("die"):
+				player.die()
 
 
 func max_hp_for_level(target_level: int) -> float:
-	return BASE_MAX_HP + MAX_HP_PER_LEVEL * float(maxi(1, target_level) - 1)
+	return float(CLOCK_CONFIG["start"])
 
 
 ## Max HP from levels plus whatever the shop has granted. Shop HP lives in its
@@ -290,6 +392,31 @@ func consume_revive() -> bool:
 	return true
 
 
+func shop_offerings() -> Array:
+	var ids: Array = []
+	for entry in SHOP_ITEMS:
+		ids.append(str(entry["id"]))
+	# filter
+	var available: Array = []
+	for id in ids:
+		if not shop_item_available(id):
+			continue
+		if id == "heal" and player_health >= player_max_hp - 1.0:
+			continue
+		if id == "revive" and revives_left > 0:
+			continue
+		if id == "cooldown" and shop_rank(id) >= 4:
+			continue
+		available.append(id)
+	# random 3
+	available.shuffle()
+	if available.size() > 3:
+		available = available.slice(0, 3)
+	if available.is_empty():
+		available = ["heal"]
+	return available
+
+
 func shop_item(id: String) -> Dictionary:
 	for entry in SHOP_ITEMS:
 		if str(entry["id"]) == id:
@@ -327,26 +454,25 @@ func buy_shop_item(id: String) -> bool:
 		return false
 	if not shop_item_available(id):
 		return false
-	var cost := shop_price(id)
-	if money < cost:
+	var cost := 0
+	if id != "heal":
+		cost = shop_price(id)
+	if id != "heal" and player_health - cost < 10.0:
 		return false
-
-	money -= cost
+	if id != "heal":
+		player_health -= cost
 	shop_ranks[id] = shop_rank(id) + 1
 	purchases_this_visit += 1
 	match id:
+		"heal":
+			player_health = minf(player_health + 20.0, player_max_hp)
 		"hp":
-			# Grant the extra max HP now so the player sees the bar move, and top
-			# up so the new ceiling is not immediately empty.
-			player_max_hp = total_max_hp()
-			player_health = minf(player_max_hp, player_health + SHOP_HP_PER_RANK)
+			player_max_hp += 10.0
+			player_health = minf(player_health + 10.0, player_max_hp)
 		"warcry":
 			warcry_charges += 1
 		"revive":
 			revives_left += 1
-		"heal":
-			player_health = player_max_hp
-
 	save_game()
 	money_changed.emit(money)
 	return true
@@ -388,7 +514,9 @@ func save_game() -> void:
 	data["shop_ranks"] = shop_ranks
 	data["warcry_charges"] = warcry_charges
 	data["warcry_active"] = warcry_active
-	data["revives_left"] = revives_left
+	data["best_score"] = best_score
+	data["heartbreak"] = heartbreak
+	data["perm_upgrades"] = perm_upgrades
 	_save_data(data)
 
 
@@ -418,6 +546,11 @@ func load_game() -> bool:
 	warcry_charges = int(parsed.get("warcry_charges", 0))
 	warcry_active = int(parsed.get("warcry_active", 0))
 	revives_left = int(parsed.get("revives_left", 0))
+	best_score = int(parsed.get("best_score", 0))
+	heartbreak = int(parsed.get("heartbreak", 0))
+	var pu = parsed.get("perm_upgrades", {})
+	if pu is Dictionary:
+		perm_upgrades = pu
 	# Max HP is recomputed from the level curve plus shop bonuses, so a purchase
 	# survives a reload instead of being clobbered by the authoritative curve.
 	player_max_hp = total_max_hp()
@@ -425,21 +558,29 @@ func load_game() -> bool:
 
 
 func add_money(value: int) -> void:
+	if negative_mode:
+		value = int(round(value * float(NEGATIVE_ENEMIES["score_mult"])))
 	money += value
 	save_game()
 	money_changed.emit(money)
 
 
+func add_clock(seconds: float) -> void:
+	player_health = minf(player_health + seconds, player_max_hp)
+	GameState.clock_seconds = player_health
+
+
 func add_exp(value: int) -> void:
-	exp += maxi(1, int(round(value * xp_multiplier())))
+	if negative_mode:
+		value = int(round(value * float(NEGATIVE_ENEMIES["xp_mult"])))
+	exp += value
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
 		level += 1
-		player_max_hp = total_max_hp()
-		var heal := player_max_hp * level_up_heal_ratio()
-		player_health = minf(player_health + heal, player_max_hp)
+		player_health = minf(player_health + float(CLOCK_CONFIG["level_up_bonus"]), player_max_hp)
+		player_damage_mult += float(CLOCK_CONFIG["level_up_damage_mult"])
 		level_changed.emit(level)
-		level_healed.emit(heal)
+		level_healed.emit(float(CLOCK_CONFIG["level_up_bonus"]))
 	exp_changed.emit(exp)
 	save_game()
 
@@ -506,6 +647,60 @@ func register_death() -> void:
 	run_deaths += 1
 
 
+func register_kill() -> void:
+	kills_this_run += 1
+
+
+func register_room_cleared() -> void:
+	rooms_cleared += 1
+
+
+func buy_perm_upgrade() -> bool:
+	var rank := int(perm_upgrades.get("clock", 0))
+	var price := int(100 * pow(1.6, rank))
+	if heartbreak < price:
+		return false
+	heartbreak -= price
+	perm_upgrades["clock"] = rank + 1
+	save_game()
+	return true
+
+
+func perm_upgrade_price() -> int:
+	var rank := int(perm_upgrades.get("clock", 0))
+	return int(100 * pow(1.6, rank))
+
+
+func payout_heartbreak(won: bool) -> int:
+	var hb := money + 100 * rooms_cleared
+	if defeated_exes >= 1:
+		hb += 150
+	heartbreak += hb
+	save_game()
+	return hb
+
+
+func enter_negative() -> void:
+	negative_mode = true
+	var cur := ""
+	if is_inside_tree() and get_tree().current_scene:
+		cur = get_tree().current_scene.scene_file_path
+	return_stage = cur
+	negative_visits += 1
+	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
+	NEGATIVE_ENEMIES["negative_start"] = ns
+	player_max_hp = ns
+	player_health = player_max_hp
+	player_damage_mult = float(NEGATIVE_ENEMIES["player_damage_mult"])
+	clock_running = false
+
+
+func exit_negative(clock_zero: bool) -> void:
+	negative_mode = false
+	# caller sets clock
+	player_damage_mult = 1.0
+
+
 ## 1.0 means the whole run was fought without being hit, 0.0 means the player was
 ## carried through it. Measured as total damage against one full health bar per
 ## completed stage, then penalised per death.
@@ -531,6 +726,25 @@ func combat_grade() -> Dictionary:
 		if ratio >= float(rule["min_ratio"]):
 			return rule
 	return GRADE_TABLE[GRADE_TABLE.size() - 1]
+
+
+func calculate_run_score() -> int:
+	var score := money + int(SCORE_CONFIG["per_kill"]) * kills_this_run + int(SCORE_CONFIG["per_room"]) * rooms_cleared
+	if defeated_exes >= 1:
+		score += int(SCORE_CONFIG["boss1"])
+	match grade_id():
+		"FLAWLESS":
+			score += int(SCORE_CONFIG["grade_flawless"])
+		"CLEAN":
+			score += int(SCORE_CONFIG["grade_clean"])
+		"BLOODIED":
+			score += int(SCORE_CONFIG["grade_bloodied"])
+		"MANGLED":
+			score += int(SCORE_CONFIG["grade_mangled"])
+	if score > best_score:
+		best_score = score
+		save_game()
+	return score
 
 
 func grade_id() -> String:
@@ -647,6 +861,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed(DEV_CHEAT_ACTION):
 		cheat("health")
+		clock_running = not clock_running
 		get_viewport().set_input_as_handled()
 
 

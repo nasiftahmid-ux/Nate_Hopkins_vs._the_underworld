@@ -15,8 +15,7 @@ var _opening := true
 
 
 func _ready() -> void:
-	# Arm the visit before anything reads it, so the greeting can never describe
-	# a purchase left over from however the player got here.
+	GameState.clock_running = false
 	GameState.reset_shop_visit()
 	speech_label.text = _greeting()
 	leave_button.pressed.connect(_on_leave)
@@ -43,8 +42,10 @@ func _greeting() -> String:
 ## Builds one row per catalogue entry straight from GameState.SHOP_ITEMS, so the
 ## screen cannot drift out of sync with the prices the economy is balanced on.
 func _build_rows() -> void:
-	for entry in GameState.SHOP_ITEMS:
-		var id := str(entry["id"])
+	for id in GameState.shop_offerings():
+		var entry := GameState.shop_item(id)
+		if entry.is_empty():
+			continue
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 12)
 
@@ -154,6 +155,7 @@ func _bought_line(id: String) -> String:
 
 
 func _on_leave() -> void:
+	GameState.clock_running = true
 	var next := GameState.shop_next_scene
 	# Close the visit out on the way out, not just on the way in, so a stale
 	# purchase count can never leak into the next stage.

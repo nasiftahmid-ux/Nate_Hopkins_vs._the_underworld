@@ -20,6 +20,7 @@ var _sting: AudioStreamPlayer
 
 
 func _ready() -> void:
+	GameState.clock_running = false
 	_apply_pixel_theme()
 	Music.stop()
 	_start_sting()
@@ -86,5 +87,6 @@ func _show_caption(text: String, subtitle: String = "") -> void:
 func _advance() -> void:
 	if _sting:
 		_sting.stop()
+	GameState.clock_running = true
 	var next: String = GameState.consume_blackout_scene()
 	get_tree().change_scene_to_file(next if not next.is_empty() else FALLBACK_SCENE)

@@ -78,6 +78,7 @@ func _ready() -> void:
 	knockback_y = -80.0
 	attack_sound = "attack_knight"
 	death_sound = "death_knight"
+	time_reward = 6.0
 	super._ready()
 	_build_arc()
 	# The Body node is only a stand-in so the shared script has something to tint.

@@ -56,6 +56,8 @@ func _on_body_entered(body: Node2D) -> void:
 func _enemies_left() -> int:
 	if not requires_clear:
 		return 0
+	if GameState.dev_god_mode:
+		return 0
 	var left := 0
 	for e in get_tree().get_nodes_in_group("enemy"):
 		if is_instance_valid(e) and e.get("alive") == true:
@@ -100,7 +102,27 @@ func _go() -> void:
 		return
 	_done = true
 	set_deferred("monitoring", false)
+	if GameState.negative_mode:
+		var target := GameState.return_stage
+		var new_clock := float(GameState.CLOCK_CONFIG["start"])
+		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
+			GameState.player_negative_damage_bonus *= 1.1
+			GameState.player_damage_mult *= 1.1
+		GameState.negative_mode = false
+		GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
+		GameState.player_health = new_clock
+		GameState.player_damage_mult = 1.0 * GameState.player_negative_damage_bonus
+		GameState.return_stage = ""
+		GameState.clock_running = false
+		GameState.enemy_damage_scale *= 1.25
+		GameState.enemy_health_scale *= 1.15
+		GameState.negative_kills = 0
+		GameState.negative_total = 0
+		get_tree().call_deferred("change_scene_to_file", target if target != "" else "res://scenes/levels/level1.tscn")
+		return
 	GameState.finish_stage()
+	GameState.enemy_damage_scale *= 1.25
+	GameState.enemy_health_scale *= 1.15
 	# Route through Aphrodite's shop, but by way of the blackout curtain so the
 	# stage ends on a "LEVEL X COMPLETED" beat. The shop is stashed in GameState
 	# rather than navigated to directly, and grants the single purchase allowed.

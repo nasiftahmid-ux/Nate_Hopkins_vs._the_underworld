@@ -235,7 +235,7 @@ func _scaled(base: float, heavy: bool = false) -> float:
 	var value := base
 	if heavy:
 		value += GameState.heavy_damage_bonus()
-	return value + GameState.warcry_damage_bonus()
+	return (value + GameState.warcry_damage_bonus()) * GameState.player_damage_mult
 
 
 func _update_animation(input: float) -> void:
@@ -319,9 +319,13 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 			attacker.on_blocked()
 		return
 	invuln_time = INVULN_DURATION
-	hp = maxf(hp - amount, 0.0)
+	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
+	if GameState.negative_mode:
+		cost *= float(GameState.NEGATIVE_ENEMIES["enemy_damage_mult"])
+	cost *= GameState.enemy_damage_scale
+	hp = maxf(hp - cost, 0.0)
 	GameState.player_health = hp
-	GameState.register_damage(amount)
+	GameState.register_damage(cost)
 	if camera.has_method("add_damage_trauma"):
 		camera.add_damage_trauma(amount, max_hp, _damage_direction(from_position))
 	hp_changed.emit(hp, max_hp)
@@ -368,14 +372,32 @@ func _damage_direction(from_position: Vector2) -> Vector2:
 func die() -> void:
 	if not is_physics_processing():
 		return
-	# A stored Second Chance intercepts before anything irreversible happens: no
-	# death animation, no death screen, no death recorded for grading.
-	if GameState.consume_revive():
-		_revive()
+	var scene_path := get_tree().current_scene.scene_file_path
+	# Negative world entry: clock-zero on a regular level while visits remain.
+	if (not GameState.negative_mode) and (not scene_path.contains("boss")) and GameState.negative_visits < GameState.negative_max_visits:
+		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
+		GameState.enter_negative()
+		get_tree().paused = false
+		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
 		return
-	GameState.register_death()
-	set_physics_process(false)
-	get_tree().paused = true
+	# Negative world clock-zero (or no visits left / boss): return to normal world, loop.
+	print("Clock 0: returning to normal world (loop)")
+	var target := scene_path
+	if GameState.negative_mode:
+		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
+			GameState.player_negative_damage_bonus *= 1.1
+		target = GameState.return_stage
+		GameState.exit_negative(false)
+	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
+	GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+	GameState.player_damage_mult = GameState.player_negative_damage_bonus
+	get_tree().paused = false
+	GameState.enemy_damage_scale *= 1.25
+	GameState.enemy_health_scale *= 1.15
+	GameState.negative_kills = 0
+	GameState.negative_total = 0
+	get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
+	return
 	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
 	sprite.modulate = Color.WHITE
 	is_attacking = false

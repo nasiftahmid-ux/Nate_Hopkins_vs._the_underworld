@@ -2370,7 +2370,7 @@ script = ExtResource("5_door")
 
 position = Vector2(11030, 86)
 
-next_scene = "res://scenes/levels/level4.tscn"
+next_scene = "res://scenes/bosses/boss_arena.tscn"
 
 [node name="Col" type="CollisionShape2D" parent="Door"]
 
