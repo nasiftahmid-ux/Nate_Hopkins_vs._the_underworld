@@ -368,6 +368,31 @@ func consume_revive() -> bool:
 	return true
 
 
+func shop_offerings() -> Array:
+	var ids: Array = []
+	for entry in SHOP_ITEMS:
+		ids.append(str(entry["id"]))
+	# filter
+	var available: Array = []
+	for id in ids:
+		if not shop_item_available(id):
+			continue
+		if id == "heal" and player_health >= player_max_hp - 1.0:
+			continue
+		if id == "revive" and revives_left > 0:
+			continue
+		if id == "cooldown" and shop_rank(id) >= 4:
+			continue
+		available.append(id)
+	# random 3
+	available.shuffle()
+	if available.size() > 3:
+		available = available.slice(0, 3)
+	if available.is_empty():
+		available = ["heal"]
+	return available
+
+
 func shop_item(id: String) -> Dictionary:
 	for entry in SHOP_ITEMS:
 		if str(entry["id"]) == id:
@@ -405,26 +430,25 @@ func buy_shop_item(id: String) -> bool:
 		return false
 	if not shop_item_available(id):
 		return false
-	var cost := shop_price(id)
-	if money < cost:
+	var cost := 0
+	if id != "heal":
+		cost = shop_price(id)
+	if id != "heal" and player_health - cost < 10.0:
 		return false
-
-	money -= cost
+	if id != "heal":
+		player_health -= cost
 	shop_ranks[id] = shop_rank(id) + 1
 	purchases_this_visit += 1
 	match id:
+		"heal":
+			player_health = minf(player_health + 20.0, player_max_hp)
 		"hp":
-			# Grant the extra max HP now so the player sees the bar move, and top
-			# up so the new ceiling is not immediately empty.
-			player_max_hp = total_max_hp()
-			player_health = minf(player_max_hp, player_health + SHOP_HP_PER_RANK)
+			player_max_hp += 10.0
+			player_health = minf(player_health + 10.0, player_max_hp)
 		"warcry":
 			warcry_charges += 1
 		"revive":
 			revives_left += 1
-		"heal":
-			player_health = player_max_hp
-
 	save_game()
 	money_changed.emit(money)
 	return true

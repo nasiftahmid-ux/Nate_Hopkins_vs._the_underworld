@@ -42,8 +42,10 @@ func _greeting() -> String:
 ## Builds one row per catalogue entry straight from GameState.SHOP_ITEMS, so the
 ## screen cannot drift out of sync with the prices the economy is balanced on.
 func _build_rows() -> void:
-	for entry in GameState.SHOP_ITEMS:
-		var id := str(entry["id"])
+	for id in GameState.shop_offerings():
+		var entry := GameState.shop_item(id)
+		if entry.is_empty():
+			continue
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 12)
 
