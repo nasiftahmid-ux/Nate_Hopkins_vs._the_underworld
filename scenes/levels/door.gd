@@ -58,6 +58,14 @@ func _enemies_left() -> int:
 		return 0
 	if GameState.dev_god_mode:
 		return 0
+	if GameState.negative_mode:
+		if GameState.negative_remaining_spawns > 0:
+			return 1
+		var left := 0
+		for e in get_tree().get_nodes_in_group("enemy"):
+			if is_instance_valid(e) and e.get("alive") == true:
+				left += 1
+		return left
 	var left := 0
 	for e in get_tree().get_nodes_in_group("enemy"):
 		if is_instance_valid(e) and e.get("alive") == true:
@@ -118,6 +126,10 @@ func _go() -> void:
 		GameState.enemy_health_scale *= 1.15
 		GameState.negative_kills = 0
 		GameState.negative_total = 0
+		GameState.negative_remaining_spawns = 0
+		for e in get_tree().get_nodes_in_group("enemy"):
+			if is_instance_valid(e):
+				e.queue_free()
 		get_tree().call_deferred("change_scene_to_file", target if target != "" else "res://scenes/levels/level1.tscn")
 		return
 	GameState.finish_stage()

@@ -46,12 +46,19 @@ var NEGATIVE_ENEMIES := {
 	"negative_start": 30.0,
 	"return_clock_min": 25.0,
 	"player_damage_mult": 2.5,
-	"enemy_damage_mult": 1.5,
-	"kill_time_mult": 0.5,
+	"enemy_damage_mult": 3.0,
+	"negative_enemy_damage_mult": 3.0,
+	"negative_damage_per_hit_cap": 12.0,
+	"negative_enemy_hp_mult": 1.0,
+	"negative_enemy_speed_mult": 1.0,
+	"kill_time_mult": 1.0,
 	"xp_mult": 2.0,
 	"score_mult": 2.0,
-	"max_visits": 2,
 	"max_alive": 12,
+	"gray_actors": true,
+	"spawn_multiplier_by_level": {1: 2, 2: 2, 3: 3},
+	"spawn_multiplier_default": 2,
+	"negative_time_gain_cap": 45.0,
 }
 ## Short roguelite run route: 3 levels, boss 1, finale.
 const RUN_ROUTE: Array[String] = [
@@ -210,6 +217,8 @@ var enemy_damage_scale := 1.0
 var enemy_health_scale := 1.0
 var negative_kills := 0
 var negative_total := 0
+var negative_time_gained := 0.0
+var negative_remaining_spawns := 0
 var player_negative_damage_bonus := 1.0
 var return_stage := ""
 var clock_seconds := 60.0
@@ -299,6 +308,8 @@ func start_new_run() -> void:
 	enemy_health_scale = 1.0
 	negative_kills = 0
 	negative_total = 0
+	negative_time_gained = 0.0
+	negative_remaining_spawns = 0
 	player_negative_damage_bonus = 1.0
 	return_stage = ""
 	clock_seconds = 60.0
@@ -568,6 +579,14 @@ func add_money(value: int) -> void:
 
 
 func add_clock(seconds: float) -> void:
+	if negative_mode:
+		var cap := float(NEGATIVE_ENEMIES["negative_time_gain_cap"])
+		var remaining := cap - negative_time_gained
+		if remaining <= 0.0:
+			seconds = 0.0
+		elif seconds > remaining:
+			seconds = remaining
+		negative_time_gained += seconds
 	player_health = minf(player_health + seconds, player_max_hp)
 	GameState.clock_seconds = player_health
 
@@ -689,6 +708,8 @@ func enter_negative() -> void:
 		cur = get_tree().current_scene.scene_file_path
 	return_stage = cur
 	negative_visits += 1
+	negative_time_gained = 0.0
+	negative_remaining_spawns = 0
 	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
 	NEGATIVE_ENEMIES["negative_start"] = ns
 	player_max_hp = ns
@@ -865,6 +886,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(DEV_CHEAT_ACTION):
 		cheat("health")
 		clock_running = not clock_running
+		get_viewport().set_input_as_handled()
+	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F8:
+		if not negative_mode:
+			enter_negative()
+			get_tree().change_scene_to_file(return_stage if return_stage != "" else "res://scenes/levels/level1.tscn")
 		get_viewport().set_input_as_handled()
 
 

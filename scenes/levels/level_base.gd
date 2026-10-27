@@ -40,50 +40,123 @@ func _ready() -> void:
 		_spawn_enemy_director()
 	if GameState.negative_mode:
 		_spawn_negative_extras()
-		GameState.negative_total = get_tree().get_nodes_in_group("enemy").size()
 	GameState.clock_running = true
 
 
+var _neg_originals: Array = []
+var _neg_remaining: int = 0
+var _neg_level: int = 0
+
+
+func _negative_level_number() -> int:
+	var path := scene_file_path
+	if path.is_empty() and get_tree() and get_tree().current_scene:
+		path = get_tree().current_scene.scene_file_path
+	var digits := path.get_file().get_basename().trim_prefix("level")
+	return int(digits) if digits.is_valid_int() else 0
+
+
 func _spawn_negative_extras() -> void:
-	var extras := ["res://scenes/enemies/husk.tscn","res://scenes/enemies/time_leech.tscn","res://scenes/enemies/blink_shade.tscn"]
-	var originals := []
+	if not GameState.negative_mode:
+		return
+	_neg_originals.clear()
 	for child in get_children():
 		if child is EnemyBase and is_instance_valid(child):
-			originals.append(child)
-	var idx := 0
-	for e in originals:
-		for k in range(2):
-			if get_tree().get_nodes_in_group("enemy").size() >= int(GameState.NEGATIVE_ENEMIES["max_alive"]):
-				return
-			var scene_path: String = extras[(idx + k) % extras.size()]
-			var packed := load(scene_path)
-			if packed == null:
-				continue
-			var inst = packed.instantiate()
-			if inst == null:
-				continue
-			add_child(inst)
-			var half := 0.0
-			for c in inst.get_children():
-				var cs := c as CollisionShape2D
-				if cs != null and cs.shape is RectangleShape2D:
-					half = (cs.shape as RectangleShape2D).size.y * 0.5 * absf(cs.scale.y)
-					break
-			var target_x: float = e.global_position.x + 40.0 * (k + 1)
-			var from := Vector2(target_x, e.global_position.y - 40.0)
-			var to := Vector2(target_x, e.global_position.y + 900.0)
-			var space := get_world_2d().direct_space_state
-			var query := PhysicsRayQueryParameters2D.create(from, to, 1, [inst.get_rid()])
-			var hit := space.intersect_ray(query)
-			if not hit.is_empty():
-				var surface_y: float = hit.position.y
-				var authored_feet: float = e.global_position.y + half
-				if absf(surface_y - authored_feet) <= 90.0:
-					inst.global_position = Vector2(target_x, surface_y - half - 1.0)
-			idx += 1
-	var dir := get_node_or_null("EnemyDirector")
-	if dir != null and dir.has_method("organize"):
-		dir.organize()
+			_neg_originals.append(child)
+	var normal_count: int = _neg_originals.size()
+	var mult_map: Dictionary = GameState.NEGATIVE_ENEMIES.get("spawn_multiplier_by_level", {})
+	var mult: int = int(mult_map.get(_negative_level_number(), GameState.NEGATIVE_ENEMIES.get("spawn_multiplier_default", 2)))
+	var quota: int = int(ceil(float(normal_count) * float(mult)))
+	_neg_level = _negative_level_number()
+	if OS.is_debug_build():
+		print("NEGATIVE: level %d, normal count %d, quota %d, max_alive %d, damage mult 3.0" % [_neg_level, normal_count, quota, int(GameState.NEGATIVE_ENEMIES["max_alive"])])
+	GameState.negative_total = quota
+	_neg_remaining = maxi(0, quota - normal_count)
+	GameState.negative_remaining_spawns = _neg_remaining
+	# Spawn up to the alive cap now; the rest follow as enemies die.
+	var max_alive: int = int(GameState.NEGATIVE_ENEMIES["max_alive"])
+	var slots: int = max_alive - get_tree().get_nodes_in_group("enemy").size()
+	var to_spawn_now: int = mini(_neg_remaining, maxi(0, slots))
+	for i in range(to_spawn_now):
+		_spawn_one_negative_extra()
+		_neg_remaining -= 1
+
+
+func _spawn_one_negative_extra() -> void:
+	if _neg_originals.is_empty():
+		return
+	var e: EnemyBase = _neg_originals[randi() % _neg_originals.size()]
+	var r: int = randi() % 100
+	var scene_path: String
+	if r < 50:
+		scene_path = "res://scenes/enemies/husk.tscn"
+	elif r < 70:
+		scene_path = "res://scenes/enemies/time_leech.tscn"
+	else:
+		scene_path = "res://scenes/enemies/blink_shade.tscn"
+	var packed := load(scene_path)
+	if packed == null:
+		return
+	var inst = packed.instantiate()
+	if inst == null:
+		return
+	add_child(inst)
+	# horizontal offset
+	var offset_x: float = randf_range(-80.0, 80.0)
+	var target_x: float = e.global_position.x + offset_x
+	target_x = clampf(target_x, 120.0, float(camera_limit_right) - 120.0)
+	# avoid player proximity
+	var player := get_node_or_null("Player")
+	if player != null and is_instance_valid(player):
+		if absf(target_x - player.global_position.x) < 400.0:
+			target_x = player.global_position.x + (400.0 if target_x >= player.global_position.x else -400.0)
+			target_x = clampf(target_x, 120.0, float(camera_limit_right) - 120.0)
+	# snap to floor
+	var half := 0.0
+	for c in inst.get_children():
+		var cs := c as CollisionShape2D
+		if cs != null and cs.shape is RectangleShape2D:
+			half = (cs.shape as RectangleShape2D).size.y * 0.5 * absf(cs.scale.y)
+			break
+	var from := Vector2(target_x, e.global_position.y - 40.0)
+	var to := Vector2(target_x, e.global_position.y + 900.0)
+	var space := get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(from, to, 1, [inst.get_rid()])
+	var hit := space.intersect_ray(query)
+	if not hit.is_empty():
+		var surface_y: float = hit.position.y
+		var authored_feet: float = e.global_position.y + half
+		if absf(surface_y - authored_feet) <= 90.0:
+			inst.global_position = Vector2(target_x, surface_y - half - 1.0)
+		else:
+			inst.global_position = Vector2(target_x, e.global_position.y)
+	else:
+		inst.global_position = Vector2(target_x, e.global_position.y)
+	# staggered respawn hook
+	inst.tree_exited.connect(_on_negative_enemy_exited)
+
+
+func _on_negative_enemy_exited() -> void:
+	if not GameState.negative_mode:
+		return
+	if _neg_remaining <= 0:
+		return
+	var max_alive: int = int(GameState.NEGATIVE_ENEMIES["max_alive"])
+	if get_tree().get_nodes_in_group("enemy").size() >= max_alive:
+		return
+	var delay: float = randf_range(0.5, 1.5)
+	var t := get_tree().create_timer(delay)
+	t.timeout.connect(func():
+		if not GameState.negative_mode:
+			return
+		if _neg_remaining <= 0:
+			return
+		if get_tree().get_nodes_in_group("enemy").size() >= max_alive:
+			return
+		_spawn_one_negative_extra()
+		_neg_remaining -= 1
+		GameState.negative_remaining_spawns = _neg_remaining
+	)
 
 
 func _spawn_enemy_director() -> void:

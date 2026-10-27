@@ -322,6 +322,7 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
 	if GameState.negative_mode:
 		cost *= float(GameState.NEGATIVE_ENEMIES["enemy_damage_mult"])
+		cost = minf(cost, float(GameState.NEGATIVE_ENEMIES["negative_damage_per_hit_cap"]))
 	cost *= GameState.enemy_damage_scale
 	hp = maxf(hp - cost, 0.0)
 	GameState.player_health = hp
