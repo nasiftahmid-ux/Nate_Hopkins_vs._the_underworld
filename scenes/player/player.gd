@@ -235,7 +235,7 @@ func _scaled(base: float, heavy: bool = false) -> float:
 	var value := base
 	if heavy:
 		value += GameState.heavy_damage_bonus()
-	return value + GameState.warcry_damage_bonus()
+	return (value + GameState.warcry_damage_bonus()) * GameState.player_damage_mult
 
 
 func _update_animation(input: float) -> void:
@@ -319,9 +319,10 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 			attacker.on_blocked()
 		return
 	invuln_time = INVULN_DURATION
-	hp = maxf(hp - amount, 0.0)
+	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
+	hp = maxf(hp - cost, 0.0)
 	GameState.player_health = hp
-	GameState.register_damage(amount)
+	GameState.register_damage(cost)
 	if camera.has_method("add_damage_trauma"):
 		camera.add_damage_trauma(amount, max_hp, _damage_direction(from_position))
 	hp_changed.emit(hp, max_hp)

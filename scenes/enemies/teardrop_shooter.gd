@@ -26,6 +26,7 @@ func _ready() -> void:
 	knockback_y = -160.0
 	attack_sound = "attack_shooter"
 	death_sound = "death_shooter"
+	time_reward = 4.0
 	super._ready()
 	# The Body node is only a stand-in so the shared script has something to tint.
 	# This enemy draws a sprite instead, so keep it out of sight.

@@ -13,6 +13,8 @@ class_name EnemyBase
 ## Logical Sfx names. Subclasses set these in `_ready()`; empty means silent.
 @export var attack_sound := ""
 @export var death_sound := ""
+## Seconds added to the clock on kill.
+@export var time_reward := 3.0
 ## A peaceful enemy still walks and can be hit, but never attacks the player.
 @export var peaceful := false
 
@@ -214,6 +216,7 @@ func die() -> void:
 	GameState.add_exp(exp_reward)
 	if money_reward > 0:
 		GameState.add_money(money_reward)
+	GameState.add_clock(time_reward)
 	_spawn_coin()
 	collision_layer = 0
 	collision_mask = 0

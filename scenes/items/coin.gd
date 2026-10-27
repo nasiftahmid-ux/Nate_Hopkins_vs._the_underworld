@@ -107,4 +107,5 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	# A coin grabbed mid-flight is still a coin grabbed.
 	GameState.add_money(value)
+	GameState.add_clock(1.0)
 	queue_free()

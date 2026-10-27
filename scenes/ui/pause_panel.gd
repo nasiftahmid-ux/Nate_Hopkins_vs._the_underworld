@@ -37,6 +37,7 @@ func _can_pause() -> bool:
 func _toggle_pause() -> void:
 	paused = not paused
 	get_tree().paused = paused
+	GameState.clock_running = not paused
 	visible = paused
 	if paused:
 		resume_button.grab_focus()

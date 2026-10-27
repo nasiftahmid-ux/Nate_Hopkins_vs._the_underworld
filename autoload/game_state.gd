@@ -18,6 +18,21 @@ const MIN_RHYTHM_NOTES := 8
 ## exit is the whole point: the run only offers five decisions, so each one has
 ## to hurt a little.
 const SHOP_PURCHASES_PER_VISIT := 1
+const CLOCK_CONFIG := {
+	"start": 60.0,
+	"drain_per_sec": 1.0,
+	"light_hit_cost": 5.0,
+	"heavy_hit_cost": 10.0,
+	"boss_hit_cost": 10.0,
+	"kill_basic": 3.0,
+	"kill_cinder": 3.0,
+	"kill_teardrop": 4.0,
+	"kill_sorrow": 6.0,
+	"kill_boss": 15.0,
+	"coin_value": 1.0,
+	"level_up_bonus": 5.0,
+	"level_up_damage_mult": 0.05,
+}
 ## Short roguelite run route: 3 levels, boss 1, finale.
 const RUN_ROUTE: Array[String] = [
 	"res://scenes/levels/level1.tscn",
@@ -156,6 +171,8 @@ var money := 0
 var exp := 0
 var level := 1
 var defeated_exes := 0
+var player_damage_mult := 1.0
+var clock_running := true
 
 ## Meta / run tracking for the roguelite loop.
 var best_score := 0
@@ -247,15 +264,23 @@ func start_new_run() -> void:
 	negative_visits = 0
 	return_stage = ""
 	clock_seconds = 60.0
+	player_damage_mult = 1.0
 	save_game()
 
 
-func new_game() -> void:
-	start_new_run()
+func _process(delta: float) -> void:
+	if not clock_running:
+		return
+	if get_tree() != null and get_tree().paused:
+		return
+	if player_health <= 0.0:
+		return
+	player_health = maxf(0.0, player_health - CLOCK_CONFIG["drain_per_sec"] * delta)
+	clock_seconds = player_health
 
 
 func max_hp_for_level(target_level: int) -> float:
-	return BASE_MAX_HP + MAX_HP_PER_LEVEL * float(maxi(1, target_level) - 1)
+	return float(CLOCK_CONFIG["start"])
 
 
 ## Max HP from levels plus whatever the shop has granted. Shop HP lives in its
@@ -466,16 +491,20 @@ func add_money(value: int) -> void:
 	money_changed.emit(money)
 
 
+func add_clock(seconds: float) -> void:
+	player_health = minf(player_health + seconds, player_max_hp)
+	GameState.clock_seconds = player_health
+
+
 func add_exp(value: int) -> void:
-	exp += maxi(1, int(round(value * xp_multiplier())))
+	exp += value
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
 		level += 1
-		player_max_hp = total_max_hp()
-		var heal := player_max_hp * level_up_heal_ratio()
-		player_health = minf(player_health + heal, player_max_hp)
+		player_health = minf(player_health + float(CLOCK_CONFIG["level_up_bonus"]), player_max_hp)
+		player_damage_mult += float(CLOCK_CONFIG["level_up_damage_mult"])
 		level_changed.emit(level)
-		level_healed.emit(heal)
+		level_healed.emit(float(CLOCK_CONFIG["level_up_bonus"]))
 	exp_changed.emit(exp)
 	save_game()
 
@@ -620,9 +649,7 @@ func decorate_followup_lines(lines: Array[Dictionary]) -> Array[Dictionary]:
 
 
 func xp_multiplier() -> float:
-	if player_max_hp <= 0.0:
-		return 1.0
-	return clampf(1.0 - damage_taken / player_max_hp, MIN_REWARD_MULT, 1.0)
+	return 1.0
 
 
 func level_up_heal_ratio() -> float:
