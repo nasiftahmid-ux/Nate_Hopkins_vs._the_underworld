@@ -101,3 +101,26 @@ func show_hint(text: String) -> void:
 
 func _on_hint_timer_timeout() -> void:
 	hint_panel.visible = false
+
+
+func _apply_negative_visuals() -> void:
+	var bbc := BackBufferCopy.new()
+	bbc.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT
+	add_child(bbc)
+	var layer := CanvasLayer.new()
+	layer.layer = 0
+	var rect := ColorRect.new()
+	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var shader := Shader.new()
+	shader.code = "shader_type canvas_item;\nuniform sampler2D screen_texture : hint_screen_texture;\nvoid fragment(){ vec4 c = texture(screen_texture, SCREEN_UV); float g = dot(c.rgb, vec3(0.299,0.587,0.114)); COLOR = vec4(vec3(g), c.a); }"
+	var mat := ShaderMaterial.new()
+	mat.shader = shader
+	rect.material = mat
+	layer.add_child(rect)
+	add_child(layer)
+	var vlayer := CanvasLayer.new()
+	var vrect := ColorRect.new()
+	vrect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	vrect.color = Color(0,0,0,0.25)
+	vlayer.add_child(vrect)
+	add_child(vlayer)
