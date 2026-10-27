@@ -271,7 +271,7 @@ func start_new_run() -> void:
 	warcry_charges = 0
 	warcry_active = 0
 	revives_left = 0
-	player_max_hp = total_max_hp()
+	player_max_hp = float(CLOCK_CONFIG["start"]) + 5.0 * float(perm_upgrades.get("clock", 0))
 	player_health = player_max_hp
 	dialogue_lines = []
 	scene_after_dialogue = ""
@@ -631,6 +631,22 @@ func register_kill() -> void:
 
 func register_room_cleared() -> void:
 	rooms_cleared += 1
+
+
+func buy_perm_upgrade() -> bool:
+	var rank := int(perm_upgrades.get("clock", 0))
+	var price := int(100 * pow(1.6, rank))
+	if heartbreak < price:
+		return false
+	heartbreak -= price
+	perm_upgrades["clock"] = rank + 1
+	save_game()
+	return true
+
+
+func perm_upgrade_price() -> int:
+	var rank := int(perm_upgrades.get("clock", 0))
+	return int(100 * pow(1.6, rank))
 
 
 func payout_heartbreak(won: bool) -> int:

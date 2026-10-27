@@ -50,6 +50,10 @@ func _ready() -> void:
 	roast_label.text = roast
 	roast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(roast_label)
+	var upg_btn := Button.new()
+	upg_btn.text = "BUY +5s START (%d HB)" % GameState.perm_upgrade_price()
+	upg_btn.pressed.connect(_on_buy_upgrade)
+	vbox.add_child(upg_btn)
 	restart_level_button.pressed.connect(_on_again)
 	restart_game_button.pressed.connect(_on_menu)
 	restart_level_button.grab_focus()
@@ -59,6 +63,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		_on_again()
+
+
+func _on_buy_upgrade() -> void:
+	if GameState.buy_perm_upgrade():
+		pass
 
 
 func _on_again() -> void:
