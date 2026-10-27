@@ -56,6 +56,8 @@ func _on_body_entered(body: Node2D) -> void:
 func _enemies_left() -> int:
 	if not requires_clear:
 		return 0
+	if GameState.dev_god_mode:
+		return 0
 	var left := 0
 	for e in get_tree().get_nodes_in_group("enemy"):
 		if is_instance_valid(e) and e.get("alive") == true:

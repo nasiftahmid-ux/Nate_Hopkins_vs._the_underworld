@@ -861,6 +861,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event.is_action_pressed(DEV_CHEAT_ACTION):
 		cheat("health")
+		clock_running = not clock_running
 		get_viewport().set_input_as_handled()
 
 
