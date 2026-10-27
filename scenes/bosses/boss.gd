@@ -1106,9 +1106,8 @@ func die() -> void:
 			{"speaker": "???", "text": "You've learned to fight. Now prove you can keep a beat."},
 			{"speaker": "Nate", "text": "A rhythm game? In the Underworld? Who designed this place?"},
 		]
-		GameState.set_rhythm_difficulty(1.0, 20)
 		GameState.rhythm_followup_lines = []
-		GameState.rhythm_followup_scene = "res://scenes/levels/level5.tscn"
-		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
+		GameState.rhythm_followup_scene = "res://scenes/levels/level3.tscn"
+		GameState.scene_after_dialogue = "res://scenes/levels/level3.tscn"
 	GameState.to_blackout("res://scenes/dialogue/dialogue.tscn")
 	get_tree().change_scene_to_file("res://scenes/ui/blackout.tscn")
