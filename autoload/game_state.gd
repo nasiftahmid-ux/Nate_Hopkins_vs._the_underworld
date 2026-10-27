@@ -57,7 +57,9 @@ var NEGATIVE_ENEMIES := {
 const RUN_ROUTE: Array[String] = [
 	"res://scenes/levels/level1.tscn",
 	"res://scenes/levels/level2.tscn",
+	"res://scenes/bosses/boss_arena.tscn",
 	"res://scenes/levels/level3.tscn",
+	"res://scenes/levels/level4.tscn",
 	"res://scenes/bosses/boss_arena.tscn",
 	"res://scenes/bosses/final_rhythm.tscn",
 ]
@@ -697,6 +699,7 @@ func enter_negative() -> void:
 
 func exit_negative(clock_zero: bool) -> void:
 	negative_mode = false
+	return_stage = ""
 	# caller sets clock
 	player_damage_mult = 1.0
 
