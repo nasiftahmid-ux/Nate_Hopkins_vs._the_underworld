@@ -299,8 +299,16 @@ func _process(delta: float) -> void:
 		return
 	if player_health <= 0.0:
 		return
-	player_health = maxf(0.0, player_health - CLOCK_CONFIG["drain_per_sec"] * delta)
+	player_health = maxf(0.0, player_health - float(CLOCK_CONFIG["drain_per_sec"]) * delta)
 	clock_seconds = player_health
+	if player_health <= 0.0:
+		clock_running = false
+		var player := _dev_player()
+		if player != null:
+			if player.get("hp") != null:
+				player.set("hp", 0.0)
+			if player.has_method("die"):
+				player.die()
 
 
 func max_hp_for_level(target_level: int) -> float:
