@@ -34,10 +34,32 @@ func _ready() -> void:
 		hint_panel.visible = false
 	if spawn_enemies and get_node_or_null("EnemyDirector") == null:
 		_spawn_enemy_director()
+	if GameState.negative_mode:
+		_spawn_negative_extras()
 	GameState.clock_running = true
 
 
-func _apply_negative_visuals() -> void:
+func _spawn_negative_extras() -> void:
+	var extras := ["res://scenes/enemies/husk.tscn","res://scenes/enemies/time_leech.tscn","res://scenes/enemies/blink_shade.tscn"]
+	var originals := []
+	for child in get_children():
+		if child is EnemyBase and is_instance_valid(child):
+			originals.append(child)
+	var idx := 0
+	for e in originals:
+		for k in range(2):
+			if get_tree().get_nodes_in_group("enemy").size() >= int(GameState.NEGATIVE_ENEMIES["max_alive"]):
+				return
+			var scene_path := extras[(idx + k) % extras.size()]
+			var packed := load(scene_path)
+			if packed == null:
+				continue
+			var inst = packed.instantiate()
+			if inst == null:
+				continue
+			inst.global_position = e.global_position + Vector2(40.0 * (k + 1), 0.0)
+			add_child(inst)
+			idx += 1
 	# Fallback full-screen grayscale shader (tell: used fallback).
 	var layer := CanvasLayer.new()
 	layer.layer = 0
