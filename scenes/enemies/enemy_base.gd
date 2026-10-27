@@ -100,8 +100,6 @@ func _ready() -> void:
 	max_hp *= GameState.enemy_health_scale
 	hp = max_hp
 	add_to_group("enemy")
-	if GameState.negative_mode:
-		node.material = null
 	# Idle wherever the level author dropped us unless the director re-homes us.
 	home = global_position
 	_patrol_target_x = home.x
@@ -219,7 +217,10 @@ func die() -> void:
 	GameState.add_exp(exp_reward)
 	if money_reward > 0:
 		GameState.add_money(money_reward)
-	GameState.add_clock(time_reward)
+	if GameState.negative_mode:
+		GameState.add_clock(10.0)
+	else:
+		GameState.add_clock(5.0)
 	GameState.register_kill()
 	if GameState.negative_mode:
 		GameState.negative_kills += 1

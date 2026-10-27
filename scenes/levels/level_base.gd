@@ -62,9 +62,28 @@ func _spawn_negative_extras() -> void:
 			var inst = packed.instantiate()
 			if inst == null:
 				continue
-			inst.global_position = e.global_position + Vector2(40.0 * (k + 1), 0.0)
 			add_child(inst)
+			var half := 0.0
+			for c in inst.get_children():
+				var cs := c as CollisionShape2D
+				if cs != null and cs.shape is RectangleShape2D:
+					half = (cs.shape as RectangleShape2D).size.y * 0.5 * absf(cs.scale.y)
+					break
+			var target_x: float = e.global_position.x + 40.0 * (k + 1)
+			var from := Vector2(target_x, e.global_position.y - 40.0)
+			var to := Vector2(target_x, e.global_position.y + 900.0)
+			var space := get_world_2d().direct_space_state
+			var query := PhysicsRayQueryParameters2D.create(from, to, 1, [inst.get_rid()])
+			var hit := space.intersect_ray(query)
+			if not hit.is_empty():
+				var surface_y: float = hit.position.y
+				var authored_feet: float = e.global_position.y + half
+				if absf(surface_y - authored_feet) <= 90.0:
+					inst.global_position = Vector2(target_x, surface_y - half - 1.0)
 			idx += 1
+	var dir := get_node_or_null("EnemyDirector")
+	if dir != null and dir.has_method("organize"):
+		dir.organize()
 
 
 func _spawn_enemy_director() -> void:
@@ -105,6 +124,14 @@ func _apply_gray_recursive(node: Node) -> void:
 		return
 	if _is_ui_node(node):
 		return
+	# Enemies keep their own coloring so they stay readable in the gray world.
+	var p := node.get_parent()
+	while p != null:
+		if p is EnemyBase:
+			return
+		p = p.get_parent()
+	if node is EnemyBase:
+		return
 	if node is CanvasItem:
 		# If a node already has its own ShaderMaterial, replace it in negative mode only.
 		node.material = _gray_material
@@ -119,6 +146,13 @@ func _on_node_added(node: Node) -> void:
 	if node == null or not is_instance_valid(node):
 		return
 	if _is_ui_node(node):
+		return
+	var p := node.get_parent()
+	while p != null:
+		if p is EnemyBase:
+			return
+		p = p.get_parent()
+	if node is EnemyBase:
 		return
 	if node is CanvasItem:
 		node.material = _gray_material

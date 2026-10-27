@@ -36,16 +36,16 @@ func _ready() -> void:
 	visits_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(visits_label)
 	var roasts := [
-		""You fought like a man apologizing with his fists."",
-		""The Underworld will miss you. Briefly."",
-		""Try not to die next time. It's unbecoming."",
-		""I've seen better from a haunted toaster."",
-		""At least you're consistent."",
-		""Love is a battlefield. You lost."",
-		""Next time, bring snacks."",
-		""Aphrodite is not impressed. Aphrodite is never impressed."",
+		"You fought like a man apologizing with his fists.",
+		"The Underworld will miss you. Briefly.",
+		"Try not to die next time. It's unbecoming.",
+		"I've seen better from a haunted toaster.",
+		"At least you're consistent.",
+		"Love is a battlefield. You lost.",
+		"Next time, bring snacks.",
+		"Aphrodite is not impressed. Aphrodite is never impressed.",
 	]
-	var roast := roasts[GameState.rooms_cleared % roasts.size()]
+	var roast: String = roasts[GameState.rooms_cleared % roasts.size()]
 	var roast_label := Label.new()
 	roast_label.text = roast
 	roast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

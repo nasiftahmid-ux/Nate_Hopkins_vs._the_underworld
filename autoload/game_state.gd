@@ -28,7 +28,7 @@ const SCORE_CONFIG := {
 	"grade_mangled": 0,
 }
 const CLOCK_CONFIG := {
-	"start": 60.0,
+	"start": 59.0,
 	"drain_per_sec": 1.0,
 	"light_hit_cost": 5.0,
 	"heavy_hit_cost": 10.0,
@@ -42,7 +42,7 @@ const CLOCK_CONFIG := {
 	"level_up_bonus": 5.0,
 	"level_up_damage_mult": 0.05,
 }
-const NEGATIVE_ENEMIES := {
+var NEGATIVE_ENEMIES := {
 	"negative_start": 30.0,
 	"return_clock_min": 25.0,
 	"player_damage_mult": 2.5,
@@ -266,6 +266,7 @@ func start_new_run() -> void:
 	exp = 0
 	level = 1
 	defeated_exes = 0
+	shop_ranks.clear()
 	kills_this_run = 0
 	rooms_cleared = 0
 	purchases_this_visit = 0
@@ -291,6 +292,7 @@ func start_new_run() -> void:
 	run_stage_index = 0
 	negative_mode = false
 	negative_visits = 0
+	NEGATIVE_ENEMIES["negative_start"] = 30.0
 	enemy_damage_scale = 1.0
 	enemy_health_scale = 1.0
 	negative_kills = 0
@@ -300,6 +302,10 @@ func start_new_run() -> void:
 	clock_seconds = 60.0
 	player_damage_mult = 1.0
 	save_game()
+
+
+func new_game() -> void:
+	start_new_run()
 
 
 func _process(delta: float) -> void:
@@ -560,8 +566,6 @@ func add_money(value: int) -> void:
 
 
 func add_clock(seconds: float) -> void:
-	if negative_mode:
-		seconds *= float(NEGATIVE_ENEMIES["kill_time_mult"])
 	player_health = minf(player_health + seconds, player_max_hp)
 	GameState.clock_seconds = player_health
 
@@ -683,7 +687,9 @@ func enter_negative() -> void:
 		cur = get_tree().current_scene.scene_file_path
 	return_stage = cur
 	negative_visits += 1
-	player_max_hp = float(NEGATIVE_ENEMIES["negative_start"])
+	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
+	NEGATIVE_ENEMIES["negative_start"] = ns
+	player_max_hp = ns
 	player_health = player_max_hp
 	player_damage_mult = float(NEGATIVE_ENEMIES["player_damage_mult"])
 	clock_running = false
@@ -792,7 +798,9 @@ func decorate_followup_lines(lines: Array[Dictionary]) -> Array[Dictionary]:
 
 
 func xp_multiplier() -> float:
-	return 1.0
+	if player_max_hp <= 0.0:
+		return 1.0
+	return clampf(1.0 - damage_taken / player_max_hp, MIN_REWARD_MULT, 1.0)
 
 
 func level_up_heal_ratio() -> float:

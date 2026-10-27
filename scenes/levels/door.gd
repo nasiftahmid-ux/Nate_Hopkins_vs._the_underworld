@@ -102,14 +102,12 @@ func _go() -> void:
 	set_deferred("monitoring", false)
 	if GameState.negative_mode:
 		var target := GameState.return_stage
-		var new_clock := GameState.player_health + 10.0
-		if new_clock < float(GameState.NEGATIVE_ENEMIES["return_clock_min"]):
-			new_clock = float(GameState.NEGATIVE_ENEMIES["return_clock_min"])
+		var new_clock := float(GameState.CLOCK_CONFIG["start"])
 		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
 			GameState.player_negative_damage_bonus *= 1.1
 			GameState.player_damage_mult *= 1.1
 		GameState.negative_mode = false
-		GameState.player_max_hp = 60.0
+		GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
 		GameState.player_health = new_clock
 		GameState.player_damage_mult = 1.0 * GameState.player_negative_damage_bonus
 		GameState.return_stage = ""
