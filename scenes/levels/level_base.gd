@@ -21,6 +21,7 @@ func _ready() -> void:
 	if GameState.negative_mode:
 		GameState.player_max_hp = float(GameState.NEGATIVE_ENEMIES["negative_start"])
 		GameState.player_health = GameState.player_max_hp
+		await get_tree().process_frame
 		_apply_negative_visuals()
 	Music.play_level()
 	camera.limit_left = 0
@@ -105,7 +106,7 @@ func _on_hint_timer_timeout() -> void:
 
 func _apply_negative_visuals() -> void:
 	var layer := CanvasLayer.new()
-	layer.layer = 10
+	layer.layer = 0
 	var bbc := BackBufferCopy.new()
 	bbc.copy_mode = BackBufferCopy.COPY_MODE_VIEWPORT
 	layer.add_child(bbc)
