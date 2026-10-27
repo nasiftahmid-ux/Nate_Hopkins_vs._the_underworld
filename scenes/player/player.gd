@@ -385,15 +385,22 @@ func die() -> void:
 	# Negative world clock-zero (or no visits left / boss): return to normal world, loop.
 	print("Clock 0: returning to normal world (loop)")
 	var target := scene_path
+	var was_negative_death := GameState.negative_mode
 	if GameState.negative_mode:
 		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
 			GameState.player_negative_damage_bonus *= 1.1
-		if GameState.return_stage != "":
+		var ret_mode := str(GameState.CLOCK_CONFIG.get("negative_death_returns_to", "current"))
+		if ret_mode == "original" and GameState.return_stage != "":
 			target = GameState.return_stage
+		else:
+			target = scene_path
 		GameState.exit_negative(false)
 		GameState.return_stage = ""
 	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-	GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+	if was_negative_death:
+		GameState.player_health = float(GameState.CLOCK_CONFIG["return_clock_min"])
+	else:
+		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
 	GameState.player_damage_mult = GameState.player_negative_damage_bonus
 	get_tree().paused = false
 	GameState.enemy_damage_scale *= 1.25

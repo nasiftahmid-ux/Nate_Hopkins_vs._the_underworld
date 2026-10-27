@@ -111,27 +111,53 @@ func _go() -> void:
 	_done = true
 	set_deferred("monitoring", false)
 	if GameState.negative_mode:
-		var target := GameState.return_stage
-		var new_clock := float(GameState.CLOCK_CONFIG["start"])
-		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
-			GameState.player_negative_damage_bonus *= 1.1
-			GameState.player_damage_mult *= 1.1
-		GameState.negative_mode = false
-		GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-		GameState.player_health = new_clock
-		GameState.player_damage_mult = 1.0 * GameState.player_negative_damage_bonus
-		GameState.return_stage = ""
-		GameState.clock_running = false
-		GameState.enemy_damage_scale *= 1.25
-		GameState.enemy_health_scale *= 1.15
-		GameState.negative_kills = 0
-		GameState.negative_total = 0
-		GameState.negative_remaining_spawns = 0
+		var next_scene_path := next_scene
+		var is_boss_next := next_scene_path.contains("boss") or next_scene_path.contains("arena")
+		var remaining := GameState.player_health
+		var bonus := float(GameState.CLOCK_CONFIG["negative_level_clear_bonus"])
 		for e in get_tree().get_nodes_in_group("enemy"):
 			if is_instance_valid(e):
 				e.queue_free()
-		get_tree().call_deferred("change_scene_to_file", target if target != "" else "res://scenes/levels/level1.tscn")
-		return
+		GameState.negative_kills = 0
+		GameState.negative_total = 0
+		GameState.negative_remaining_spawns = 0
+		if is_boss_next:
+			GameState.negative_mode = false
+			GameState.return_stage = ""
+			GameState.in_boss_fight = true
+			GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
+			var nc := maxf(remaining + bonus, float(GameState.CLOCK_CONFIG["return_clock_min"]))
+			if nc > GameState.player_max_hp:
+				nc = GameState.player_max_hp
+			GameState.player_health = nc
+			GameState.player_damage_mult = GameState.player_negative_damage_bonus
+			GameState.clock_running = false
+			GameState.enemy_damage_scale *= 1.25
+			GameState.enemy_health_scale *= 1.15
+			if OS.is_debug_build():
+				print("TRANSITION: from %s/negative to %s/normal, clock %.0f" % [scene_file_path, next_scene_path, GameState.player_health])
+			GameState.shop_next_scene = next_scene_path
+			var stage := _stage_number()
+			var caption := ("LEVEL %d COMPLETED" % stage) if stage > 0 else ""
+			GameState.to_blackout("res://scenes/ui/shop.tscn", caption, "WELCOME TO APHRODITE'S UNDERWORLD SHOP")
+			get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
+			return
+		else:
+			GameState.player_health = minf(remaining + bonus, GameState.player_max_hp)
+			if GameState.player_health < 10.0:
+				GameState.player_health = 10.0
+			GameState.clock_seconds = GameState.player_health
+			if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
+				GameState.player_negative_damage_bonus *= 1.1
+			GameState.player_damage_mult = GameState.player_negative_damage_bonus
+			if OS.is_debug_build():
+				print("TRANSITION: from %s/negative to %s/negative, clock %.0f" % [scene_file_path, next_scene_path, GameState.player_health])
+			GameState.shop_next_scene = next_scene_path
+			var stage := _stage_number()
+			var caption := ("LEVEL %d COMPLETED" % stage) if stage > 0 else ""
+			GameState.to_blackout("res://scenes/ui/shop.tscn", caption, "WELCOME TO APHRODITE'S UNDERWORLD SHOP")
+			get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
+			return
 	GameState.finish_stage()
 	GameState.enemy_damage_scale *= 1.25
 	GameState.enemy_health_scale *= 1.15

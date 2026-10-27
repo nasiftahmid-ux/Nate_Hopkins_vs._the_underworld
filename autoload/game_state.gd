@@ -41,6 +41,9 @@ const CLOCK_CONFIG := {
 	"coin_value": 1.0,
 	"level_up_bonus": 5.0,
 	"level_up_damage_mult": 0.05,
+	"negative_level_clear_bonus": 10.0,
+	"return_clock_min": 25.0,
+	"negative_death_returns_to": "current",
 }
 var NEGATIVE_ENEMIES := {
 	"negative_start": 30.0,
@@ -219,6 +222,7 @@ var negative_kills := 0
 var negative_total := 0
 var negative_time_gained := 0.0
 var negative_remaining_spawns := 0
+var in_boss_fight := false
 var player_negative_damage_bonus := 1.0
 var return_stage := ""
 var clock_seconds := 60.0
@@ -310,6 +314,7 @@ func start_new_run() -> void:
 	negative_total = 0
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
+	in_boss_fight = false
 	player_negative_damage_bonus = 1.0
 	return_stage = ""
 	clock_seconds = 60.0
@@ -710,6 +715,7 @@ func enter_negative() -> void:
 	negative_visits += 1
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
+	in_boss_fight = false
 	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
 	NEGATIVE_ENEMIES["negative_start"] = ns
 	player_max_hp = ns
@@ -891,6 +897,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		if not negative_mode:
 			enter_negative()
 			get_tree().change_scene_to_file(return_stage if return_stage != "" else "res://scenes/levels/level1.tscn")
+		get_viewport().set_input_as_handled()
+	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F7:
+		var scene := get_tree().current_scene
+		if scene:
+			var door := scene.find_child("Door", true, false)
+			if door and door.has_method("_go"):
+				door._go()
 		get_viewport().set_input_as_handled()
 
 
