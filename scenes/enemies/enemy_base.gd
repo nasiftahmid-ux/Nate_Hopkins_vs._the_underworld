@@ -217,6 +217,7 @@ func die() -> void:
 	if money_reward > 0:
 		GameState.add_money(money_reward)
 	GameState.add_clock(time_reward)
+	GameState.register_kill()
 	_spawn_coin()
 	collision_layer = 0
 	collision_mask = 0

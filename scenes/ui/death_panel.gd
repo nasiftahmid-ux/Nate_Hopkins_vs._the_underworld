@@ -8,28 +8,48 @@ func _ready() -> void:
 	get_tree().paused = true
 	restart_level_button.text = "AGAIN"
 	restart_game_button.text = "MENU"
-	# Results summary
 	var score := GameState.calculate_run_score()
+	var hb := GameState.payout_heartbreak(false)
+	var vbox := $Center/VBox
 	var score_label := Label.new()
 	score_label.text = "SCORE: %d" % score
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	$Center/VBox.add_child(score_label)
+	vbox.add_child(score_label)
 	var best_label := Label.new()
-	if score >= GameState.best_score and score > 0:
-		best_label.text = "NEW BEST!"
-	else:
-		best_label.text = "BEST: %d" % GameState.best_score
+	best_label.text = "BEST: %d" % GameState.best_score
 	best_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	$Center/VBox.add_child(best_label)
+	vbox.add_child(best_label)
 	var grade_label := Label.new()
 	grade_label.text = "GRADE: %s" % GameState.grade_id()
 	grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	$Center/VBox.add_child(grade_label)
+	vbox.add_child(grade_label)
 	var rooms_label := Label.new()
-	rooms_label.text = "ROOMS: %d" % GameState.rooms_cleared
+	rooms_label.text = "ENDED IN ROOM %d OF 3" % (GameState.rooms_cleared + 1)
 	rooms_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	$Center/VBox.add_child(rooms_label)
-	# move buttons after? They are already in tree; labels appended after buttons. Reorder not critical.
+	vbox.add_child(rooms_label)
+	var hb_label := Label.new()
+	hb_label.text = "+%d HEARTBREAK" % hb
+	hb_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(hb_label)
+	var visits_label := Label.new()
+	visits_label.text = "NEGATIVE VISITS: %d" % GameState.negative_visits
+	visits_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(visits_label)
+	var roasts := [
+		""You fought like a man apologizing with his fists."",
+		""The Underworld will miss you. Briefly."",
+		""Try not to die next time. It's unbecoming."",
+		""I've seen better from a haunted toaster."",
+		""At least you're consistent."",
+		""Love is a battlefield. You lost."",
+		""Next time, bring snacks."",
+		""Aphrodite is not impressed. Aphrodite is never impressed."",
+	]
+	var roast := roasts[GameState.rooms_cleared % roasts.size()]
+	var roast_label := Label.new()
+	roast_label.text = roast
+	roast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vbox.add_child(roast_label)
 	restart_level_button.pressed.connect(_on_again)
 	restart_game_button.pressed.connect(_on_menu)
 	restart_level_button.grab_focus()

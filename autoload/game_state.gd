@@ -629,6 +629,19 @@ func register_kill() -> void:
 	kills_this_run += 1
 
 
+func register_room_cleared() -> void:
+	rooms_cleared += 1
+
+
+func payout_heartbreak(won: bool) -> int:
+	var hb := money + 100 * rooms_cleared
+	if defeated_exes >= 1:
+		hb += 150
+	heartbreak += hb
+	save_game()
+	return hb
+
+
 func enter_negative() -> void:
 	negative_mode = true
 	var cur := ""
