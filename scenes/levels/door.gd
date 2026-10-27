@@ -105,15 +105,24 @@ func _go() -> void:
 		var new_clock := GameState.player_health + 10.0
 		if new_clock < float(GameState.NEGATIVE_ENEMIES["return_clock_min"]):
 			new_clock = float(GameState.NEGATIVE_ENEMIES["return_clock_min"])
+		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
+			GameState.player_negative_damage_bonus *= 1.1
+			GameState.player_damage_mult *= 1.1
 		GameState.negative_mode = false
 		GameState.player_max_hp = 60.0
 		GameState.player_health = new_clock
-		GameState.player_damage_mult = 1.0
+		GameState.player_damage_mult = 1.0 * GameState.player_negative_damage_bonus
 		GameState.return_stage = ""
 		GameState.clock_running = false
+		GameState.enemy_damage_scale *= 1.25
+		GameState.enemy_health_scale *= 1.15
+		GameState.negative_kills = 0
+		GameState.negative_total = 0
 		get_tree().call_deferred("change_scene_to_file", target if target != "" else "res://scenes/levels/level1.tscn")
 		return
 	GameState.finish_stage()
+	GameState.enemy_damage_scale *= 1.25
+	GameState.enemy_health_scale *= 1.15
 	# Route through Aphrodite's shop, but by way of the blackout curtain so the
 	# stage ends on a "LEVEL X COMPLETED" beat. The shop is stashed in GameState
 	# rather than navigated to directly, and grants the single purchase allowed.

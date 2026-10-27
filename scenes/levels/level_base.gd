@@ -40,6 +40,7 @@ func _ready() -> void:
 		_spawn_enemy_director()
 	if GameState.negative_mode:
 		_spawn_negative_extras()
+		GameState.negative_total = get_tree().get_nodes_in_group("enemy").size()
 	GameState.clock_running = true
 
 

@@ -204,6 +204,11 @@ var run_stage_index := 0
 var negative_mode := false
 var negative_visits := 0
 var negative_max_visits := 2
+var enemy_damage_scale := 1.0
+var enemy_health_scale := 1.0
+var negative_kills := 0
+var negative_total := 0
+var player_negative_damage_bonus := 1.0
 var return_stage := ""
 var clock_seconds := 60.0
 
@@ -286,6 +291,11 @@ func start_new_run() -> void:
 	run_stage_index = 0
 	negative_mode = false
 	negative_visits = 0
+	enemy_damage_scale = 1.0
+	enemy_health_scale = 1.0
+	negative_kills = 0
+	negative_total = 0
+	player_negative_damage_bonus = 1.0
 	return_stage = ""
 	clock_seconds = 60.0
 	player_damage_mult = 1.0

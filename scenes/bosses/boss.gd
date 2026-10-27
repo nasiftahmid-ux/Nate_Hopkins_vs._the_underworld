@@ -1063,6 +1063,8 @@ func die() -> void:
 	GameState.add_money(100)
 	GameState.add_exp(200)
 	GameState.add_clock(15.0)
+	GameState.enemy_damage_scale *= 1.25
+	GameState.enemy_health_scale *= 1.15
 	_clear_hazards()
 	collision_layer = 0
 	collision_mask = 0

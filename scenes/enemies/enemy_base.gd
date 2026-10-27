@@ -97,8 +97,11 @@ var _player: Node2D
 
 
 func _ready() -> void:
+	max_hp *= GameState.enemy_health_scale
 	hp = max_hp
 	add_to_group("enemy")
+	if GameState.negative_mode:
+		node.material = null
 	# Idle wherever the level author dropped us unless the director re-homes us.
 	home = global_position
 	_patrol_target_x = home.x
@@ -218,6 +221,8 @@ func die() -> void:
 		GameState.add_money(money_reward)
 	GameState.add_clock(time_reward)
 	GameState.register_kill()
+	if GameState.negative_mode:
+		GameState.negative_kills += 1
 	_spawn_coin()
 	collision_layer = 0
 	collision_mask = 0
