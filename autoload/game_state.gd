@@ -755,111 +755,15 @@ func save_game() -> void:
 	if active_slot >= 0 and not sandbox:
 		save_slot()
 		return
-	var data := _load_save_data()
-	data["player_max_hp"] = player_max_hp
-	data["money"] = money
-	data["exp"] = exp
-	data["level"] = level
-	data["defeated_exes"] = defeated_exes
-	data["run_damage_taken"] = run_damage_taken
-	data["run_deaths"] = run_deaths
-	data["stage_damage"] = stage_damage
-	data["shop_ranks"] = shop_ranks
-	data["warcry_charges"] = warcry_charges
-	data["warcry_active"] = warcry_active
-	data["best_score"] = best_score
-	data["heartbreak"] = heartbreak
-	data["perm_upgrades"] = perm_upgrades
-	data["seen_story"] = seen_story
-	_save_data(data)
+	# sandbox / no active slot: never touch the legacy save.json
+	return
 
 
 func load_game() -> bool:
 	if active_slot >= 0 and not sandbox:
 		return load_slot(active_slot)
-	var parsed := _load_save_data()
-	if parsed.is_empty() and not FileAccess.file_exists(SAVE_PATH):
-		return false
-	if not parsed is Dictionary:
-		return false
-	player_max_hp = parsed.get("player_max_hp", player_max_hp)
-	money = parsed.get("money", money)
-	exp = parsed.get("exp", exp)
-	level = parsed.get("level", level)
-	defeated_exes = parsed.get("defeated_exes", defeated_exes)
-	run_damage_taken = float(parsed.get("run_damage_taken", 0.0))
-	run_deaths = int(parsed.get("run_deaths", 0))
-	stage_damage.clear()
-	var saved_stages = parsed.get("stage_damage", [])
-	if saved_stages is Array:
-		for value in saved_stages:
-			stage_damage.append(float(value))
-	shop_ranks.clear()
-	var saved_ranks = parsed.get("shop_ranks", {})
-	if saved_ranks is Dictionary:
-		for key in saved_ranks:
-			shop_ranks[str(key)] = int(saved_ranks[key])
-	warcry_charges = int(parsed.get("warcry_charges", 0))
-	warcry_active = int(parsed.get("warcry_active", 0))
-	revives_left = int(parsed.get("revives_left", 0))
-	best_score = int(parsed.get("best_score", 0))
-	var saved_seen = parsed.get("seen_story", {})
-	if saved_seen is Dictionary:
-		seen_story = saved_seen
-	heartbreak = int(parsed.get("heartbreak", 0))
-	var pu = parsed.get("perm_upgrades", {})
-	if pu is Dictionary:
-		perm_upgrades = pu
-	# Max HP is recomputed from the level curve plus shop bonuses, so a purchase
-	# survives a reload instead of being clobbered by the authoritative curve.
-	player_max_hp = total_max_hp()
-	return true
+	return false
 
-
-func add_money(value: int) -> void:
-	if negative_mode:
-		value = int(round(value * float(NEGATIVE_ENEMIES["score_mult"])))
-	money += value
-	save_game()
-	money_changed.emit(money)
-
-
-func add_clock(seconds: float) -> void:
-	if negative_mode:
-		var cap := float(NEGATIVE_ENEMIES["negative_time_gain_cap"])
-		var remaining := cap - negative_time_gained
-		if remaining <= 0.0:
-			seconds = 0.0
-		elif seconds > remaining:
-			seconds = remaining
-		negative_time_gained += seconds
-	player_health = minf(player_health + seconds, player_max_hp)
-	GameState.clock_seconds = player_health
-
-
-func add_exp(value: int) -> void:
-	if negative_mode:
-		value = int(round(value * float(NEGATIVE_ENEMIES["xp_mult"])))
-	exp += value
-	while exp >= exp_to_next_level():
-		exp -= exp_to_next_level()
-		level += 1
-		player_health = minf(player_health + float(CLOCK_CONFIG["level_up_bonus"]), player_max_hp)
-		player_damage_mult += float(CLOCK_CONFIG["level_up_damage_mult"])
-		level_changed.emit(level)
-		level_healed.emit(float(CLOCK_CONFIG["level_up_bonus"]))
-	exp_changed.emit(exp)
-	save_game()
-
-
-func begin_level() -> void:
-	clear_damage_penalty()
-	player_health = player_max_hp
-
-
-## Called by every stage scene on entry. Closing is idempotent, so a door that
-## already closed the previous stage does not record a duplicate. Warcry bought
-## at the previous door goes live here, and `finish_stage()` retires it.
 func begin_stage() -> void:
 	clear_damage_penalty()
 	_stage_open = true
