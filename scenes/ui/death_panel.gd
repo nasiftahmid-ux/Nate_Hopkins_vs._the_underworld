@@ -24,7 +24,11 @@ func _ready() -> void:
 	grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(grade_label)
 	var rooms_label := Label.new()
-	rooms_label.text = "ENDED IN ROOM %d OF 3" % (GameState.rooms_cleared + 1)
+	var _n := 0
+	for _r in GameState.RUN_ROUTE:
+		if _r.contains("level"):
+			_n += 1
+	rooms_label.text = "ENDED IN ROOM %d OF %d" % [GameState.rooms_cleared + 1, _n]
 	rooms_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(rooms_label)
 	var hb_label := Label.new()

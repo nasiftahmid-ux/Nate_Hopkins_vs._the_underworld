@@ -59,11 +59,11 @@ var NEGATIVE_ENEMIES := {
 	"score_mult": 2.0,
 	"max_alive": 12,
 	"gray_actors": true,
-	"spawn_multiplier_by_level": {1: 2, 2: 2, 3: 3},
+	"spawn_multiplier_by_level": {1: 2, 2: 2, 3: 3, 4: 3},
 	"spawn_multiplier_default": 2,
 	"negative_time_gain_cap": 45.0,
 }
-## Short roguelite run route: 3 levels, boss 1, finale.
+## Run route: levels 1-4, boss 1, boss 2, finale.
 const RUN_ROUTE: Array[String] = [
 	"res://scenes/levels/level1.tscn",
 	"res://scenes/levels/level2.tscn",

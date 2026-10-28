@@ -118,6 +118,7 @@ func _go() -> void:
 		for e in get_tree().get_nodes_in_group("enemy"):
 			if is_instance_valid(e):
 				e.queue_free()
+		GameState.register_room_cleared()
 		GameState.negative_kills = 0
 		GameState.negative_total = 0
 		GameState.negative_remaining_spawns = 0
@@ -155,6 +156,7 @@ func _go() -> void:
 			GameState.to_blackout("res://scenes/ui/shop.tscn", caption, "WELCOME TO APHRODITE'S UNDERWORLD SHOP")
 			get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
 			return
+	GameState.register_room_cleared()
 	GameState.finish_stage()
 	GameState.enemy_damage_scale *= 1.25
 	GameState.enemy_health_scale *= 1.15

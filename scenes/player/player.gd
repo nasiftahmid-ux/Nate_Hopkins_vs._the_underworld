@@ -378,6 +378,8 @@ func die() -> void:
 	# Negative world entry: clock-zero on a regular level while visits remain.
 	if (not GameState.negative_mode) and (not is_boss) and GameState.negative_visits < GameState.negative_max_visits:
 		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
+		if OS.is_debug_build():
+			print("TRANSITION: %s/normal -> %s/negative, clock %.0f" % [scene_path, scene_path, GameState.player_health])
 		GameState.enter_negative()
 		get_tree().paused = false
 		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
@@ -386,6 +388,8 @@ func die() -> void:
 	print("Clock 0: returning to normal world (loop)")
 	var target := scene_path
 	var was_negative_death := GameState.negative_mode
+	if OS.is_debug_build():
+		print("TRANSITION: %s -> %s, negative=%s, clock=%.0f" % [scene_path, target, str(GameState.negative_mode), GameState.player_health])
 	if GameState.negative_mode:
 		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
 			GameState.player_negative_damage_bonus *= 1.1
