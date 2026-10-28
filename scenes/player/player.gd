@@ -400,6 +400,11 @@ func die() -> void:
 			target = scene_path
 		GameState.exit_negative(false)
 		GameState.return_stage = ""
+		GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
+		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+		if GameState.should_play_story("S4_FIRST_TIME_BACK_FROM_NEGATIVE"):
+			GameState.play_story("S4_FIRST_TIME_BACK_FROM_NEGATIVE", GameState.story_lines("S4_FIRST_TIME_BACK_FROM_NEGATIVE"), target)
+			return
 	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
 	GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
 	GameState.player_damage_mult = GameState.player_negative_damage_bonus
@@ -408,6 +413,11 @@ func die() -> void:
 	GameState.enemy_health_scale *= 1.15
 	GameState.negative_kills = 0
 	GameState.negative_total = 0
+	if is_boss:
+		GameState.dialogue_lines = GameState.story_lines("S7_BOSS_LOSS")
+		GameState.scene_after_dialogue = target if target != "" else "res://scenes/bosses/boss_arena.tscn"
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
+		return
 	get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
 	return
 	sprite.process_mode = Node.PROCESS_MODE_ALWAYS

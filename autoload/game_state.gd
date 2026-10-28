@@ -223,6 +223,7 @@ var negative_total := 0
 var negative_time_gained := 0.0
 var negative_remaining_spawns := 0
 var in_boss_fight := false
+var seen_story := {}
 var unlocked_moves := {"kick": false, "special": false}
 signal move_unlocked(move_name: String)
 var player_negative_damage_bonus := 1.0
@@ -542,6 +543,7 @@ func save_game() -> void:
 	data["best_score"] = best_score
 	data["heartbreak"] = heartbreak
 	data["perm_upgrades"] = perm_upgrades
+	data["seen_story"] = seen_story
 	_save_data(data)
 
 
@@ -572,6 +574,9 @@ func load_game() -> bool:
 	warcry_active = int(parsed.get("warcry_active", 0))
 	revives_left = int(parsed.get("revives_left", 0))
 	best_score = int(parsed.get("best_score", 0))
+	var saved_seen = parsed.get("seen_story", {})
+	if saved_seen is Dictionary:
+		seen_story = saved_seen
 	heartbreak = int(parsed.get("heartbreak", 0))
 	var pu = parsed.get("perm_upgrades", {})
 	if pu is Dictionary:
@@ -835,6 +840,71 @@ func decorate_followup_lines(lines: Array[Dictionary]) -> Array[Dictionary]:
 	return out
 
 
+func should_play_story(id: String) -> bool:
+	if STORY_CONFIG.get("repeat_each_run", false):
+		return true
+	return not seen_story.has(id)
+
+
+func story_lines(id: String) -> Array[Dictionary]:
+	match id:
+		"S2_BEFORE_LEVEL_1":
+			return [
+				{"speaker": "Nate", "text": "Where am I?"},
+				{"speaker": "Hades", "text": "You're in the Underworld, boy. Fight your way through if you want to escape in time."},
+				{"speaker": "Hades", "text": "And don't tell Aphrodite I gave you the idea."},
+			]
+		"S3_FIRST_TIME_NEGATIVE_WORLD":
+			return [
+				{"speaker": "Nate", "text": "I didn't die?"},
+				{"speaker": "Hades", "text": "No, boy. This is the colourless world. It's harsh, and the demons are much stronger."},
+				{"speaker": "Hades", "text": "But you can get stronger too, by defeating them."},
+			]
+		"S4_FIRST_TIME_BACK_FROM_NEGATIVE":
+			return [
+				{"speaker": "Nate", "text": "I'm back! And wait... I still have my skills!"},
+				{"speaker": "Hades", "text": "Use them wisely. And use them in time."},
+			]
+		"S5_BEFORE_BOSS_1":
+			return [
+				{"speaker": "Hades", "text": "Your first real fight, boy. Press K to kick. You'll need it."},
+				{"speaker": "Nate", "text": "Whoa! Who are you?"},
+				{"speaker": "", "text": "The boss does not speak."},
+			]
+		"S7_BOSS_LOSS":
+			return [
+				{"speaker": "Nate", "text": "Oh nooo... Again from here?"},
+			]
+		"S8_BEFORE_LEVEL_3":
+			return [
+				{"speaker": "Hades", "text": "Listen, boy. You've learned a new trick: the uppercut."},
+				{"speaker": "Hades", "text": "Hit them from below and send them flying."},
+				{"speaker": "Nate", "text": "Hell yeah!"},
+			]
+		"S9_BEFORE_BOSS_2":
+			return [
+				{"speaker": "Nate", "text": "We meet again. Whatever the hell you are... demon."},
+				{"speaker": "???", "text": "So I'm a demon now? You can't even recognize me."},
+			]
+		"S11_FINALE_PLAYER_LOSES":
+			return [
+				{"speaker": "Aphrodite", "text": "Pathetic. Back to the beginning with you!"},
+			]
+	var _empty: Array[Dictionary] = []
+	return _empty
+
+
+func play_story(id: String, lines: Array[Dictionary], scene_after: String) -> bool:
+	if not should_play_story(id):
+		return false
+	seen_story[id] = true
+	save_game()
+	dialogue_lines = lines
+	scene_after_dialogue = scene_after
+	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
+	return true
+
+
 func can_use(move: String) -> bool:
 	return bool(unlocked_moves.get(move, false))
 
@@ -907,6 +977,7 @@ static func dev_cheats_available() -> bool:
 ## F9 mirrors the command line for testing in an exported build, where the
 ## engine console does not exist at all.
 const DEV_CHEAT_ACTION := &"dev_cheat"
+const STORY_CONFIG := {"repeat_each_run": false}
 ## Enough to buy anything in the shop several times over, for price testing.
 const DEV_MONEY_REFILL := 5000
 
@@ -927,6 +998,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(DEV_CHEAT_ACTION):
 		cheat("health")
 		clock_running = not clock_running
+		get_viewport().set_input_as_handled()
+	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F6:
+		seen_story.clear()
+		save_game()
+		print("STORY RESET")
 		get_viewport().set_input_as_handled()
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F8:
 		if not negative_mode:

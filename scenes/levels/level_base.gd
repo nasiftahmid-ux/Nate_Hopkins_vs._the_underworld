@@ -22,11 +22,23 @@ var _gray_count := 0
 func _ready() -> void:
 	GameState.begin_stage()
 	GameState.apply_unlocks_for_stage(scene_file_path)
+	if (not GameState.negative_mode) and scene_file_path.ends_with("level1.tscn") and GameState.should_play_story("S2_BEFORE_LEVEL_1"):
+		GameState.play_story("S2_BEFORE_LEVEL_1", GameState.story_lines("S2_BEFORE_LEVEL_1"), scene_file_path)
+		return
+	if (not GameState.negative_mode) and scene_file_path.ends_with("level3.tscn") and GameState.should_play_story("S8_BEFORE_LEVEL_3"):
+		GameState.play_story("S8_BEFORE_LEVEL_3", GameState.story_lines("S8_BEFORE_LEVEL_3"), scene_file_path)
+		return
+	var _play_neg_story := false
 	if GameState.negative_mode:
 		GameState.player_max_hp = float(GameState.NEGATIVE_ENEMIES["negative_start"])
 		GameState.player_health = GameState.player_max_hp
 		await get_tree().process_frame
 		_apply_negative_visuals()
+		if GameState.should_play_story("S3_FIRST_TIME_NEGATIVE_WORLD"):
+			_play_neg_story = true
+	if _play_neg_story:
+		GameState.play_story("S3_FIRST_TIME_NEGATIVE_WORLD", GameState.story_lines("S3_FIRST_TIME_NEGATIVE_WORLD"), scene_file_path)
+		return
 	Music.play_level()
 	camera.limit_left = 0
 	camera.limit_top = -400

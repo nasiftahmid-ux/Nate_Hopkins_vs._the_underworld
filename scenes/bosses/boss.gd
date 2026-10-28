@@ -144,6 +144,13 @@ func _ready() -> void:
 	GameState.begin_stage()
 	if GameState.defeated_exes == 0:
 		GameState.unlock_move("kick")
+		if GameState.should_play_story("S5_BEFORE_BOSS_1"):
+			GameState.play_story("S5_BEFORE_BOSS_1", GameState.story_lines("S5_BEFORE_BOSS_1"), "res://scenes/bosses/boss_arena.tscn")
+			return
+	elif GameState.defeated_exes == 1:
+		if GameState.should_play_story("S9_BEFORE_BOSS_2"):
+			GameState.play_story("S9_BEFORE_BOSS_2", GameState.story_lines("S9_BEFORE_BOSS_2"), "res://scenes/bosses/boss_arena.tscn")
+			return
 	hp = HP_BASE + GameState.defeated_exes * HP_PER_EX
 	max_hp = hp
 	boss_kind = BossKind.BROKEN if GameState.defeated_exes == 0 else BossKind.SWEETHEART
