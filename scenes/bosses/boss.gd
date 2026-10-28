@@ -1104,11 +1104,10 @@ func die() -> void:
 		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
 	else:
 		GameState.dialogue_lines = [
-			{"speaker": "Aphrodite", "text": "One heart down, one to go. But don't celebrate yet, Nate Hopkins."},
-			{"speaker": "???", "text": "You really don't remember me? My heart was yours first. And you broke it first."},
+			{"speaker": "Nate", "text": "Heh. I beat you."},
+			{"speaker": "???", "text": "You think you beat me, Nate? Like you broke my heart? Ha ha ha..."},
 			GameState.grade_chant(),
-			{"speaker": "???", "text": "You've learned to fight. Now prove you can keep a beat."},
-			{"speaker": "Nate", "text": "A rhythm game? In the Underworld? Who designed this place?"},
+			{"speaker": "???", "text": "You'll face me again soon enough."},
 		]
 		GameState.rhythm_followup_lines = []
 		GameState.rhythm_followup_scene = "res://scenes/levels/level3.tscn"
