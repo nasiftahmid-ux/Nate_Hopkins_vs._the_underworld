@@ -44,9 +44,17 @@ func _ready() -> void:
 	_animate_backdrop()
 	_animate_title()
 	_style_text_button(start_button, 24)
-	_style_text_button(quit_button, 24)
+	start_button.text = "CONTINUE"
 	start_button.grab_focus()
-	start_button.pressed.connect(_on_start)
+	start_button.pressed.connect(_on_continue)
+	var start_over := Button.new()
+	start_over.text = "START OVER"
+	_style_text_button(start_over, 24)
+	start_over.pressed.connect(_on_start_over)
+	$Center/VBox.add_child(start_over)
+	# move quit button after
+	quit_button.get_parent().move_child(quit_button, quit_button.get_parent().get_child_count() - 1)
+	_style_text_button(quit_button, 24)
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
 	_build_level_select()
 	_run_slideshow()
@@ -105,10 +113,21 @@ func _setup_rhythm(phase: int) -> void:
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 
 
-func _on_start() -> void:
+func _on_continue() -> void:
 	Music.stop()
-	GameState.scene_after_dialogue = "res://scenes/levels/level1.tscn"
-	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
+	if GameState.active_slot >= 0 and not GameState.sandbox:
+		if GameState.load_slot(GameState.active_slot):
+			var stage := GameState.begin_attempt()
+			get_tree().change_scene_to_file(stage)
+			return
+	GameState.open_new_run_flow_pending = false
+	get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
+
+
+func _on_start_over() -> void:
+	Music.stop()
+	GameState.open_new_run_flow_pending = true
+	get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
 
 
 # --- Presentation -----------------------------------------------------------
