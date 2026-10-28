@@ -75,7 +75,10 @@ func _on_level_selected(entry: Dictionary) -> void:
 	GameState.active_slot = -1
 	GameState.begin_level()
 	GameState.apply_unlocks_for_stage(entry["scene"])
-	get_tree().change_scene_to_file(entry["scene"])
+	if entry["scene"].contains("level1") and GameState.should_play_story("S1_INTRO"):
+		GameState.play_story("S1_INTRO", GameState.story_lines("S1_INTRO"), entry["scene"])
+	else:
+		get_tree().change_scene_to_file(entry["scene"])
 
 
 func _setup_rhythm(phase: int) -> void:
