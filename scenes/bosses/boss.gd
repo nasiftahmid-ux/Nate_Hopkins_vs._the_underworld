@@ -1086,19 +1086,31 @@ func die() -> void:
 	GameState.defeated_exes += 1
 	if GameState.defeated_exes >= 2:
 		GameState.dialogue_lines = [
-			{"speaker": "Aphrodite", "text": "Impressive, mortal. Two broken hearts, both beaten to a pulp..."},
-			{"speaker": "Aphrodite", "text": "But love is never won with fists. Love is a SONG, Nate Hopkins."},
+			{"speaker": "Narrator", "text": "Her demon form fades away."},
+			{"speaker": "Nate", "text": "Wendy?"},
+			{"speaker": "Wendy", "text": "Yes."},
+			{"speaker": "", "text": "Nate sobs."},
+			{"speaker": "Nate", "text": "Wait... why are you here?"},
+			{"speaker": "Wendy", "text": "What else do you think?"},
+			{"speaker": "", "text": "Aphrodite appears."},
+			{"speaker": "Aphrodite", "text": "How did you escape?! No... what did you do?!"},
+			{"speaker": "Aphrodite", "text": "Wait. Nate Hopkins, you beast! Is there no love in your heart?"},
+			{"speaker": "Aphrodite", "text": "Sing me a song of love, if you can. Or I'll throw you back to the beginning."},
+			{"speaker": "Aphrodite", "text": "That is the price of your freedom."},
 			GameState.grade_chant(),
-			{"speaker": "???", "text": "Proof you deserve another chance... must be sung beautifully."},
-			{"speaker": "Nate", "text": "Seriously? A dating game taught me how to fight. Now I have to learn to sing too?"},
-			{"speaker": "Aphrodite", "text": "Sing, and the Underworld will set you free. Miss the beat, and you begin again."},
 		]
 		GameState.set_rhythm_difficulty(1.0, 30)
 		GameState.rhythm_followup_lines = GameState.decorate_followup_lines([
-			{"speaker": "Nate", "text": "Hazel... I clawed my way out of the actual Underworld for this."},
-			{"speaker": "Hazel", "text": "...That's the weirdest pickup line I've ever heard."},
-			{"speaker": "Hazel", "text": "But I guess anyone who fights through Hell deserves a first date. Dinner?"},
-			{"speaker": "Narrator", "text": "Nate became a master of the Underworld dating circuit. 10/10 no notes."},
+			{"speaker": "Aphrodite", "text": "Hmph. I'll say nothing. I hope you've learned your lesson, mortal."},
+			{"speaker": "Aphrodite", "text": "There will be no next time... or my brother Mischief will be there to help you."},
+			{"speaker": "Narrator", "text": "Nate falls into the middle of a classroom. Hazel is there."},
+			{"speaker": "Hazel", "text": "Where did you go? What happened to you?"},
+			{"speaker": "Nate", "text": "Well... it's a long story. But I think I deserved what happened to me."},
+			{"speaker": "Hazel", "text": "Are you okay? You should get checked up. Let me take you."},
+			{"speaker": "Nate", "text": "Hazel, wait. I need to tell you something."},
+			{"speaker": "Hazel", "text": "What?"},
+			{"speaker": "Nate", "text": "Do you wanna go out with me?"},
+			{"speaker": "Hazel", "text": "......"},
 		])
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
