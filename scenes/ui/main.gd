@@ -32,8 +32,7 @@ var level_select: Array[Dictionary] = [
 	{"label": "L5", "scene": "res://scenes/levels/level5.tscn"},
 	{"label": "BOSS 1", "scene": "res://scenes/bosses/boss_arena.tscn", "exes": 0},
 	{"label": "BOSS 2", "scene": "res://scenes/bosses/boss_arena.tscn", "exes": 1},
-	{"label": "RHYTHM 1", "scene": "res://scenes/bosses/final_rhythm.tscn", "rhythm": 1},
-	{"label": "RHYTHM 2", "scene": "res://scenes/bosses/final_rhythm.tscn", "rhythm": 2},
+	{"label": "RHYTHM", "scene": "res://scenes/bosses/final_rhythm.tscn", "rhythm": 2},
 ]
 
 

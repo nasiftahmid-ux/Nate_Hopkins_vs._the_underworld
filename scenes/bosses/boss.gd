@@ -1120,7 +1120,7 @@ func die() -> void:
 			{"speaker": "Hazel", "text": "......"},
 		])
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
-		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
+		GameState.scene_after_dialogue = "res://scenes/ui/main.tscn"
 	else:
 		GameState.dialogue_lines = [
 			{"speaker": "Nate", "text": "Heh. I beat you."},
