@@ -80,7 +80,7 @@ const SHOP_HP_PER_RANK := 10.0
 const SHOP_HEAVY_PER_RANK := 3.0
 const SHOP_COOLDOWN_PER_RANK := 0.25
 const SHOP_WARCRY_PER_RANK := 6.0
-const BASE_SPECIAL_COOLDOWN := 2.0
+const BASE_SPECIAL_COOLDOWN := 7.0
 
 ## Aphrodite's Underworld Shop catalogue. `base` is the first purchase, `scale`
 ## multiplies the price on every repeat, and `max_ranks` caps it (`0` = forever).
@@ -601,7 +601,7 @@ func heavy_damage_bonus() -> float:
 func special_cooldown_value() -> float:
 	return maxf(
 		BASE_SPECIAL_COOLDOWN - SHOP_COOLDOWN_PER_RANK * float(shop_rank("cooldown")),
-		1.0
+		5.0
 	)
 
 
