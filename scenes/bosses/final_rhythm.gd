@@ -37,8 +37,8 @@ var finished := false
 @onready var feedback: Label = $UI/FeedbackLabel
 @onready var intro_label: Label = $UI/IntroLabel
 @onready var title_label: Label = $UI/TitleLabel
-@onready var boss_box: ColorRect = $UI/BossBox
-@onready var boss_label: Label = $UI/BossLabel
+@onready var boss_box: ColorRect = get_node_or_null("UI/BossBox")
+@onready var boss_label: Label = get_node_or_null("UI/BossLabel")
 @onready var hint_label: Label = $UI/Hint
 
 
@@ -52,12 +52,15 @@ func _ready() -> void:
 		notes.append(randi_range(0, 2))
 	var boss_phase := maxi(GameState.defeated_exes, 1)
 	title_label.text = "FINAL BOSS: RHYTHM OF THE UNDERWORLD - PHASE %d" % boss_phase
-	if boss_phase >= 2:
-		boss_label.text = "THE FIRST LOVE"
-		boss_box.color = Color(0.95, 0.55, 0.75, 1)
-	else:
-		boss_label.text = "THE ONE YOU HURT"
-		boss_box.color = Color(0.85, 0.5, 0.95, 1)
+	if boss_box:
+		if boss_phase >= 2:
+			if boss_label:
+				boss_label.text = "THE FIRST LOVE"
+			boss_box.color = Color(0.95, 0.55, 0.75, 1)
+		else:
+			if boss_label:
+				boss_label.text = "THE ONE YOU HURT"
+			boss_box.color = Color(0.85, 0.5, 0.95, 1)
 	hint_label.add_theme_color_override("font_color", rule["color"])
 	hint_label.text = GameState.grade_brief()
 	$UI/FeedbackTimer.timeout.connect(func() -> void: feedback.visible = false)

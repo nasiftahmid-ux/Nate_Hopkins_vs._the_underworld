@@ -45,33 +45,6 @@ theme_override_font_sizes/font_size = 26
 text = "♪"
 horizontal_alignment = 1
 
-[node name="BossBox" type="ColorRect" parent="UI"]
-offset_left = 963.0
-offset_top = 320.0
-offset_right = 997.0
-offset_bottom = 384.0
-color = Color(0.95, 0.55, 0.75, 1)
-
-[node name="BossLabel" type="Label" parent="UI"]
-offset_left = 903.0
-offset_top = 388.0
-offset_right = 1057.0
-offset_bottom = 416.0
-theme_override_colors/font_color = Color(1, 0.65, 0.85, 1)
-theme_override_font_sizes/font_size = 18
-text = "THE EX"
-horizontal_alignment = 1
-
-[node name="BossNoteIcon" type="Label" parent="UI"]
-offset_left = 943.0
-offset_top = 276.0
-offset_right = 1017.0
-offset_bottom = 312.0
-theme_override_colors/font_color = Color(1, 0.75, 0.9, 1)
-theme_override_font_sizes/font_size = 26
-text = "♪"
-horizontal_alignment = 1
-
 [node name="TitleLabel" type="Label" parent="UI"]
 offset_left = 280.0
 offset_top = 16.0
