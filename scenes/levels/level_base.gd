@@ -21,6 +21,7 @@ var _gray_count := 0
 
 func _ready() -> void:
 	GameState.begin_stage()
+	GameState.apply_unlocks_for_stage(scene_file_path)
 	if GameState.negative_mode:
 		GameState.player_max_hp = float(GameState.NEGATIVE_ENEMIES["negative_start"])
 		GameState.player_health = GameState.player_max_hp

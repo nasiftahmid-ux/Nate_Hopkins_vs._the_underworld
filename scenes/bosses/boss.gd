@@ -142,6 +142,8 @@ func _get_camera() -> Camera2D:
 func _ready() -> void:
 	add_to_group("enemy")
 	GameState.begin_stage()
+	if GameState.defeated_exes == 0:
+		GameState.unlock_move("kick")
 	hp = HP_BASE + GameState.defeated_exes * HP_PER_EX
 	max_hp = hp
 	boss_kind = BossKind.BROKEN if GameState.defeated_exes == 0 else BossKind.SWEETHEART
@@ -1079,6 +1081,8 @@ func die() -> void:
 		boss_bar.value = 0
 	GameState.finish_stage()
 	await get_tree().create_timer(1.4).timeout
+	if GameState.defeated_exes == 0:
+		GameState.unlock_move("special")
 	GameState.defeated_exes += 1
 	if GameState.defeated_exes >= 2:
 		GameState.dialogue_lines = [

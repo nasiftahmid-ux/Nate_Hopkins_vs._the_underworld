@@ -153,9 +153,9 @@ func _process_combat(delta: float) -> void:
 	elif not is_blocking:
 		if Input.is_action_just_pressed("attack"):
 			try_attack(false, false, not is_on_floor())
-		elif Input.is_action_just_pressed("heavy_attack"):
+		elif Input.is_action_just_pressed("heavy_attack") and GameState.can_use("kick"):
 			try_attack(true, false)
-		elif Input.is_action_just_pressed("special") and special_cooldown <= 0.0:
+		elif Input.is_action_just_pressed("special") and special_cooldown <= 0.0 and GameState.can_use("special"):
 			try_attack(false, true)
 
 

@@ -223,6 +223,8 @@ var negative_total := 0
 var negative_time_gained := 0.0
 var negative_remaining_spawns := 0
 var in_boss_fight := false
+var unlocked_moves := {"kick": false, "special": false}
+signal move_unlocked(move_name: String)
 var player_negative_damage_bonus := 1.0
 var return_stage := ""
 var clock_seconds := 60.0
@@ -315,6 +317,7 @@ func start_new_run() -> void:
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
 	in_boss_fight = false
+	unlocked_moves = {"kick": false, "special": false}
 	player_negative_damage_bonus = 1.0
 	return_stage = ""
 	clock_seconds = 60.0
@@ -460,6 +463,10 @@ func shop_item_available(id: String) -> bool:
 	if cap > 0 and shop_rank(id) >= cap:
 		return false
 	if bool(entry.get("blocked_at_full_health", false)) and player_health >= player_max_hp - 0.01:
+		return false
+	if id == "cooldown" and not can_use("special"):
+		return false
+	if id == "heavy" and not can_use("kick"):
 		return false
 	return true
 
@@ -716,6 +723,7 @@ func enter_negative() -> void:
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
 	in_boss_fight = false
+	unlocked_moves = {"kick": false, "special": false}
 	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
 	NEGATIVE_ENEMIES["negative_start"] = ns
 	player_max_hp = ns
@@ -827,6 +835,33 @@ func decorate_followup_lines(lines: Array[Dictionary]) -> Array[Dictionary]:
 	return out
 
 
+func can_use(move: String) -> bool:
+	return bool(unlocked_moves.get(move, false))
+
+
+func unlock_move(move: String) -> void:
+	if not unlocked_moves.has(move):
+		return
+	if unlocked_moves[move]:
+		return
+	unlocked_moves[move] = true
+	move_unlocked.emit(move)
+	if OS.is_debug_build():
+		print("UNLOCKED: %s" % move)
+
+
+func apply_unlocks_for_stage(stage_path: String) -> void:
+	unlocked_moves["kick"] = false
+	unlocked_moves["special"] = false
+	if stage_path.contains("level3") or stage_path.contains("level4") or stage_path.contains("final_rhythm"):
+		unlocked_moves["kick"] = true
+		unlocked_moves["special"] = true
+	elif stage_path.contains("boss_arena"):
+		unlocked_moves["kick"] = true
+		if defeated_exes >= 1:
+			unlocked_moves["special"] = true
+
+
 func xp_multiplier() -> float:
 	if player_max_hp <= 0.0:
 		return 1.0
@@ -905,6 +940,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			if door and door.has_method("_go"):
 				door._go()
 		get_viewport().set_input_as_handled()
+	if OS.is_debug_build() and event is InputEventKey and event.pressed:
+		match event.physical_keycode:
+			KEY_1:
+				unlocked_moves = {"kick": false, "special": false}
+				print("UNLOCKS: none")
+				get_viewport().set_input_as_handled()
+			KEY_2:
+				unlocked_moves = {"kick": true, "special": false}
+				print("UNLOCKS: kick")
+				get_viewport().set_input_as_handled()
+			KEY_3:
+				unlocked_moves = {"kick": true, "special": true}
+				print("UNLOCKS: kick + special")
+				get_viewport().set_input_as_handled()
 
 
 ## Handles every dev command. An unknown argument reports the usage instead of
