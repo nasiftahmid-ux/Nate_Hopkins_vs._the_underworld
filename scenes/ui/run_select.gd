@@ -6,6 +6,7 @@ var _status: Label
 var _new_run_btn: Button
 var _back_btn: Button
 var _erase_mode := false
+var _delete_only := false
 var _pending_erase_slot := -1
 var _name_panel: PanelContainer
 var _name_edit: LineEdit
@@ -55,6 +56,11 @@ func _build_ui() -> void:
 	_new_run_btn.text = "NEW UNDERWORLD RUN"
 	_new_run_btn.pressed.connect(_on_new_run_pressed)
 	vbox.add_child(_new_run_btn)
+
+	var del_btn := Button.new()
+	del_btn.text = "DELETE RUN"
+	del_btn.pressed.connect(_on_delete_pressed)
+	vbox.add_child(del_btn)
 
 	_back_btn = Button.new()
 	_back_btn.text = "BACK"
@@ -108,7 +114,15 @@ func _on_slot_pressed(i: int) -> void:
 				get_tree().change_scene_to_file(stage)
 
 
+func _on_delete_pressed() -> void:
+	_erase_mode = true
+	_delete_only = true
+	_status.text = "CHOOSE A RUN TO DELETE"
+	_refresh_cards()
+
+
 func _on_new_run_pressed() -> void:
+	_delete_only = false
 	var first_empty := -1
 	for i in range(GameState.SLOT_COUNT):
 		if GameState.slot_summary(i)["state"] == "empty":
@@ -225,6 +239,7 @@ func _cancel_warning() -> void:
 	_warning_panel.visible = false
 	_pending_erase_slot = -1
 	_erase_mode = false
+	_delete_only = false
 	_status.text = "CHOOSE YOUR UNDERWORLD RUN"
 	_refresh_cards()
 
@@ -237,6 +252,12 @@ func _confirm_erase() -> void:
 	_pending_erase_slot = -1
 	_warning_panel.visible = false
 	_erase_mode = false
+	if _delete_only:
+		_delete_only = false
+		_status.text = "CHOOSE YOUR UNDERWORLD RUN"
+		_refresh_cards()
+		return
+	_delete_only = false
 	_status.text = "CHOOSE YOUR UNDERWORLD RUN"
 	_refresh_cards()
 	_name_target_slot = slot
