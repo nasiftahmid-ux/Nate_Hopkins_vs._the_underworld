@@ -1090,7 +1090,14 @@ func die() -> void:
 	await get_tree().create_timer(1.4).timeout
 	if GameState.defeated_exes == 0:
 		GameState.unlock_move("special")
+	if (not GameState.sandbox) and GameState.active_slot >= 0:
+		if GameState.defeated_exes == 0:
+			GameState.checkpoint_index = 3
+		else:
+			GameState.checkpoint_index = 6
 	GameState.defeated_exes += 1
+	if (not GameState.sandbox) and GameState.active_slot >= 0:
+		GameState.save_slot()
 	if GameState.defeated_exes >= 2:
 		GameState.dialogue_lines = [
 			{"speaker": "Narrator", "text": "Her demon form fades away."},
@@ -1121,6 +1128,7 @@ func die() -> void:
 		]
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 		GameState.scene_after_dialogue = "res://scenes/ui/main.tscn"
+		GameState.pending_completion = true
 	else:
 		GameState.dialogue_lines = [
 			{"speaker": "Nate", "text": "Heh. I beat you."},

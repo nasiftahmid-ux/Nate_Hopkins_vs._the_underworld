@@ -137,6 +137,7 @@ func _go() -> void:
 			GameState.shop_next_scene = next_scene_path
 			var stage := _stage_number()
 			var caption := ("LEVEL %d COMPLETED" % stage) if stage > 0 else ""
+			GameState.save_slot()
 			GameState.to_blackout("res://scenes/ui/shop.tscn", caption, "WELCOME TO APHRODITE'S UNDERWORLD SHOP")
 			get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
 			return
@@ -153,10 +154,12 @@ func _go() -> void:
 			GameState.shop_next_scene = next_scene_path
 			var stage := _stage_number()
 			var caption := ("LEVEL %d COMPLETED" % stage) if stage > 0 else ""
+			GameState.save_slot()
 			GameState.to_blackout("res://scenes/ui/shop.tscn", caption, "WELCOME TO APHRODITE'S UNDERWORLD SHOP")
 			get_tree().call_deferred("change_scene_to_file", "res://scenes/ui/blackout.tscn")
 			return
 	GameState.register_room_cleared()
+	GameState.save_slot()
 	GameState.finish_stage()
 	GameState.enemy_damage_scale *= 1.25
 	GameState.enemy_health_scale *= 1.15
