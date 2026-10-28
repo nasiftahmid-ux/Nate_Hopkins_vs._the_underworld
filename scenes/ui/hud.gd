@@ -12,4 +12,4 @@ func _process(_delta: float) -> void:
 	else:
 		$HPLabel.modulate = Color.WHITE
 	$CoinsLabel.text = "Coins: %d" % GameState.money
-	$LVLabel.text = "LV %d  XP: %d / %d" % [GameState.level, GameState.exp, GameState.exp_to_next_level()]
+	$LVLabel.text = "XP: %d / %d" % [GameState.exp, GameState.exp_to_next_level()]
