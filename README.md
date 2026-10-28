@@ -94,7 +94,6 @@ end
 subgraph group_stages["Stages"]
   node_levels["Five stages"]
   node_doors["Stage doors<br/>[door.gd]"]
-  node_hints["Level hints<br/>[hint_zone.gd]"]
   node_platforms["Moving platforms<br/>[moving_platform.gd]"]
 end
 
@@ -125,7 +124,6 @@ node_enemies -->|"pays rewards"| node_game_state
 node_levels -->|"offers exit"| node_doors
 node_doors -->|"routes through"| node_shop
 node_shop -->|"stores purchases"| node_game_state
-node_levels -->|"scatters hints"| node_hints
 node_levels -.->|"includes"| node_platforms
 node_items -.->|"damages"| node_player
 node_levels -->|"records damage"| node_game_state
@@ -145,7 +143,6 @@ click node_bosses "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underw
 click node_items "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/tree/main/scenes/items"
 click node_levels "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/tree/main/scenes/levels"
 click node_doors "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/levels/door.gd"
-click node_hints "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/levels/hint_zone.gd"
 click node_platforms "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/levels/moving_platform.gd"
 click node_game_state "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/autoload/game_state.gd"
 click node_shop "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/ui/shop.gd"
