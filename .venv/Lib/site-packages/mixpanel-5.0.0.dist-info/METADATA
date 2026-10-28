@@ -1,0 +1,102 @@
+Metadata-Version: 2.4
+Name: mixpanel
+Version: 5.0.0
+Summary: Official Mixpanel library for Python
+Author-email: "Mixpanel, Inc." <dev@mixpanel.com>
+License-Expression: Apache-2.0
+Project-URL: Homepage, https://github.com/mixpanel/mixpanel-python
+Keywords: mixpanel,analytics
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Requires-Python: >=3.9
+Description-Content-Type: text/x-rst
+License-File: LICENSE.txt
+Requires-Dist: requests<3,>=2.4.2
+Requires-Dist: httpx>=0.27.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: asgiref>=3.0.0
+Provides-Extra: test
+Requires-Dist: pytest>=8.4.1; extra == "test"
+Requires-Dist: pytest-asyncio>=0.23.0; extra == "test"
+Requires-Dist: responses>=0.25.8; extra == "test"
+Requires-Dist: respx>=0.21.0; extra == "test"
+Requires-Dist: pytest-cov; extra == "test"
+Provides-Extra: dev
+Requires-Dist: tox>=4.28.4; extra == "dev"
+Requires-Dist: build; extra == "dev"
+Requires-Dist: twine; extra == "dev"
+Requires-Dist: sphinx; extra == "dev"
+Requires-Dist: ghp-import; extra == "dev"
+Dynamic: license-file
+
+mixpanel-python
+==============================
+
+.. image:: https://img.shields.io/pypi/v/mixpanel
+    :target: https://pypi.org/project/mixpanel
+    :alt: PyPI
+
+.. image:: https://img.shields.io/pypi/pyversions/mixpanel
+    :target: https://pypi.org/project/mixpanel
+    :alt: PyPI - Python Version
+
+.. image:: https://img.shields.io/pypi/dm/mixpanel
+    :target: https://pypi.org/project/mixpanel
+    :alt: PyPI - Downloads
+
+.. image:: https://github.com/mixpanel/mixpanel-python/workflows/Tests/badge.svg
+
+This is the official Mixpanel Python library. This library allows for
+server-side integration of Mixpanel.
+
+To import, export, transform, or delete your Mixpanel data, please see our
+`mixpanel-utils package`_.
+
+
+Installation
+------------
+
+The library can be installed using pip::
+
+    pip install mixpanel
+
+
+Getting Started
+---------------
+
+Typical usage usually looks like this::
+
+    from mixpanel import Mixpanel
+
+    mp = Mixpanel(YOUR_TOKEN)
+
+    # tracks an event with certain properties
+    mp.track(DISTINCT_ID, 'button clicked', {'color' : 'blue', 'size': 'large'})
+
+    # sends an update to a user profile
+    mp.people_set(DISTINCT_ID, {'$first_name' : 'Ilya', 'favorite pizza': 'margherita'})
+
+You can use an instance of the Mixpanel class for sending all of your events
+and people updates.
+
+
+Additional Information
+----------------------
+
+* `Help Docs`_
+* `Full Documentation`_
+* mixpanel-python-async_; a third party tool for sending data asynchronously
+  from the tracking python process.
+
+
+.. |travis-badge| image:: https://travis-ci.org/mixpanel/mixpanel-python.svg?branch=master
+    :target: https://travis-ci.org/mixpanel/mixpanel-python
+.. _mixpanel-utils package: https://github.com/mixpanel/mixpanel-utils
+.. _Help Docs: https://www.mixpanel.com/help/reference/python
+.. _Full Documentation: http://mixpanel.github.io/mixpanel-python/
+.. _mixpanel-python-async: https://github.com/jessepollak/mixpanel-python-async
