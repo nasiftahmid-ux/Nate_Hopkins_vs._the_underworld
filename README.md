@@ -74,7 +74,7 @@ Controls are registered programmatically at startup (see `autoload/input_setup.g
   - `scenes/enemies/` — enemy AI and combat behavior, all sharing the `EnemyBase` class, plus one generated `*_frames.tres` per enemy so each one's animation set is a data asset rather than hand-authored.
   - `scenes/bosses/` — boss fight state machine, boss arena, boss projectiles, and the rhythm-game finale.
   - `scenes/items/` — pickups and environmental hazards (coins, lava, spikes, falling rocks).
-  - `scenes/levels/` — level scenes built on a shared parameterized `level_base.gd`, plus moving platforms, doors, hazard scripts, and hint zones.
+  - `scenes/levels/` — level scenes built on a shared parameterized `level_base.gd`, plus moving platforms and doors.
   - `scenes/ui/` — main menu, HUD, pause menu, and death screen.
   - `scenes/dialogue/` — a lightweight line-by-line dialogue/cutscene system.
   - `_slice.gd` — a headless atlas builder that turns the raw sprite sheets into lossless square-grid atlases plus `SpriteFrames` resources. It locates the labelled animation bands, strips the caption text (including captions fused to the first frame), and cuts frames on the widest internal gaps so particle trails and projectiles don't split a single pose in half. Every cell is then centred horizontally and bottom-aligned to one baseline, which is what makes flipping safe. Re-cut every enemy atlas from source with `godot --headless --script res://_slice.gd`.
@@ -165,12 +165,17 @@ classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
 classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
 classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
 class node_player,node_enemies,node_bosses,node_items toneBlue
-class node_levels,node_doors,node_hints,node_platforms toneAmber
+class node_levels,node_doors,node_platforms toneAmber
 class node_game_state,node_shop toneMint
 class node_grade,node_rhythm toneRose
 class node_hud,node_main_menu,node_death,node_pause,node_dialogue,node_player_actor toneIndigo
 ```
 
+## Download & Play
+
+Pre-built Windows release: download the zip from the [Releases page](https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases), extract, and run Nate Hopkins vs the Underworld.exe. No Godot install required.
+
+Direct link (v1.0.0): https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases/download/v1.0.0/Nate%20Hopkins%20vs%20the%20Underworld.zip
 ## Running the Project
 
 1. Install [Godot 4.7](https://godotengine.org/download) or later.
@@ -181,7 +186,6 @@ class node_hud,node_main_menu,node_death,node_pause,node_dialogue,node_player_ac
 3. Open Godot, choose **Import**, and select the `project.godot` file in the cloned folder.
 4. Press **Play** (or `F5`) to run the game.
 
-There's also a level-select screen on the title menu for jumping straight into any level, either boss fight, or either phase of the rhythm finale for testing purposes.
 
 ## Project Status
 
