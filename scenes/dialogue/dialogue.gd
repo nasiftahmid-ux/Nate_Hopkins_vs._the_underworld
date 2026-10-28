@@ -31,6 +31,26 @@ func advance() -> void:
 	idx += 1
 	if idx >= GameState.dialogue_lines.size():
 		var next := GameState.scene_after_dialogue
+		if GameState.pending_completion:
+			GameState.pending_completion = false
+			if GameState.active_slot >= 0 and not GameState.sandbox:
+				var d := {}
+				var f := FileAccess.open(GameState.slot_path(GameState.active_slot), FileAccess.READ)
+				if f:
+					var p = JSON.parse_string(f.get_as_text())
+					f.close()
+					if p is Dictionary:
+						d = p
+				if d.is_empty():
+					d = GameState._default_slot_data("Nate")
+				d["completed"] = true
+				d["best_score"] = GameState.best_score
+				d["heartbreak"] = GameState.heartbreak
+				GameState._atomic_write_slot(GameState.active_slot, d)
+			GameState.show_completion_panel = true
+			GameState.clock_running = true
+			get_tree().change_scene_to_file("res://scenes/ui/main.tscn")
+			return
 		if next == "":
 			get_tree().quit()
 		else:

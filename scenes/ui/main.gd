@@ -50,6 +50,9 @@ func _ready() -> void:
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
 	_build_level_select()
 	_run_slideshow()
+	if GameState.show_completion_panel:
+		GameState.show_completion_panel = false
+		_show_completion_panel()
 
 
 func _build_level_select() -> void:
@@ -101,33 +104,6 @@ func _setup_rhythm(phase: int) -> void:
 
 func _on_start() -> void:
 	Music.stop()
-	get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
-		{"speaker": "Narrator", "text": "On the balcony of a mansion, a boy stands alone."},
-		{"speaker": "Narrator", "text": "Nate Hopkins has just finished his freshman year at university."},
-		{"speaker": "Narrator", "text": "The whole class is throwing a party before they become sophomores."},
-		{"speaker": "Narrator", "text": "As he heads inside, a flash catches his eye. A beauty has just walked past him."},
-		{"speaker": "Narrator", "text": "A boy... or maybe a man now. Never interested in this sort of thing. Yet he felt interested."},
-		{"speaker": "Nate", "text": "Hey! T! Who's that girl over there?"},
-		{"speaker": "Tracy", "text": "Her? Forget about it."},
-		{"speaker": "Nate", "text": "Why? Why?!"},
-		{"speaker": "Tracy", "text": "You never showed interest in anyone I introduced you to. You're still sulking over that ex of yours."},
-		{"speaker": "Nate", "text": "Hey, c'mon. Help your homeboy out."},
-		{"speaker": "Tracy", "text": "No. Go for it yourself. You're on your own."},
-		{"speaker": "Narrator", "text": "Nate walks up to her and tries a little small talk."},
-		{"speaker": "Nate", "text": "Hi, I'm Nate."},
-		{"speaker": "Hazel", "text": "Hi. I'm Hazel."},
-		{"speaker": "Nate", "text": "Nice name."},
-		{"speaker": "Hazel", "text": "Oh, thanks. My dad gave it to me. Hazel A. Frey."},
-		{"speaker": "Nate", "text": "What does the A stand for?"},
-		{"speaker": "Hazel", "text": "My mom's name. Anasta..."},
-		{"speaker": "", "text": "BIG EXPLOSION. Aphrodite appears out of nowhere."},
-		{"speaker": "Aphrodite", "text": "Nate Hopkins!"},
-		{"speaker": "Nate", "text": "Do I know you? How did you just explode out of nowhere?"},
-		{"speaker": "Aphrodite", "text": "Spare me your silly chat, mortal. You cursed love, and love is me."},
-		{"speaker": "Aphrodite", "text": "I will not let you bring a curse on my name again with another poor sweetheart. You're coming with me."},
-		{"speaker": "Aphrodite", "text": "Brother, lock him up."},
-		{"speaker": "Narrator", "text": "Hades sighs. He was right behind her."},
-	]
 	GameState.scene_after_dialogue = "res://scenes/levels/level1.tscn"
 	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
 
@@ -304,3 +280,31 @@ func _style_dev_button(btn: Button) -> void:
 		box.content_margin_top = 3.0
 		box.content_margin_bottom = 3.0
 		box.set_corner_radius_all(6)
+func _show_completion_panel() -> void:
+	var panel := PanelContainer.new()
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	add_child(panel)
+	var vbox := VBoxContainer.new()
+	panel.add_child(vbox)
+	var lbl := Label.new()
+	lbl.text = "CARE FOR ANOTHER UNDERWORLD RUN? SEE WHAT YOU COULD HAVE DONE BETTER."
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	vbox.add_child(lbl)
+	var score_lbl := Label.new()
+	score_lbl.text = "FINAL SCORE: %d  BEST: %d  GRADE: %s" % [GameState.calculate_run_score(), GameState.best_score, GameState.grade_id()]
+	vbox.add_child(score_lbl)
+	var btns := HBoxContainer.new()
+	vbox.add_child(btns)
+	var yes := Button.new()
+	yes.text = "YES"
+	yes.pressed.connect(func():
+		panel.queue_free()
+		GameState.open_new_run_flow_pending = true
+		get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
+	)
+	btns.add_child(yes)
+	var no := Button.new()
+	no.text = "NO"
+	no.pressed.connect(func(): panel.queue_free())
+	btns.add_child(no)
+	no.grab_focus()

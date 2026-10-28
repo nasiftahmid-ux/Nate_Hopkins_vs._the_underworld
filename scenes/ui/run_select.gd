@@ -16,6 +16,9 @@ var _warning_label: Label
 func _ready() -> void:
 	_build_ui()
 	_refresh_cards()
+	if GameState.open_new_run_flow_pending:
+		GameState.open_new_run_flow_pending = false
+		open_new_run_flow()
 
 
 func open_new_run_flow() -> void:

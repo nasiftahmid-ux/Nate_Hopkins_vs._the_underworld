@@ -230,6 +230,9 @@ var active_slot := -1
 var sandbox := false
 var checkpoint_index := 0
 var story_played_this_run: Array = []
+var pending_completion := false
+var show_completion_panel := false
+var open_new_run_flow_pending := false
 var unlocked_moves := {"kick": false, "special": false}
 signal move_unlocked(move_name: String)
 var player_negative_damage_bonus := 1.0
@@ -546,6 +549,10 @@ func start_new_run() -> void:
 	story_played_this_run.clear()
 	save_game()
 
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		save_slot()
 
 func _process(delta: float) -> void:
 	if not clock_running:
@@ -1147,6 +1154,7 @@ func unlock_move(move: String) -> void:
 	move_unlocked.emit(move)
 	if OS.is_debug_build():
 		print("UNLOCKED: %s" % move)
+	save_slot()
 
 
 func apply_unlocks_for_stage(stage_path: String) -> void:

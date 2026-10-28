@@ -75,11 +75,18 @@ func _on_buy_upgrade() -> void:
 
 
 func _on_again() -> void:
-	GameState.start_new_run()
-	get_tree().paused = false
-	get_tree().change_scene_to_file(GameState.RUN_ROUTE[0])
+	GameState.save_slot()
+	if GameState.active_slot >= 0 and not GameState.sandbox:
+		var stage := GameState.begin_attempt()
+		get_tree().paused = false
+		get_tree().change_scene_to_file(stage)
+	else:
+		GameState.start_new_run()
+		get_tree().paused = false
+		get_tree().change_scene_to_file(GameState.RUN_ROUTE[0])
 
 
 func _on_menu() -> void:
+	GameState.save_slot()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/ui/main.tscn")

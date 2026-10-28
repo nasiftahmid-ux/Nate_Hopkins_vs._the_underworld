@@ -58,6 +58,7 @@ func _on_restart() -> void:
 
 
 func _on_quit() -> void:
+	GameState.save_slot()
 	paused = false
 	get_tree().paused = false
 	visible = false
