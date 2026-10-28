@@ -159,7 +159,7 @@ func _ready() -> void:
 		base_chase = 72.0
 		base_damage = 17.0
 	else:
-		base_name = "FIRST LOVE"
+		base_name = ""
 		base_chase = 96.0
 		base_damage = 15.0
 	_apply_phase_stats()
