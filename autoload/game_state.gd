@@ -478,6 +478,8 @@ func begin_attempt() -> String:
 	negative_remaining_spawns = 0
 	in_boss_fight = false
 	return_stage = ""
+	enemy_damage_scale = 1.0
+	enemy_health_scale = 1.0
 	clock_seconds = 0.0
 	story_played_this_run.clear()
 	# apply saved abilities/stats
@@ -490,6 +492,10 @@ func begin_attempt() -> String:
 	if checkpoint_index < 0 or checkpoint_index >= RUN_ROUTE.size():
 		checkpoint_index = 0
 	return RUN_ROUTE[checkpoint_index]
+
+
+func new_game() -> void:
+	start_new_run()
 
 
 func start_new_run() -> void:
