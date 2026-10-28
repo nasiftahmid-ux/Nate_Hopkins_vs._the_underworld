@@ -985,6 +985,34 @@ func should_play_story(id: String) -> bool:
 
 func story_lines(id: String) -> Array[Dictionary]:
 	match id:
+		"S1_INTRO":
+			return [
+				{"speaker": "Narrator", "text": "On the balcony of a mansion, a boy stands alone."},
+				{"speaker": "Narrator", "text": "Nate Hopkins has just finished his freshman year at university."},
+				{"speaker": "Narrator", "text": "The whole class is throwing a party before they become sophomores."},
+				{"speaker": "Narrator", "text": "As he heads inside, a flash catches his eye. A beauty has just walked past him."},
+				{"speaker": "Narrator", "text": "A boy... or maybe a man now. Never interested in this sort of thing. Yet he felt interested."},
+				{"speaker": "Nate", "text": "Hey! T! Who's that girl over there?"},
+				{"speaker": "Tracy", "text": "Her? Forget about it."},
+				{"speaker": "Nate", "text": "Why? Why?!"},
+				{"speaker": "Tracy", "text": "You never showed interest in anyone I introduced you to. You're still sulking over that ex of yours."},
+				{"speaker": "Nate", "text": "Hey, c'mon. Help your homeboy out."},
+				{"speaker": "Tracy", "text": "No. Go for it yourself. You're on your own."},
+				{"speaker": "Narrator", "text": "Nate walks up to her and tries a little small talk."},
+				{"speaker": "Nate", "text": "Hi, I'm Nate."},
+				{"speaker": "Hazel", "text": "Hi. I'm Hazel."},
+				{"speaker": "Nate", "text": "Nice name."},
+				{"speaker": "Hazel", "text": "Oh, thanks. My dad gave it to me. Hazel A. Frey."},
+				{"speaker": "Nate", "text": "What does the A stand for?"},
+				{"speaker": "Hazel", "text": "My mom's name. Anasta..."},
+				{"speaker": "", "text": "BIG EXPLOSION. Aphrodite appears out of nowhere."},
+				{"speaker": "Aphrodite", "text": "Nate Hopkins!"},
+				{"speaker": "Nate", "text": "Do I know you? How did you just explode out of nowhere?"},
+				{"speaker": "Aphrodite", "text": "Spare me your silly chat, mortal. You cursed love, and love is me."},
+				{"speaker": "Aphrodite", "text": "I will not let you bring a curse on my name again with another poor sweetheart. You're coming with me."},
+				{"speaker": "Aphrodite", "text": "Brother, lock him up."},
+				{"speaker": "Narrator", "text": "Hades sighs. He was right behind her."},
+			]
 		"S2_BEFORE_LEVEL_1":
 			return [
 				{"speaker": "Nate", "text": "Where am I?"},
