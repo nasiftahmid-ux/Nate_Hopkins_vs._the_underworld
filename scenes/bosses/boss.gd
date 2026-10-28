@@ -1118,7 +1118,6 @@ func die() -> void:
 			{"speaker": "Hazel", "text": "What?"},
 			{"speaker": "Nate", "text": "Do you wanna go out with me?"},
 			{"speaker": "Hazel", "text": "......"},
-			{"speaker": "Narrator", "text": "The game ends without showing Hazel's answer."},
 		]
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 		GameState.scene_after_dialogue = "res://scenes/ui/main.tscn"
