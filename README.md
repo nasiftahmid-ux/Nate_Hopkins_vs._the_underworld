@@ -172,7 +172,7 @@ class node_hud,node_main_menu,node_death,node_pause,node_dialogue,node_player_ac
 
 Pre-built Windows release: download the zip from the [Releases page](https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases), extract, and run Nate Hopkins vs the Underworld.exe. No Godot install required.
 
-Direct link (v1.0.0): https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases/download/v1.0.0/Nate%20Hopkins%20vs%20the%20Underworld.zip
+Direct link (v1.0.0): https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases/download/v1.0.0/Nate.Hopkins.vs.the.Underworld.zip
 ## Running the Project
 
 1. Install [Godot 4.7](https://godotengine.org/download) or later.
