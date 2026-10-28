@@ -1107,7 +1107,7 @@ func die() -> void:
 			GameState.grade_chant(),
 		]
 		GameState.set_rhythm_difficulty(1.0, 30)
-		GameState.rhythm_followup_lines = GameState.decorate_followup_lines([
+		GameState.rhythm_followup_lines = [
 			{"speaker": "Aphrodite", "text": "Hmph. I'll say nothing. I hope you've learned your lesson, mortal."},
 			{"speaker": "Aphrodite", "text": "There will be no next time... or my brother Mischief will be there to help you."},
 			{"speaker": "Narrator", "text": "Nate falls into the middle of a classroom. Hazel is there."},
@@ -1118,7 +1118,8 @@ func die() -> void:
 			{"speaker": "Hazel", "text": "What?"},
 			{"speaker": "Nate", "text": "Do you wanna go out with me?"},
 			{"speaker": "Hazel", "text": "......"},
-		])
+			{"speaker": "Narrator", "text": "The game ends without showing Hazel's answer."},
+		]
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
 		GameState.scene_after_dialogue = "res://scenes/ui/main.tscn"
 	else:
