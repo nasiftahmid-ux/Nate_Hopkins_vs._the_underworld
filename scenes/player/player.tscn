@@ -1,0 +1,407 @@
+[gd_scene load_steps=73 format=3]
+
+[ext_resource type="Script" path="res://scenes/player/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scenes/player/camera_shake.gd" id="1_shake"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Idle.png" id="id_sp_idle"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Running.png" id="id_sp_run"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Punch.png" id="id_sp_attack_punch"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Kick.png" id="id_sp_attack_kick"]
+[ext_resource type="Texture2D" path="res://assets/Nate_uppercut.png" id="id_sp_attack_uppercut"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Jumping.png" id="id_sp_jump"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Hurt.png" id="id_sp_death"]
+[ext_resource type="Texture2D" path="res://assets/Nate_Block.png" id="id_sp_block"]
+
+
+[sub_resource type="AtlasTexture" id="idle_AT_0"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(84, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_1"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(351, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_2"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(618, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_3"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(888, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_4"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(1155, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_5"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(960, 0, 192, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_6"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+filter_clip = true
+region = Rect2(1152, 0, 192, 255)
+
+[sub_resource type="AtlasTexture" id="idle_AT_7"]
+atlas = ExtResource("id_sp_idle")
+filter_clip = true
+region = Rect2(525, 0, 75, 190)
+
+[sub_resource type="AtlasTexture" id="run_AT_0"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+filter_clip = true
+region = Rect2(87, 0, 111, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_1"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+filter_clip = true
+region = Rect2(339, 0, 129, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_2"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+filter_clip = true
+region = Rect2(585, 0, 159, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_3"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+filter_clip = true
+region = Rect2(870, 0, 138, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_4"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+filter_clip = true
+region = Rect2(1161, 0, 117, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_5"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+region = Rect2(1425, 0, 123, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_6"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+region = Rect2(1671, 0, 147, 255)
+
+[sub_resource type="AtlasTexture" id="run_AT_7"]
+atlas = ExtResource("id_sp_run")
+filter_clip = true
+region = Rect2(1953, 0, 138, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_0"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(81, 0, 111, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_1"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(336, 0, 168, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_2"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(609, 0, 159, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_3"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(888, 0, 114, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_4"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(1161, 0, 111, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_5"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(610, 0, 122, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_6"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(732, 0, 122, 255)
+
+[sub_resource type="AtlasTexture" id="atk_punch_AT_7"]
+atlas = ExtResource("id_sp_attack_punch")
+filter_clip = true
+filter_clip = true
+region = Rect2(854, 0, 122, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_0"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+filter_clip = true
+region = Rect2(93, 0, 99, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_1"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+filter_clip = true
+region = Rect2(357, 0, 105, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_2"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+filter_clip = true
+region = Rect2(600, 0, 183, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_3"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+filter_clip = true
+region = Rect2(879, 0, 159, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_4"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+filter_clip = true
+region = Rect2(1149, 0, 162, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_5"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+filter_clip = true
+region = Rect2(1422, 0, 153, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_6"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+region = Rect2(1701, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="atk_kick_AT_7"]
+atlas = ExtResource("id_sp_attack_kick")
+filter_clip = true
+region = Rect2(700, 0, 100, 190)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_0"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(66, 0, 123, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_1"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(336, 0, 129, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_2"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(606, 0, 120, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_3"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(876, 0, 138, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_4"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(1149, 0, 153, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_5"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(1434, 0, 111, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_6"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(510, 0, 85, 255)
+
+[sub_resource type="AtlasTexture" id="atk_uppercut_AT_7"]
+atlas = ExtResource("id_sp_attack_uppercut")
+filter_clip = true
+filter_clip = true
+region = Rect2(595, 0, 85, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_0"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+filter_clip = true
+region = Rect2(66, 0, 138, 255)
+region = Rect2(66, 0, 138, 255)
+region = Rect2(66, 0, 138, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_1"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+filter_clip = true
+region = Rect2(351, 0, 117, 255)
+region = Rect2(351, 0, 117, 255)
+region = Rect2(351, 0, 117, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_2"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+filter_clip = true
+region = Rect2(621, 0, 114, 255)
+region = Rect2(621, 0, 114, 255)
+region = Rect2(621, 0, 114, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_3"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+filter_clip = true
+region = Rect2(891, 0, 120, 255)
+region = Rect2(891, 0, 120, 255)
+region = Rect2(891, 0, 120, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_4"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(1158, 0, 117, 255)
+region = Rect2(1158, 0, 117, 255)
+region = Rect2(1158, 0, 117, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_5"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(1428, 0, 126, 255)
+region = Rect2(1428, 0, 126, 255)
+region = Rect2(1428, 0, 126, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_6"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(1701, 0, 123, 255)
+region = Rect2(1701, 0, 123, 255)
+region = Rect2(1701, 0, 123, 255)[sub_resource type="AtlasTexture" id="jump_AT_7"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(1971, 0, 117, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_8"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(2238, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_9"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(2511, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_10"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(2781, 0, 108, 255)
+
+[sub_resource type="AtlasTexture" id="jump_AT_11"]
+atlas = ExtResource("id_sp_jump")
+filter_clip = true
+region = Rect2(3033, 0, 144, 255)
+
+
+
+[sub_resource type="AtlasTexture" id="death_AT_0"]
+atlas = ExtResource("id_sp_death")
+filter_clip = true
+region = Rect2(87, 0, 99, 255)
+
+[sub_resource type="AtlasTexture" id="death_AT_1"]
+atlas = ExtResource("id_sp_death")
+filter_clip = true
+region = Rect2(357, 0, 99, 255)
+
+[sub_resource type="AtlasTexture" id="death_AT_2"]
+atlas = ExtResource("id_sp_death")
+filter_clip = true
+region = Rect2(627, 0, 105, 255)[sub_resource type="AtlasTexture" id="block_AT_0"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(93, 0, 87, 255)
+
+[sub_resource type="AtlasTexture" id="block_AT_1"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(363, 0, 87, 255)
+
+[sub_resource type="AtlasTexture" id="block_AT_2"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(633, 0, 87, 255)
+
+[sub_resource type="AtlasTexture" id="block_AT_3"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(903, 0, 87, 255)
+
+[sub_resource type="AtlasTexture" id="block_AT_4"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(1176, 0, 87, 255)
+
+[sub_resource type="AtlasTexture" id="block_AT_5"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(1440, 0, 96, 255)
+
+[sub_resource type="AtlasTexture" id="block_AT_6"]
+atlas = ExtResource("id_sp_block")
+filter_clip = true
+region = Rect2(1698, 0, 111, 255)
+
+
+
+
+[sub_resource type="RectangleShape2D" id="body_shape"]
+size = Vector2(34, 64)
+
+[sub_resource type="RectangleShape2D" id="hit_shape"]
+size = Vector2(42, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_player"]
+animations = [{"name": &"idle", "speed": 5, "loop": true, "frames": [ {"texture": SubResource("idle_AT_0"), "duration": 1.0}, {"texture": SubResource("idle_AT_1"), "duration": 1.0}, {"texture": SubResource("idle_AT_2"), "duration": 1.0}, {"texture": SubResource("idle_AT_3"), "duration": 1.0}, {"texture": SubResource("idle_AT_4"), "duration": 1.0} ]}, {"name": &"run", "speed": 13, "loop": true, "frames": [ {"texture": SubResource("run_AT_0"), "duration": 1.0}, {"texture": SubResource("run_AT_1"), "duration": 1.0}, {"texture": SubResource("run_AT_2"), "duration": 1.0}, {"texture": SubResource("run_AT_3"), "duration": 1.0}, {"texture": SubResource("run_AT_4"), "duration": 1.0}, {"texture": SubResource("run_AT_5"), "duration": 1.0}, {"texture": SubResource("run_AT_6"), "duration": 1.0}, {"texture": SubResource("run_AT_7"), "duration": 1.0} ]}, {"name": &"attack_punch", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_punch_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_punch_AT_7"), "duration": 1.0} ]}, {"name": &"attack_kick", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_kick_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_kick_AT_7"), "duration": 1.0} ]}, {"name": &"attack_uppercut", "speed": 14, "loop": true, "frames": [ {"texture": SubResource("atk_uppercut_AT_0"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_1"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_2"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_3"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_4"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_5"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_6"), "duration": 1.0}, {"texture": SubResource("atk_uppercut_AT_7"), "duration": 1.0} ]}, {"name": &"jump", "speed": 8, "loop": true, "frames": [{"texture": SubResource("jump_AT_0"), "duration": 1.0}, {"texture": SubResource("jump_AT_1"), "duration": 1.0}, {"texture": SubResource("jump_AT_2"), "duration": 1.0}, {"texture": SubResource("jump_AT_3"), "duration": 1.0}, {"texture": SubResource("jump_AT_4"), "duration": 1.0}, {"texture": SubResource("jump_AT_5"), "duration": 1.0}, {"texture": SubResource("jump_AT_6"), "duration": 1.0}, {"texture": SubResource("jump_AT_7"), "duration": 1.0}, {"texture": SubResource("jump_AT_8"), "duration": 1.0}, {"texture": SubResource("jump_AT_9"), "duration": 1.0}, {"texture": SubResource("jump_AT_10"), "duration": 1.0}, {"texture": SubResource("jump_AT_11"), "duration": 1.0}]}, {"name": &"death", "speed": 14, "loop": false, "frames": [{"texture": SubResource("death_AT_0"), "duration": 1.0}, {"texture": SubResource("death_AT_1"), "duration": 1.0}, {"texture": SubResource("death_AT_2"), "duration": 1.0}]}, {"name": &"block", "speed": 8, "loop": true, "frames": [{"texture": SubResource("block_AT_0"), "duration": 1.0}, {"texture": SubResource("block_AT_1"), "duration": 1.0}, {"texture": SubResource("block_AT_2"), "duration": 1.0}, {"texture": SubResource("block_AT_3"), "duration": 1.0}, {"texture": SubResource("block_AT_4"), "duration": 1.0}, {"texture": SubResource("block_AT_5"), "duration": 1.0}, {"texture": SubResource("block_AT_6"), "duration": 1.0}]}]
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_player")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_player")
+offset = Vector2(0, -37)
+scale = Vector2(0.5, 0.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Hitbox" type="Area2D" parent="."]
+monitoring = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("hit_shape")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+script = ExtResource("1_shake")

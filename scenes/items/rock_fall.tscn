@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/items/rock_fall.gd" id="1_rock_fall"]
+[ext_resource type="Script" path="res://scenes/items/rock.gd" id="2_rock"]
+
+[sub_resource type="RectangleShape2D" id="zone_shape"]
+size = Vector2(620, 720)
+
+[node name="RockFall" type="Area2D"]
+script = ExtResource("1_rock_fall")
+
+[node name="Col" type="CollisionShape2D" parent="."]
+shape = SubResource("zone_shape")

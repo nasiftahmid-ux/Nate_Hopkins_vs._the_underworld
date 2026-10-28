@@ -1,0 +1,58 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/ui/pause_panel.gd" id="1_pause"]
+
+[node name="PausePanel" type="CanvasLayer"]
+layer = 100
+process_mode = 3
+visible = false
+script = ExtResource("1_pause")
+
+[node name="Shade" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.68)
+
+[node name="Center" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Center"]
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/VBox"]
+theme_override_font_sizes/font_size = 44
+theme_override_colors/font_color = Color(1, 0.42, 0.42, 1)
+text = "GIVING UP ON\nHAZEL ALREADY?"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Center/VBox"]
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.95, 0.85, 0.6, 1)
+text = "~ PAUSED ~"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Center/VBox"]
+custom_minimum_size = Vector2(0, 16)
+
+[node name="ResumeButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(300, 54)
+text = "RESUME"
+
+[node name="RestartButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(300, 54)
+text = "RESTART LEVEL"
+
+[node name="QuitButton" type="Button" parent="Center/VBox"]
+custom_minimum_size = Vector2(300, 54)
+text = "MAIN MENU"
+
+[node name="Hint" type="Label" parent="Center/VBox"]
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.7, 0.7, 0.75, 1)
+text = "ESC resumes | RESTART replays this level | MAIN MENU gives up entirely"
+horizontal_alignment = 1

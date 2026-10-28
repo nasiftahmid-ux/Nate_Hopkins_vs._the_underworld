@@ -1,0 +1,141 @@
+[gd_scene format=3 uid="uid://dn2iwtljo6fqw"]
+
+[ext_resource type="Script" uid="uid://bkyyms4kkap0y" path="res://scenes/ui/main.gd" id="1_main"]
+[ext_resource type="Texture2D" uid="uid://ht6byfap61ga" path="res://assets/level1/background.png" id="2_bg"]
+
+[node name="Main" type="Control" unique_id=1107216043]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Backdrop" type="Control" parent="." unique_id=1745882364]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BG" type="TextureRect" parent="Backdrop" unique_id=1605797449]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BGNext" type="TextureRect" parent="Backdrop" unique_id=72077489]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Shade" type="ColorRect" parent="." unique_id=66236524]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0.02, 0.08, 0.5)
+
+[node name="TitleGroup" type="VBoxContainer" parent="." unique_id=700380674]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 84.0
+offset_bottom = 280.0
+grow_horizontal = 2
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Title" type="Label" parent="TitleGroup" unique_id=1006128991]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.09, 0.13, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_colors/font_outline_color = Color(0.12, 0.01, 0.02, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 5
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 72
+text = "NATE HOPKINS"
+horizontal_alignment = 1
+
+[node name="VsLabel" type="Label" parent="TitleGroup" unique_id=746112452]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.02, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 36
+text = "vs."
+horizontal_alignment = 1
+
+[node name="VsSpacer" type="Control" parent="TitleGroup" unique_id=1113603820]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="Subtitle" type="Label" parent="TitleGroup" unique_id=1608893373]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.66, 0.24, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.02, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 52
+text = "THE UNDERWORLD"
+horizontal_alignment = 1
+
+[node name="Center" type="CenterContainer" parent="." unique_id=2101473765]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -196.0
+offset_bottom = -96.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="VBox" type="VBoxContainer" parent="Center" unique_id=1754646982]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="StartButton" type="Button" parent="Center/VBox" unique_id=541734002]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+text = "START"
+
+[node name="QuitButton" type="Button" parent="Center/VBox" unique_id=1488347432]
+custom_minimum_size = Vector2(220, 40)
+layout_mode = 2
+text = "QUIT"
+
+[node name="Version" type="Label" parent="." unique_id=292880526]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 10.0
+offset_right = -16.0
+offset_bottom = 30.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.56, 1)
+theme_override_font_sizes/font_size = 9
+text = "v1.0"
+horizontal_alignment = 2

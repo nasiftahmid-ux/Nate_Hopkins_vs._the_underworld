@@ -1,0 +1,459 @@
+extends CharacterBody2D
+
+signal hp_changed(current: float, maximum: float)
+
+const SPEED := 260.0
+const JUMP_VELOCITY := -820.0
+const GRAVITY := 1600.0
+const COMBO_WINDOW := 0.5
+const ATTACK_DURATION := 0.18
+const SPECIAL_DURATION := 0.35
+const AERIAL_DURATION := 0.3
+const ATTACK_REACH := 46.0
+const ATK_LIGHT := 8.0
+const ATK_HEAVY := 18.0
+const ATK_FINISHER := 20.0
+const ATK_SLAM := 22.0
+const ATK_SPECIAL := 40.0
+## How long a revived player is untouchable, so a Second Chance does not
+## immediately walk back into whatever killed them.
+const REVIVE_INVULN := 1.5
+
+var hp := 0.0
+var max_hp := 100.0
+var facing := 1
+var combo_step := 0
+var combo_timer := 0.0
+var is_attacking := false
+var is_blocking := false
+## Seconds the block has been held continuously; drives the parry window.
+var block_hold := 0.0
+var attack_anim := "attack_punch"
+## True while the in-flight attack is the special (uppercut), so a landed hit
+## can stagger a boss that reacts to uppercuts.
+var attack_special := false
+var attack_left := 0.0
+var hit_delay := 0.0
+var hit_damage := 0.0
+var special_cooldown := 0.0
+var invuln_time := 0.0
+var start_pos := Vector2.ZERO
+var _was_on_floor := true
+const INVULN_DURATION := 0.6
+const KILL_PLANE_Y := 640.0
+## Seconds between footstep sounds while running on the ground.
+const STEP_INTERVAL := 0.3
+
+var _step_timer := 0.0
+
+@onready var sprite: AnimatedSprite2D = $Sprite
+@onready var hitbox: Area2D = $Hitbox
+@onready var camera: Camera2D = $Camera2D
+
+
+func _ready() -> void:
+	add_to_group("player")
+	sprite.play("idle")
+	start_pos = global_position
+	max_hp = GameState.player_max_hp
+	hp = clampf(GameState.player_health, 1.0, max_hp) if GameState.player_health > 0.0 else max_hp
+	GameState.player_health = hp
+	hp_changed.emit(hp, max_hp)
+	GameState.level_healed.connect(_on_level_healed)
+	# God mode is a session flag, not a per-player one, so a player that spawns
+	# after the cheat was switched on still starts untouchable.
+	if GameState.dev_god_mode:
+		hp = max_hp
+		GameState.player_health = hp
+		hp_changed.emit(hp, max_hp)
+
+
+func _on_level_healed(amount: float) -> void:
+	if hp <= 0.0:
+		return
+	max_hp = GameState.player_max_hp
+	hp = minf(hp + amount, max_hp)
+	GameState.player_health = hp
+	hp_changed.emit(hp, max_hp)
+
+
+func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity.y += GRAVITY * delta
+
+	var input := Input.get_axis("move_left", "move_right")
+	var blocking_now := Input.is_action_pressed("block") and not is_attacking
+	# Restart the parry clock whenever the block is first pressed and only
+	# keep counting while the key stays held, so a fresh Q press can parry.
+	if not blocking_now:
+		block_hold = 0.0
+	elif not is_blocking:
+		block_hold = 0.0
+	else:
+		block_hold += delta
+	is_blocking = blocking_now
+	_process_movement(delta, input)
+	_process_timers(delta)
+	_process_combat(delta)
+	_update_animation(input)
+	_update_footsteps(delta, input != 0.0)
+
+	move_and_slide()
+	_detect_landing()
+
+	if global_position.y > KILL_PLANE_Y:
+		if GameState.dev_god_mode:
+			# God mode does not make pits survivable, it removes the death: drop
+			# back to the level start so a dev test keeps moving instead of
+			# dumping you on a death screen every time you test a pit.
+			global_position = start_pos
+			velocity = Vector2.ZERO
+		else:
+			die()
+
+
+func _process_movement(delta: float, input: float) -> void:
+	if is_blocking:
+		velocity.x = move_toward(velocity.x, 0.0, 1200.0 * delta)
+	elif is_attacking:
+		velocity.x = move_toward(velocity.x, 0.0, 800.0 * delta)
+	elif input != 0.0:
+		velocity.x = input * SPEED
+		facing = signf(input)
+		sprite.flip_h = facing < 0
+	else:
+		velocity.x = move_toward(velocity.x, 0.0, 800.0 * delta)
+
+	if Input.is_action_just_pressed("jump") and is_on_floor() and not is_blocking:
+		velocity.y = JUMP_VELOCITY
+		Sfx.play("jump", -4.0, randf_range(0.97, 1.03))
+
+
+func _process_timers(delta: float) -> void:
+	special_cooldown = maxf(special_cooldown - delta, 0.0)
+	invuln_time = maxf(invuln_time - delta, 0.0)
+	sprite.visible = not int(fmod(Time.get_ticks_msec() / 60.0, 2.0)) if invuln_time > 0.0 else true
+
+	combo_timer -= delta
+	if combo_timer <= 0.0 and combo_step != 0:
+		combo_step = 0
+
+	if hit_delay > 0.0:
+		hit_delay -= delta
+		if hit_delay <= 0.0:
+			apply_hit()
+
+
+func _process_combat(delta: float) -> void:
+	if is_attacking:
+		attack_left -= delta
+		if attack_left <= 0.0:
+			is_attacking = false
+			sprite.modulate = Color.WHITE
+	elif not is_blocking:
+		if Input.is_action_just_pressed("attack"):
+			try_attack(false, false, not is_on_floor())
+		elif Input.is_action_just_pressed("heavy_attack") and GameState.can_use("kick"):
+			try_attack(true, false)
+		elif Input.is_action_just_pressed("special") and special_cooldown <= 0.0 and GameState.can_use("special"):
+			try_attack(false, true)
+
+
+func try_attack(heavy: bool, special: bool, aerial: bool = false) -> void:
+	if is_attacking:
+		return
+	is_attacking = true
+	attack_left = SPECIAL_DURATION if special else ATTACK_DURATION
+	attack_special = special
+	if special:
+		special_cooldown = GameState.special_cooldown_value()
+		combo_step = 0
+		hit_damage = _scaled(ATK_SPECIAL)
+		attack_anim = "attack_uppercut"
+	elif heavy:
+		combo_step = 0
+		hit_damage = _scaled(ATK_HEAVY, true)
+		attack_anim = "attack_kick"
+	elif aerial:
+		combo_step = 0
+		attack_left = AERIAL_DURATION
+		hit_damage = _scaled(ATK_SLAM, true)
+		attack_anim = "jump"
+		velocity.y = 400.0
+	else:
+		combo_step = (combo_step + 1) % 4
+		combo_timer = COMBO_WINDOW
+		match combo_step:
+			1:
+				hit_damage = _scaled(ATK_LIGHT)
+				attack_anim = "attack_punch"
+			2:
+				hit_damage = _scaled(ATK_HEAVY - 6.0, true)
+				attack_anim = "attack_kick"
+			_:
+				hit_damage = _scaled(ATK_FINISHER, true) if combo_step == 3 else _scaled(ATK_LIGHT)
+				attack_anim = "attack_uppercut" if combo_step == 3 else "attack_punch"
+	hitbox.position.x = facing * ATTACK_REACH
+	hit_delay = 0.03
+	_play_attack_sound()
+
+
+## Picks the swing sound from whatever animation the attack selected. The aerial
+## slam reuses the jump animation and stays silent; its impact is covered by the
+## landing sound instead.
+func _play_attack_sound() -> void:
+	var sound := ""
+	match attack_anim:
+		"attack_punch":
+			sound = "punch"
+		"attack_kick":
+			sound = "kick"
+		"attack_uppercut":
+			sound = "uppercut"
+	if sound.is_empty():
+		return
+	var vol := -3.0
+	if sound == "uppercut":
+		vol = -5.0
+	elif sound == "punch" or sound == "kick":
+		vol = -5.0
+	Sfx.play(sound, vol, randf_range(0.95, 1.08))
+
+
+## Fires a landing cue on the airborne -> grounded edge, so jumps, drops and the
+## aerial slam all read as a touch down.
+func _detect_landing() -> void:
+	var on_floor := is_on_floor()
+	if on_floor and not _was_on_floor:
+		Sfx.play("land", -4.0, randf_range(0.92, 1.05))
+	_was_on_floor = on_floor
+
+
+## Applies shop upgrades to a base attack value. `heavy` marks the attacks that
+## Wrath strengthens; Warcry lifts everything for the stage it is active.
+func _scaled(base: float, heavy: bool = false) -> float:
+	var value := base
+	if heavy:
+		value += GameState.heavy_damage_bonus()
+	return (value + GameState.warcry_damage_bonus()) * GameState.player_damage_mult
+
+
+func _update_animation(input: float) -> void:
+	if is_blocking:
+		if sprite.sprite_frames.has_animation("block") and sprite.animation != "block":
+			sprite.play("block")
+	elif is_attacking:
+		if sprite.animation != attack_anim:
+			sprite.play(attack_anim)
+	elif not is_on_floor():
+		if sprite.animation != "jump":
+			sprite.play("jump")
+	elif input != 0.0:
+		if sprite.animation != "run":
+			sprite.play("run")
+	else:
+		if sprite.animation != "idle":
+			sprite.play("idle")
+
+
+## Plays a footstep at a steady cadence while running along the ground. Stops
+## (and re-arms) whenever the player is idle, airborne, attacking or blocking.
+func _update_footsteps(delta: float, moving: bool) -> void:
+	if not moving or not is_on_floor() or is_attacking or is_blocking:
+		_step_timer = 0.0
+		return
+	_step_timer -= delta
+	if _step_timer <= 0.0:
+		Sfx.play("step", -13.0, randf_range(0.94, 1.06))
+		_step_timer = STEP_INTERVAL
+
+
+func apply_hit() -> void:
+	var landed := false
+	for target in hitbox.get_overlapping_bodies():
+		if target.is_in_group("enemy") and target.has_method("take_hit"):
+			target.take_hit(hit_damage, facing)
+			# An uppercut that connects staggers the target. An enemy one-shot by
+			# the hit is already dead, so it never reaches the stagger.
+			if attack_special and target.has_method("on_uppercut"):
+				target.on_uppercut()
+			landed = true
+	# Once per swing, not once per target, so a jab that clips three enemies does
+	# not read as a heavy hit.
+	if landed:
+		_shake_from_hit(Vector2(facing, 0.0))
+		# A little extra oomph for the uppercut, to show the vertical impact.
+		if attack_special and camera.has_method("add_trauma"):
+			camera.add_trauma(0.48, Vector2(0.0, 1.0))
+
+
+## Player offence gets a small shake scaled to the attack's damage, so a light
+## jab barely registers while the special reads as a real impact.
+func _shake_from_hit(dir: Vector2) -> void:
+	if camera.has_method("add_offence_trauma"):
+		camera.add_offence_trauma(hit_damage, ATK_SPECIAL, dir)
+
+
+## `from_position` is the world position the hit came from; leave it at the
+## default to fall back to a sideways shake based on facing.
+func take_damage(amount: float, blockable: bool = true, from_position: Vector2 = Vector2.ZERO,
+		parry_window: float = 0.0, attacker: Node = null) -> void:
+	if invuln_time > 0.0:
+		return
+	# Dev cheat: swallow the hit whole. Returning before `register_damage()`
+	# also keeps a god-mode run out of the clean-combat grading, so enabling
+	# this cannot quietly flatter a score.
+	if GameState.dev_god_mode:
+		hp = max_hp
+		GameState.player_health = hp
+		hp_changed.emit(hp, max_hp)
+		return
+	if is_blocking and blockable and (parry_window <= 0.0 or block_hold <= parry_window):
+		sprite.modulate = Color(0.7, 0.9, 1.0)
+		invuln_time = 0.25
+		sprite.visible = true
+		get_tree().create_timer(0.12).timeout.connect(reset_color)
+		_show_block_text()
+		# Let the attacker know it was parried so it holds off a beat.
+		if is_instance_valid(attacker) and attacker.has_method("on_blocked"):
+			attacker.on_blocked()
+		return
+	invuln_time = INVULN_DURATION
+	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
+	if GameState.negative_mode:
+		cost *= float(GameState.NEGATIVE_ENEMIES["enemy_damage_mult"])
+		cost = minf(cost, float(GameState.NEGATIVE_ENEMIES["negative_damage_per_hit_cap"]))
+	cost *= GameState.enemy_damage_scale
+	hp = maxf(hp - cost, 0.0)
+	GameState.player_health = hp
+	GameState.register_damage(cost)
+	if camera.has_method("add_damage_trauma"):
+		camera.add_damage_trauma(amount, max_hp, _damage_direction(from_position))
+	hp_changed.emit(hp, max_hp)
+	sprite.modulate = Color(1, 0.3, 0.3)
+	if hp <= 0.0:
+		die()
+	else:
+		get_tree().create_timer(0.12).timeout.connect(reset_color)
+
+
+func reset_color() -> void:
+	# Clear the hurt/parry flash unconditionally. Gating on is_blocking left Nate
+	# stuck red when a block landed late (badly timed) and he kept holding Q.
+	sprite.modulate = Color.WHITE
+
+
+## Ticks the tiny "blocked" readout that pops beside Nate on a successful parry.
+func _show_block_text() -> void:
+	var label := Label.new()
+	label.text = "blocked"
+	label.add_theme_font_size_override("font_size", 10)
+	label.add_theme_color_override("font_color", Color(0.75, 0.95, 1.0))
+	label.add_theme_color_override("font_outline_color", Color(0, 0, 0))
+	label.add_theme_constant_override("outline_size", 3)
+	label.position = Vector2(24, -62)
+	label.z_index = 100
+	add_child(label)
+	var tw := create_tween()
+	tw.tween_property(label, "position:y", -76.0, 0.5)
+	tw.parallel().tween_property(label, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(label.queue_free)
+
+
+## Pushes the camera away from whatever hit us, so a hit from the right shakes
+## right. With no source known, fall back to the side the player is facing.
+func _damage_direction(from_position: Vector2) -> Vector2:
+	if not from_position.is_zero_approx():
+		var away := global_position - from_position
+		if not away.is_zero_approx():
+			return away.normalized()
+	return Vector2(float(-facing), -0.35).normalized()
+
+
+func die() -> void:
+	if not is_physics_processing():
+		return
+	var scene_path := get_tree().current_scene.scene_file_path
+	var is_boss := scene_path.contains("boss") or scene_path.contains("arena")
+	# Negative world entry: clock-zero on a regular level while visits remain.
+	if (not GameState.negative_mode) and (not is_boss) and GameState.negative_visits < GameState.negative_max_visits:
+		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
+		if OS.is_debug_build():
+			print("TRANSITION: %s/normal -> %s/negative, clock %.0f" % [scene_path, scene_path, GameState.player_health])
+		GameState.enter_negative()
+		get_tree().paused = false
+		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
+		return
+	# Negative world clock-zero (or no visits left / boss): return to normal world, loop.
+	print("Clock 0: returning to normal world (loop)")
+	var target := scene_path
+	var was_negative_death := GameState.negative_mode
+	if OS.is_debug_build():
+		print("TRANSITION: %s -> %s, negative=%s, clock=%.0f" % [scene_path, target, str(GameState.negative_mode), GameState.player_health])
+	if GameState.negative_mode:
+		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
+			GameState.player_negative_damage_bonus *= 1.1
+		var ret_mode := str(GameState.CLOCK_CONFIG.get("negative_death_returns_to", "current"))
+		if ret_mode == "original" and GameState.return_stage != "":
+			target = GameState.return_stage
+		else:
+			target = scene_path
+		GameState.exit_negative(false)
+		GameState.return_stage = ""
+		GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
+		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+		if GameState.should_play_story("S4_FIRST_TIME_BACK_FROM_NEGATIVE"):
+			GameState.play_story("S4_FIRST_TIME_BACK_FROM_NEGATIVE", GameState.story_lines("S4_FIRST_TIME_BACK_FROM_NEGATIVE"), target)
+			return
+	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
+	GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+	GameState.player_damage_mult = GameState.player_negative_damage_bonus
+	get_tree().paused = false
+	GameState.enemy_damage_scale *= 1.25
+	GameState.enemy_health_scale *= 1.15
+	GameState.negative_kills = 0
+	GameState.negative_total = 0
+	if is_boss:
+		GameState.dialogue_lines = GameState.story_lines("S7_BOSS_LOSS")
+		GameState.scene_after_dialogue = target if target != "" else "res://scenes/bosses/boss_arena.tscn"
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
+		return
+	get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
+	return
+	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
+	sprite.modulate = Color.WHITE
+	is_attacking = false
+	hitbox.monitoring = false
+	var fall_delay := 0.0
+	if sprite.sprite_frames.has_animation("death"):
+		sprite.play("death")
+		if not sprite.sprite_frames.get_animation_loop("death"):
+			await sprite.animation_finished
+		else:
+			fall_delay = sprite.sprite_frames.get_animation_length("death")
+			await get_tree().create_timer(fall_delay + 0.6, true).timeout
+	else:
+		await get_tree().create_timer(1.1, true).timeout
+	var death_panel := preload("res://scenes/ui/death_panel.tscn").instantiate()
+	get_tree().current_scene.add_child(death_panel)
+
+
+## Second Chance: stand back up where you fell, at full health, briefly
+## untouchable. Uses the current max HP so a Vitality purchase is respected.
+## A fall death respawns at the level start instead, because the kill plane
+## would otherwise call `die()` again on the very next frame and burn the revive.
+func _revive() -> void:
+	max_hp = GameState.player_max_hp
+	hp = max_hp
+	GameState.player_health = hp
+	invuln_time = REVIVE_INVULN
+	is_attacking = false
+	is_blocking = false
+	hitbox.monitoring = true
+	velocity = Vector2.ZERO
+	sprite.modulate = Color.WHITE
+	if sprite.sprite_frames.has_animation("idle"):
+		sprite.play("idle")
+	if global_position.y > KILL_PLANE_Y:
+		global_position = start_pos
+	hp_changed.emit(hp, max_hp)

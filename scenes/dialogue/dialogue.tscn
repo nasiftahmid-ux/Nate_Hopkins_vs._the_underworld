@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/dialogue/dialogue.gd" id="1_dlg"]
+
+[node name="Dialogue" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_dlg")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Panel" type="ColorRect" parent="."]
+anchors_preset = 12
+anchor_top = 0.76
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -16.0
+offset_right = -80.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(0.06, 0.06, 0.12, 0.92)
+
+[node name="Speaker" type="Label" parent="Panel"]
+offset_left = 28.0
+offset_top = 18.0
+offset_right = 300.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 0.85, 0.35, 1)
+theme_override_font_sizes/font_size = 20
+text = "Speaker"
+
+[node name="Text" type="Label" parent="Panel"]
+offset_left = 28.0
+offset_top = 52.0
+offset_right = 1040.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 18
+text = "..."
+autowrap_mode = 2
+
+[node name="Hint" type="Label" parent="Panel"]
+offset_left = 960.0
+offset_top = 134.0
+offset_right = 1060.0
+offset_bottom = 154.0
+theme_override_colors/font_color = Color(0.55, 0.55, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+text = "Press J / Enter"
+horizontal_alignment = 2

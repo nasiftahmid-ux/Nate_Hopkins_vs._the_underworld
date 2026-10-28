@@ -1,0 +1,134 @@
+extends EnemyBase
+# A drifting soul that chases the player on foot.
+# It simply walks toward the player and stops at ledges so it won't fall.
+
+const GRAVITY := 1600.0
+
+var speed := 80.0
+var damage := 8.0
+
+var attack_cooldown := 0.0
+var _growl_cooldown := 0.0
+
+@onready var floor_ahead: RayCast2D = $FloorAhead
+@onready var sprite: AnimatedSprite2D = $Sprite
+
+
+func _ready() -> void:
+	super()
+	attack_sound = "attack_slash"
+	death_sound = "death_basic"
+	_growl_cooldown = randf_range(2.0, 5.0)
+	# The Base node is only a stand-in so the shared script has something to tint.
+	# This enemy draws a sprite instead, so keep it out of sight.
+	body.visible = false
+
+
+func _physics_process(delta: float) -> void:
+	if not alive:
+		return
+	if not is_on_floor():
+		velocity.y += GRAVITY * delta
+	# Staggered by an uppercut: hold the hurt pose and skip the AI.
+	if _stun_tick(delta):
+		_play("hurt")
+		return
+	_update_awareness(delta)
+	attack_cooldown -= delta
+	_growl_cooldown -= delta
+
+	var vx := 0.0
+	if _in_combat():
+		vx = _chase()
+	elif awareness == Awareness.ALERTED:
+		# Spotted the player but not committed yet: freeze and stare.
+		_face(_aware_player_dir())
+	else:
+		vx = _idle_velocity(delta, speed)
+		if absf(vx) > 1.0:
+			_face(signf(vx))
+
+	velocity.x = move_toward(velocity.x, vx, 500.0 * delta)
+	move_and_slide()
+	_update_footsteps(delta, absf(vx) > 0.0)
+
+	# Don't cut a one-shot short (an attack, a hit reaction, a death).
+	if not _one_shot_playing():
+		_play("run" if absf(velocity.x) > 1.0 else "idle")
+
+
+## Walks down the player and swipes when close. Returns the desired vx.
+func _chase() -> float:
+	var player := _get_player()
+	if player == null or not is_instance_valid(player):
+		return 0.0
+	var dist := global_position.distance_to(player.global_position)
+	if dist < 160.0 and _growl_cooldown <= 0.0:
+		Sfx.play("monster_growl", -12.0, randf_range(0.92, 1.08))
+		_growl_cooldown = randf_range(3.0, 6.0)
+	var dir := signf(player.global_position.x - global_position.x)
+	var vx := 0.0
+	if absf(player.global_position.x - global_position.x) > 30.0:
+		vx = dir * speed
+		if is_on_floor():
+			floor_ahead.position = Vector2(dir * 15.0, 24.0)
+			floor_ahead.target_position = Vector2(0, 20)
+			floor_ahead.force_raycast_update()
+			if not floor_ahead.is_colliding():
+				vx = 0.0
+	_face(dir)
+	if dist < 40.0 and attack_cooldown <= 0.0:
+		attack_cooldown = 1.2
+		_play("attack")
+		play_attack_sound()
+		if player.has_method("take_damage"):
+			player.take_damage(damage, true, global_position, PARRY_WINDOW, self)
+	return vx
+
+
+func _face(dir: float) -> void:
+	if dir == 0.0:
+		return
+	body.scale.x = dir
+	sprite.flip_h = dir < 0.0
+
+
+func awareness_facing() -> float:
+	return signf(body.scale.x)
+
+
+func take_hit(dmg: float, dir: float) -> void:
+	if not alive:
+		return
+	_play("hurt")
+	_flash()
+	super.take_hit(dmg, dir)
+
+
+func die() -> void:
+	if is_dead:
+		return
+	_play("death")
+	super.die()
+
+
+## Plays `anim` unless it is already the current, still-running animation.
+func _play(anim: String) -> void:
+	if not sprite.sprite_frames.has_animation(anim):
+		return
+	if sprite.animation == anim and sprite.is_playing():
+		return
+	sprite.play(anim)
+
+
+## True while a non-looping animation (attack/hurt/death) is still running.
+func _one_shot_playing() -> bool:
+	if not sprite.is_playing():
+		return false
+	return not sprite.sprite_frames.get_animation_loop(sprite.animation)
+
+
+func _flash() -> void:
+	sprite.modulate = Color(1.7, 1.7, 1.7)
+	var t := create_tween()
+	t.tween_property(sprite, "modulate", Color.WHITE, hit_flash_time)

@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scenes/bosses/boss.gd" id="1_boss"]
+[ext_resource type="SpriteFrames" uid="uid://cuvef8gtkac2j" path="res://scenes/bosses/boss1_frames.tres" id="2_frames"]
+
+[sub_resource type="RectangleShape2D" id="body_shape"]
+size = Vector2(32, 56)
+
+[sub_resource type="RectangleShape2D" id="hitbox_shape"]
+size = Vector2(28, 38)
+
+[node name="Boss" type="CharacterBody2D"]
+script = ExtResource("1_boss")
+collision_layer = 1
+collision_mask = 1
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -28)
+scale = Vector2(0.55, 0.55)
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hitbox_shape")
+position = Vector2(0, -42)
+
+[node name="Telegraph" type="ColorRect" parent="."]
+offset_left = -8.0
+offset_top = -12.0
+offset_right = 8.0
+offset_bottom = -6.0
+visible = false
+color = Color(1, 0.2, 0.35, 0.8)
+
+[node name="NameLabel" type="Label" parent="."]
+offset_left = -120.0
+offset_top = -112.0
+offset_right = 120.0
+offset_bottom = -88.0
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "THE EX"

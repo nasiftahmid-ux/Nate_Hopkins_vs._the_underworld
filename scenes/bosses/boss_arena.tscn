@@ -1,0 +1,141 @@
+[gd_scene format=3 uid="uid://b4affycqfwwod"]
+
+[ext_resource type="Texture2D" path="res://assets/bosses/boss1_background.png" id="boss1_bg"]
+[ext_resource type="Texture2D" path="res://assets/bosses/boss_floor.png" id="boss_floor"]
+[ext_resource type="Texture2D" path="res://assets/bosses/floor.png" id="floor_art"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/bosses/boss.tscn" id="2_boss"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3_hud"]
+[ext_resource type="Script" uid="uid://cxtm0kkppsd31" path="res://scenes/bosses/boss_arena.gd" id="4_arena"]
+
+[sub_resource type="RectangleShape2D" id="floor_shape"]
+size = Vector2(900, 60)
+
+[sub_resource type="RectangleShape2D" id="wall_shape"]
+size = Vector2(40, 900)
+
+[node name="BossArena" type="Node2D" unique_id=121780623]
+script = ExtResource("4_arena")
+
+[node name="BG" type="TextureRect" parent="." unique_id=603419591]
+offset_left = -220.0
+offset_top = -345.0
+offset_right = 1120.0
+offset_bottom = 575.0
+expand_mode = 1
+stretch_mode = 1
+texture = ExtResource("boss1_bg")
+
+[node name="Floor" type="StaticBody2D" parent="." unique_id=765336025]
+position = Vector2(450, 470)
+
+[node name="Col" type="CollisionShape2D" parent="Floor" unique_id=1210200240]
+shape = SubResource("floor_shape")
+
+[node name="Vis" type="TextureRect" parent="Floor" unique_id=1541817678]
+visible = false
+offset_left = -450.0
+offset_top = -30.0
+offset_right = 450.0
+offset_bottom = 210.0
+expand_mode = 1
+stretch_mode = 1
+texture = ExtResource("boss_floor")
+
+[node name="FloorArt" type="Sprite2D" parent="Floor" unique_id=999999]
+position = Vector2(-836, -30)
+scale = Vector2(1, 1)
+centered = false
+texture = ExtResource("floor_art")
+texture_filter = 1
+z_index = 0
+visible = true
+modulate = Color(1, 1, 1, 1)
+
+[node name="GroundTrim" type="TextureRect" parent="." unique_id=291695552]
+visible = false
+offset_left = -180.0
+offset_top = 440.0
+offset_right = 1080.0
+offset_bottom = 680.0
+expand_mode = 1
+stretch_mode = 1
+texture = ExtResource("boss_floor")
+
+[node name="FloorFill" type="ColorRect" parent="." unique_id=888888]
+offset_left = -180.0
+offset_top = 594.0
+offset_right = 1080.0
+offset_bottom = 794.0
+color = Color(0.043, 0.024, 0.051, 1)
+z_index = 0
+
+[node name="WallL" type="StaticBody2D" parent="." unique_id=2013819000]
+position = Vector2(-20, 0)
+
+[node name="Col" type="CollisionShape2D" parent="WallL" unique_id=1048882515]
+shape = SubResource("wall_shape")
+
+[node name="Vis" type="ColorRect" parent="WallL" unique_id=739454472]
+offset_left = -20.0
+offset_top = -400.0
+offset_right = 20.0
+offset_bottom = 450.0
+color = Color(1, 0, 0, 0)
+
+[node name="WallR" type="StaticBody2D" parent="." unique_id=98178909]
+position = Vector2(920, 0)
+
+[node name="Col" type="CollisionShape2D" parent="WallR" unique_id=1456021169]
+shape = SubResource("wall_shape")
+
+[node name="Vis" type="ColorRect" parent="WallR" unique_id=478151869]
+offset_left = -20.0
+offset_top = -400.0
+offset_right = 20.0
+offset_bottom = 450.0
+color = Color(1, 0, 0, 0)
+
+[node name="Player" parent="." unique_id=645418933 instance=ExtResource("1_player")]
+position = Vector2(160, 400)
+
+[node name="Boss" parent="." unique_id=407943133 instance=ExtResource("2_boss")]
+position = Vector2(700, 386)
+
+[node name="HUD" parent="." unique_id=344059924 instance=ExtResource("3_hud")]
+
+[node name="BossHUD" type="CanvasLayer" parent="." unique_id=98097435]
+
+[node name="BossNameLabel" type="Label" parent="BossHUD" unique_id=205181176]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -220.0
+offset_top = 24.0
+offset_right = 220.0
+offset_bottom = 56.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.65, 1)
+theme_override_font_sizes/font_size = 26
+horizontal_alignment = 1
+
+[node name="BossBar" type="ProgressBar" parent="BossHUD" unique_id=406021702]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -230.0
+offset_top = 60.0
+offset_right = 230.0
+offset_bottom = 88.0
+grow_horizontal = 2
+max_value = 300.0
+show_percentage = false
+
+[node name="Title" type="Label" parent="." unique_id=816903430]
+offset_left = 250.0
+offset_top = 14.0
+offset_right = 650.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(1, 0.35, 0.55, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1
