@@ -68,6 +68,8 @@ func _on_level_selected(entry: Dictionary) -> void:
 		_setup_rhythm(entry["rhythm"])
 	elif entry.has("exes"):
 		GameState.defeated_exes = entry["exes"]
+	GameState.sandbox = true
+	GameState.active_slot = -1
 	GameState.begin_level()
 	GameState.apply_unlocks_for_stage(entry["scene"])
 	get_tree().change_scene_to_file(entry["scene"])
@@ -99,8 +101,7 @@ func _setup_rhythm(phase: int) -> void:
 
 func _on_start() -> void:
 	Music.stop()
-	GameState.start_new_run()
-	GameState.dialogue_lines = [
+	get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
 		{"speaker": "Narrator", "text": "On the balcony of a mansion, a boy stands alone."},
 		{"speaker": "Narrator", "text": "Nate Hopkins has just finished his freshman year at university."},
 		{"speaker": "Narrator", "text": "The whole class is throwing a party before they become sophomores."},
