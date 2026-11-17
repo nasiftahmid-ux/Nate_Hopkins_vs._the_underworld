@@ -13,6 +13,8 @@ const MAX_HP_PER_LEVEL := 10.0
 const DEATH_RATIO_PENALTY := 0.1
 const MIN_RHYTHM_WINDOW := 0.15
 const MIN_RHYTHM_NOTES := 8
+const WORLD_ENTRY_CLOCK_NORMAL := 60.0
+const WORLD_ENTRY_CLOCK_NEGATIVE := 25.0
 
 ## How many things the player may buy on a single shop visit. One purchase per
 ## exit is the whole point: the run only offers five decisions, so each one has
@@ -214,6 +216,7 @@ var heartbreak := 0
 var perm_upgrades := {}
 var run_stage_index := 0
 var negative_mode := false
+var world_clock_applied := false
 var negative_visits := 0
 var negative_max_visits := 2
 var enemy_damage_scale := 1.0
@@ -271,6 +274,7 @@ func _ready() -> void:
 
 
 func start_new_run() -> void:
+	world_clock_applied = false
 	damage_taken = 0.0
 	run_damage_taken = 0.0
 	run_deaths = 0
@@ -327,6 +331,8 @@ func new_game() -> void:
 
 
 func _process(delta: float) -> void:
+	if not world_clock_applied:
+		return
 	if not clock_running:
 		return
 	if get_tree() != null and get_tree().paused:
@@ -583,6 +589,18 @@ func add_money(value: int) -> void:
 	money_changed.emit(money)
 
 
+## Single entry point for the clock value on a world switch. `world` is "normal"
+## or "negative".
+func set_world_entry_clock(world: String) -> void:
+	if world == "negative":
+		player_health = WORLD_ENTRY_CLOCK_NEGATIVE
+	else:
+		player_health = WORLD_ENTRY_CLOCK_NORMAL
+	clock_seconds = player_health
+	world_clock_applied = true
+	print("WORLD_CLOCK", world, player_health)
+
+
 func add_clock(seconds: float) -> void:
 	if negative_mode:
 		var cap := float(NEGATIVE_ENEMIES["negative_time_gain_cap"])
@@ -719,7 +737,8 @@ func enter_negative() -> void:
 	var ns := 30.0
 	NEGATIVE_ENEMIES["negative_start"] = ns
 	player_max_hp = ns
-	player_health = player_max_hp
+	player_health = 0.0
+	world_clock_applied = false
 	player_damage_mult = float(NEGATIVE_ENEMIES["player_damage_mult"])
 	clock_running = false
 

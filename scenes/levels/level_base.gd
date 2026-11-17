@@ -24,9 +24,10 @@ func _ready() -> void:
 	if GameState.negative_mode:
 		GameState.clock_running = false
 		GameState.player_max_hp = float(GameState.NEGATIVE_ENEMIES["negative_start"])
-		GameState.player_health = GameState.player_max_hp
 		await get_tree().process_frame
 		_apply_negative_visuals()
+		if not GameState.world_clock_applied:
+			GameState.set_world_entry_clock("negative")
 	Music.play_level()
 	camera.limit_left = 0
 	camera.limit_top = -400
@@ -41,6 +42,8 @@ func _ready() -> void:
 		_spawn_enemy_director()
 	if GameState.negative_mode:
 		_spawn_negative_extras()
+	if not GameState.world_clock_applied:
+		GameState.set_world_entry_clock("normal")
 	GameState.clock_running = true
 
 

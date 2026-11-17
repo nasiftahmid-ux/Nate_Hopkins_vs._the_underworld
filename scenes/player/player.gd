@@ -395,13 +395,11 @@ func die() -> void:
 			target = GameState.return_stage
 		else:
 			target = scene_path
-		GameState.exit_negative(false)
-		GameState.return_stage = ""
+	GameState.exit_negative(false)
+	GameState.return_stage = ""
+	GameState.world_clock_applied = false
 	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-	if was_negative_death:
-		GameState.player_health = float(GameState.CLOCK_CONFIG["return_clock_min"])
-	else:
-		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+	GameState.world_clock_applied = false
 	GameState.player_damage_mult = GameState.player_negative_damage_bonus
 	get_tree().paused = false
 	if not was_negative_death:
