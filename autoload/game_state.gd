@@ -592,7 +592,7 @@ func add_clock(seconds: float) -> void:
 		elif seconds > remaining:
 			seconds = remaining
 		negative_time_gained += seconds
-	player_health = minf(player_health + seconds, player_max_hp)
+	player_health = minf(player_health + seconds, maxf(player_max_hp, 600.0))
 	GameState.clock_seconds = player_health
 
 
@@ -603,7 +603,7 @@ func add_exp(value: int) -> void:
 	while exp >= exp_to_next_level():
 		exp -= exp_to_next_level()
 		level += 1
-		player_health = minf(player_health + float(CLOCK_CONFIG["level_up_bonus"]), player_max_hp)
+		player_health = minf(player_health + float(CLOCK_CONFIG["level_up_bonus"]), maxf(player_max_hp, 600.0))
 		player_damage_mult += float(CLOCK_CONFIG["level_up_damage_mult"])
 		level_changed.emit(level)
 		level_healed.emit(float(CLOCK_CONFIG["level_up_bonus"]))
