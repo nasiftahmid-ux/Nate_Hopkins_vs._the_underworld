@@ -631,7 +631,7 @@ func add_exp(value: int) -> void:
 
 func begin_level() -> void:
 	clear_damage_penalty()
-	player_health = player_max_hp
+	player_health = maxf(player_health, player_max_hp)
 
 
 ## Called by every stage scene on entry. Closing is idempotent, so a door that

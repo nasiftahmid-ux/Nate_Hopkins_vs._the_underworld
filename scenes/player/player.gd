@@ -56,7 +56,12 @@ func _ready() -> void:
 	sprite.play("idle")
 	start_pos = global_position
 	max_hp = GameState.player_max_hp
-	hp = clampf(GameState.player_health, 1.0, max_hp) if GameState.player_health > 0.0 else max_hp
+	if GameState.player_health > 0.0:
+		hp = GameState.player_health
+		if hp < 1.0:
+			hp = max_hp
+	else:
+		hp = max_hp
 	GameState.player_health = hp
 	hp_changed.emit(hp, max_hp)
 	GameState.level_healed.connect(_on_level_healed)
@@ -72,7 +77,7 @@ func _on_level_healed(amount: float) -> void:
 	if hp <= 0.0:
 		return
 	max_hp = GameState.player_max_hp
-	hp = minf(hp + amount, max_hp)
+	hp = minf(hp + amount, maxf(max_hp, 600.0))
 	GameState.player_health = hp
 	hp_changed.emit(hp, max_hp)
 
@@ -434,7 +439,7 @@ func die() -> void:
 func _revive() -> void:
 	max_hp = GameState.player_max_hp
 	hp = max_hp
-	GameState.player_health = hp
+	GameState.player_health = maxf(GameState.player_health, hp)
 	invuln_time = REVIVE_INVULN
 	is_attacking = false
 	is_blocking = false
