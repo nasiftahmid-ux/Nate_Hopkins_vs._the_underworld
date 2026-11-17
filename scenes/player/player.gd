@@ -322,8 +322,9 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
 	if GameState.negative_mode:
 		cost *= float(GameState.NEGATIVE_ENEMIES["enemy_damage_mult"])
-		cost = minf(cost, float(GameState.NEGATIVE_ENEMIES["negative_damage_per_hit_cap"]))
 	cost *= GameState.enemy_damage_scale
+	if GameState.negative_mode:
+		cost = minf(cost, float(GameState.NEGATIVE_ENEMIES["negative_damage_per_hit_cap"]))
 	hp = maxf(hp - cost, 0.0)
 	GameState.player_health = hp
 	GameState.register_damage(cost)
@@ -375,9 +376,9 @@ func die() -> void:
 		return
 	var scene_path := get_tree().current_scene.scene_file_path
 	var is_boss := scene_path.contains("boss") or scene_path.contains("arena")
-	# Negative world entry: clock-zero on a regular level while visits remain.
-	if (not GameState.negative_mode) and (not is_boss) and GameState.negative_visits < GameState.negative_max_visits:
-		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
+	# Negative world entry: clock-zero on a regular level always enters the negative world.
+	if (not GameState.negative_mode) and (not is_boss):
+		print("Clock 0: entering negative (visit %d)" % [GameState.negative_visits + 1])
 		GameState.enter_negative()
 		get_tree().paused = false
 		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
@@ -403,8 +404,9 @@ func die() -> void:
 		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
 	GameState.player_damage_mult = GameState.player_negative_damage_bonus
 	get_tree().paused = false
-	GameState.enemy_damage_scale *= 1.25
-	GameState.enemy_health_scale *= 1.15
+	if not was_negative_death:
+		GameState.enemy_damage_scale *= 1.25
+		GameState.enemy_health_scale *= 1.15
 	GameState.negative_kills = 0
 	GameState.negative_total = 0
 	get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")

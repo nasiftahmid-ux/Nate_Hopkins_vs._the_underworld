@@ -716,7 +716,7 @@ func enter_negative() -> void:
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
 	in_boss_fight = false
-	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
+	var ns := 30.0
 	NEGATIVE_ENEMIES["negative_start"] = ns
 	player_max_hp = ns
 	player_health = player_max_hp

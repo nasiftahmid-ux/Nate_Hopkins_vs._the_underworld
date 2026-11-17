@@ -22,6 +22,7 @@ var _gray_count := 0
 func _ready() -> void:
 	GameState.begin_stage()
 	if GameState.negative_mode:
+		GameState.clock_running = false
 		GameState.player_max_hp = float(GameState.NEGATIVE_ENEMIES["negative_start"])
 		GameState.player_health = GameState.player_max_hp
 		await get_tree().process_frame
