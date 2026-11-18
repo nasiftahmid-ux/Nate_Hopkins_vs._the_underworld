@@ -388,7 +388,7 @@ func die() -> void:
 	GameState.set_world_entry_clock("negative")
 	get_tree().paused = false
 	get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
-		return
+	return
 	# Negative world clock-zero (or no visits left / boss): return to normal world, loop.
 	print("Clock 0: returning to normal world (loop)")
 	var target := scene_path
