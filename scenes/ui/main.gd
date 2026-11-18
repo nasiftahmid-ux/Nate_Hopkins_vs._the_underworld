@@ -70,6 +70,7 @@ func _on_level_selected(entry: Dictionary) -> void:
 	elif entry.has("exes"):
 		GameState.defeated_exes = entry["exes"]
 	GameState.begin_level()
+	GameState.world_clock_applied = false
 	get_tree().change_scene_to_file(entry["scene"])
 
 

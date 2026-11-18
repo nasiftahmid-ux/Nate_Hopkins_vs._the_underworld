@@ -6,6 +6,7 @@ extends Node2D
 func _ready() -> void:
 	GameState.negative_mode = false
 	GameState.return_stage = ""
+	GameState.set_stage_start_clock("boss")
 	camera.limit_left = 0
 	camera.limit_top = -400
 	camera.limit_right = 900

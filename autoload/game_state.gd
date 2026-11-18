@@ -15,6 +15,9 @@ const MIN_RHYTHM_WINDOW := 0.15
 const MIN_RHYTHM_NOTES := 8
 const WORLD_ENTRY_CLOCK_NORMAL := 60.0
 const WORLD_ENTRY_CLOCK_NEGATIVE := 25.0
+const STAGE_START_NORMAL := 60.0
+const STAGE_START_BOSS := 60.0
+const STAGE_START_NEGATIVE_CHAIN := 30.0
 
 ## How many things the player may buy on a single shop visit. One purchase per
 ## exit is the whole point: the run only offers five decisions, so each one has
@@ -599,6 +602,16 @@ func set_world_entry_clock(world: String) -> void:
 	clock_seconds = player_health
 	world_clock_applied = true
 	print("WORLD_CLOCK", world, player_health)
+
+
+func set_stage_start_clock(kind: String) -> void:
+	if kind == "chain":
+		player_health = STAGE_START_NEGATIVE_CHAIN
+	else:
+		player_health = STAGE_START_NORMAL
+	clock_seconds = player_health
+	world_clock_applied = true
+	print("WORLD_CLOCK", kind, player_health)
 
 
 func add_clock(seconds: float) -> void:

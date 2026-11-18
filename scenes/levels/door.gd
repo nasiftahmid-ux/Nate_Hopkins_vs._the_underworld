@@ -150,6 +150,7 @@ func _go() -> void:
 			if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
 				GameState.player_negative_damage_bonus *= 1.1
 			GameState.player_damage_mult = GameState.player_negative_damage_bonus
+			GameState.world_clock_applied = false
 			if OS.is_debug_build():
 				print("TRANSITION: from %s/negative to %s/negative, clock %.0f" % [scene_file_path, next_scene_path, GameState.player_health])
 			GameState.shop_next_scene = next_scene_path

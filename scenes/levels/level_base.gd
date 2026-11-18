@@ -27,7 +27,7 @@ func _ready() -> void:
 		await get_tree().process_frame
 		_apply_negative_visuals()
 		if not GameState.world_clock_applied:
-			GameState.set_world_entry_clock("negative")
+			GameState.set_stage_start_clock("chain")
 	Music.play_level()
 	camera.limit_left = 0
 	camera.limit_top = -400
