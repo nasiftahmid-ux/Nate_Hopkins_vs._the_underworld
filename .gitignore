@@ -1,3 +1,4 @@
 # Godot 4
 .godot/
 .aider*
+dist/
