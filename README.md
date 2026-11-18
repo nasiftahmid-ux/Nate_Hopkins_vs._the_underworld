@@ -68,6 +68,8 @@ Three save slots in `user://saves/slot_N.json`. Start from the slot menu. Progre
 
 ## Project structure
 
+[![Architecture diagram of nasiftahmid-ux/nate_hopkins_vs._the_underworld](https://gitdiagram.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/diagram.png)](https://gitdiagram.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld?utm_source=readme&utm_medium=picture)
+
 - `autoload/` - global singletons (GameState, InputSetup, audio).
 - `scenes/` - player, enemies, bosses, levels, items, ui, dialogue.
 - `_slice.gd` - headless atlas builder (run with `godot --headless --script res://_slice.gd`).
