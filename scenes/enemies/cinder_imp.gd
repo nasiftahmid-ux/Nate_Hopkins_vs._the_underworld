@@ -128,7 +128,7 @@ func take_hit(dmg: float, dir: float) -> void:
 
 
 func die() -> void:
-	if is_dead:
+	if not alive:
 		return
 	_play("death")
 	super.die()

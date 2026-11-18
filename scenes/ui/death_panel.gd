@@ -24,11 +24,7 @@ func _ready() -> void:
 	grade_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(grade_label)
 	var rooms_label := Label.new()
-	var _n := 0
-	for _r in GameState.RUN_ROUTE:
-		if _r.contains("level"):
-			_n += 1
-	rooms_label.text = "ENDED IN ROOM %d OF %d" % [GameState.rooms_cleared + 1, _n]
+	rooms_label.text = "ENDED IN ROOM %d OF 3" % (GameState.rooms_cleared + 1)
 	rooms_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(rooms_label)
 	var hb_label := Label.new()
@@ -75,18 +71,11 @@ func _on_buy_upgrade() -> void:
 
 
 func _on_again() -> void:
-	GameState.save_slot()
-	if GameState.active_slot >= 0 and not GameState.sandbox:
-		var stage := GameState.begin_attempt()
-		get_tree().paused = false
-		get_tree().change_scene_to_file(stage)
-	else:
-		GameState.start_new_run()
-		get_tree().paused = false
-		get_tree().change_scene_to_file(GameState.RUN_ROUTE[0])
+	GameState.start_new_run()
+	get_tree().paused = false
+	get_tree().change_scene_to_file(GameState.RUN_ROUTE[0])
 
 
 func _on_menu() -> void:
-	GameState.save_slot()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/ui/main.tscn")

@@ -142,15 +142,6 @@ func _get_camera() -> Camera2D:
 func _ready() -> void:
 	add_to_group("enemy")
 	GameState.begin_stage()
-	if GameState.defeated_exes == 0:
-		GameState.unlock_move("kick")
-		if GameState.should_play_story("S5_BEFORE_BOSS_1"):
-			GameState.play_story("S5_BEFORE_BOSS_1", GameState.story_lines("S5_BEFORE_BOSS_1"), "res://scenes/bosses/boss_arena.tscn")
-			return
-	elif GameState.defeated_exes == 1:
-		if GameState.should_play_story("S9_BEFORE_BOSS_2"):
-			GameState.play_story("S9_BEFORE_BOSS_2", GameState.story_lines("S9_BEFORE_BOSS_2"), "res://scenes/bosses/boss_arena.tscn")
-			return
 	hp = HP_BASE + GameState.defeated_exes * HP_PER_EX
 	max_hp = hp
 	boss_kind = BossKind.BROKEN if GameState.defeated_exes == 0 else BossKind.SWEETHEART
@@ -159,7 +150,7 @@ func _ready() -> void:
 		base_chase = 72.0
 		base_damage = 17.0
 	else:
-		base_name = ""
+		base_name = "FIRST LOVE"
 		base_chase = 96.0
 		base_damage = 15.0
 	_apply_phase_stats()
@@ -1088,53 +1079,32 @@ func die() -> void:
 		boss_bar.value = 0
 	GameState.finish_stage()
 	await get_tree().create_timer(1.4).timeout
-	if GameState.defeated_exes == 0:
-		GameState.unlock_move("special")
-	if (not GameState.sandbox) and GameState.active_slot >= 0:
-		if GameState.defeated_exes == 0:
-			GameState.checkpoint_index = 3
-		else:
-			GameState.checkpoint_index = 6
 	GameState.defeated_exes += 1
-	if (not GameState.sandbox) and GameState.active_slot >= 0:
-		GameState.save_slot()
 	if GameState.defeated_exes >= 2:
 		GameState.dialogue_lines = [
-			{"speaker": "Narrator", "text": "Her demon form fades away."},
-			{"speaker": "Nate", "text": "Wendy?"},
-			{"speaker": "Wendy", "text": "Yes."},
-			{"speaker": "", "text": "Nate sobs."},
-			{"speaker": "Nate", "text": "Wait... why are you here?"},
-			{"speaker": "Wendy", "text": "What else do you think?"},
-			{"speaker": "", "text": "Aphrodite appears."},
-			{"speaker": "Aphrodite", "text": "How did you escape?! No... what did you do?!"},
-			{"speaker": "Aphrodite", "text": "Wait. Nate Hopkins, you beast! Is there no love in your heart?"},
-			{"speaker": "Aphrodite", "text": "Sing me a song of love, if you can. Or I'll throw you back to the beginning."},
-			{"speaker": "Aphrodite", "text": "That is the price of your freedom."},
+			{"speaker": "Aphrodite", "text": "Impressive, mortal. Two broken hearts, both beaten to a pulp..."},
+			{"speaker": "Aphrodite", "text": "But love is never won with fists. Love is a SONG, Nate Hopkins."},
 			GameState.grade_chant(),
+			{"speaker": "???", "text": "Proof you deserve another chance... must be sung beautifully."},
+			{"speaker": "Nate", "text": "Seriously? A dating game taught me how to fight. Now I have to learn to sing too?"},
+			{"speaker": "Aphrodite", "text": "Sing, and the Underworld will set you free. Miss the beat, and you begin again."},
 		]
 		GameState.set_rhythm_difficulty(1.0, 30)
-		GameState.rhythm_followup_lines = [
-			{"speaker": "Aphrodite", "text": "Hmph. I'll say nothing. I hope you've learned your lesson, mortal."},
-			{"speaker": "Aphrodite", "text": "There will be no next time... or my brother Mischief will be there to help you."},
-			{"speaker": "Narrator", "text": "Nate falls into the middle of a classroom. Hazel is there."},
-			{"speaker": "Hazel", "text": "Where did you go? What happened to you?"},
-			{"speaker": "Nate", "text": "Well... it's a long story. But I think I deserved what happened to me."},
-			{"speaker": "Hazel", "text": "Are you okay? You should get checked up. Let me take you."},
-			{"speaker": "Nate", "text": "Hazel, wait. I need to tell you something."},
-			{"speaker": "Hazel", "text": "What?"},
-			{"speaker": "Nate", "text": "Do you wanna go out with me?"},
-			{"speaker": "Hazel", "text": "......"},
-		]
+		GameState.rhythm_followup_lines = GameState.decorate_followup_lines([
+			{"speaker": "Nate", "text": "Hazel... I clawed my way out of the actual Underworld for this."},
+			{"speaker": "Hazel", "text": "...That's the weirdest pickup line I've ever heard."},
+			{"speaker": "Hazel", "text": "But I guess anyone who fights through Hell deserves a first date. Dinner?"},
+			{"speaker": "Narrator", "text": "Nate became a master of the Underworld dating circuit. 10/10 no notes."},
+		])
 		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
-		GameState.scene_after_dialogue = "res://scenes/ui/main.tscn"
-		GameState.pending_completion = true
+		GameState.scene_after_dialogue = "res://scenes/bosses/final_rhythm.tscn"
 	else:
 		GameState.dialogue_lines = [
-			{"speaker": "Nate", "text": "Heh. I beat you."},
-			{"speaker": "???", "text": "You think you beat me, Nate? Like you broke my heart? Ha ha ha..."},
+			{"speaker": "Aphrodite", "text": "One heart down, one to go. But don't celebrate yet, Nate Hopkins."},
+			{"speaker": "???", "text": "You really don't remember me? My heart was yours first. And you broke it first."},
 			GameState.grade_chant(),
-			{"speaker": "???", "text": "You'll face me again soon enough."},
+			{"speaker": "???", "text": "You've learned to fight. Now prove you can keep a beat."},
+			{"speaker": "Nate", "text": "A rhythm game? In the Underworld? Who designed this place?"},
 		]
 		GameState.rhythm_followup_lines = []
 		GameState.rhythm_followup_scene = "res://scenes/levels/level3.tscn"

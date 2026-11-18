@@ -56,7 +56,12 @@ func _ready() -> void:
 	sprite.play("idle")
 	start_pos = global_position
 	max_hp = GameState.player_max_hp
-	hp = clampf(GameState.player_health, 1.0, max_hp) if GameState.player_health > 0.0 else max_hp
+	if GameState.player_health > 0.0:
+		hp = GameState.player_health
+		if hp < 1.0:
+			hp = max_hp
+	else:
+		hp = max_hp
 	GameState.player_health = hp
 	hp_changed.emit(hp, max_hp)
 	GameState.level_healed.connect(_on_level_healed)
@@ -72,7 +77,7 @@ func _on_level_healed(amount: float) -> void:
 	if hp <= 0.0:
 		return
 	max_hp = GameState.player_max_hp
-	hp = minf(hp + amount, max_hp)
+	hp = minf(hp + amount, maxf(max_hp, 600.0))
 	GameState.player_health = hp
 	hp_changed.emit(hp, max_hp)
 
@@ -153,9 +158,9 @@ func _process_combat(delta: float) -> void:
 	elif not is_blocking:
 		if Input.is_action_just_pressed("attack"):
 			try_attack(false, false, not is_on_floor())
-		elif Input.is_action_just_pressed("heavy_attack") and GameState.can_use("kick"):
+		elif Input.is_action_just_pressed("heavy_attack"):
 			try_attack(true, false)
-		elif Input.is_action_just_pressed("special") and special_cooldown <= 0.0 and GameState.can_use("special"):
+		elif Input.is_action_just_pressed("special") and special_cooldown <= 0.0:
 			try_attack(false, true)
 
 
@@ -322,8 +327,9 @@ func take_damage(amount: float, blockable: bool = true, from_position: Vector2 =
 	var cost := float(GameState.CLOCK_CONFIG["light_hit_cost"]) if amount < 10.0 else float(GameState.CLOCK_CONFIG["heavy_hit_cost"])
 	if GameState.negative_mode:
 		cost *= float(GameState.NEGATIVE_ENEMIES["enemy_damage_mult"])
-		cost = minf(cost, float(GameState.NEGATIVE_ENEMIES["negative_damage_per_hit_cap"]))
 	cost *= GameState.enemy_damage_scale
+	if GameState.negative_mode:
+		cost = minf(cost, float(GameState.NEGATIVE_ENEMIES["negative_damage_per_hit_cap"]))
 	hp = maxf(hp - cost, 0.0)
 	GameState.player_health = hp
 	GameState.register_damage(cost)
@@ -375,12 +381,11 @@ func die() -> void:
 		return
 	var scene_path := get_tree().current_scene.scene_file_path
 	var is_boss := scene_path.contains("boss") or scene_path.contains("arena")
-	# Negative world entry: clock-zero on a regular level while visits remain.
-	if (not GameState.negative_mode) and (not is_boss) and GameState.negative_visits < GameState.negative_max_visits:
-		print("Clock 0: entering negative (visit %d/%d)" % [GameState.negative_visits + 1, GameState.negative_max_visits])
-		if OS.is_debug_build():
-			print("TRANSITION: %s/normal -> %s/negative, clock %.0f" % [scene_path, scene_path, GameState.player_health])
+	# Negative world entry: clock-zero on a regular level always enters the negative world.
+	if (not GameState.negative_mode) and (not is_boss):
+		print("Clock 0: entering negative (visit %d)" % [GameState.negative_visits + 1])
 		GameState.enter_negative()
+		GameState.set_world_entry_clock("negative")
 		get_tree().paused = false
 		get_tree().change_scene_to_file(GameState.return_stage if GameState.return_stage != "" else scene_path)
 		return
@@ -388,8 +393,6 @@ func die() -> void:
 	print("Clock 0: returning to normal world (loop)")
 	var target := scene_path
 	var was_negative_death := GameState.negative_mode
-	if OS.is_debug_build():
-		print("TRANSITION: %s -> %s, negative=%s, clock=%.0f" % [scene_path, target, str(GameState.negative_mode), GameState.player_health])
 	if GameState.negative_mode:
 		if GameState.negative_total > 0 and GameState.negative_kills >= GameState.negative_total:
 			GameState.player_negative_damage_bonus *= 1.1
@@ -398,26 +401,18 @@ func die() -> void:
 			target = GameState.return_stage
 		else:
 			target = scene_path
-		GameState.exit_negative(false)
-		GameState.return_stage = ""
-		GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-		GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
-		if GameState.should_play_story("S4_FIRST_TIME_BACK_FROM_NEGATIVE"):
-			GameState.play_story("S4_FIRST_TIME_BACK_FROM_NEGATIVE", GameState.story_lines("S4_FIRST_TIME_BACK_FROM_NEGATIVE"), target)
-			return
+	GameState.exit_negative(false)
+	GameState.return_stage = ""
+	GameState.world_clock_applied = false
 	GameState.player_max_hp = float(GameState.CLOCK_CONFIG["start"])
-	GameState.player_health = float(GameState.CLOCK_CONFIG["start"])
+	GameState.set_world_entry_clock("normal")
 	GameState.player_damage_mult = GameState.player_negative_damage_bonus
 	get_tree().paused = false
-	GameState.enemy_damage_scale *= 1.25
-	GameState.enemy_health_scale *= 1.15
+	if not was_negative_death:
+		GameState.enemy_damage_scale *= 1.25
+		GameState.enemy_health_scale *= 1.15
 	GameState.negative_kills = 0
 	GameState.negative_total = 0
-	if is_boss:
-		GameState.dialogue_lines = GameState.story_lines("S7_BOSS_LOSS")
-		GameState.scene_after_dialogue = target if target != "" else "res://scenes/bosses/boss_arena.tscn"
-		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
-		return
 	get_tree().change_scene_to_file(target if target != "" else "res://scenes/levels/level1.tscn")
 	return
 	sprite.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -445,7 +440,7 @@ func die() -> void:
 func _revive() -> void:
 	max_hp = GameState.player_max_hp
 	hp = max_hp
-	GameState.player_health = hp
+	GameState.player_health = maxf(GameState.player_health, hp)
 	invuln_time = REVIVE_INVULN
 	is_attacking = false
 	is_blocking = false

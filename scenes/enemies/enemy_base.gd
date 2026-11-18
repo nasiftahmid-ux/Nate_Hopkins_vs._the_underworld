@@ -86,7 +86,6 @@ const KILL_PLANE_Y := 640.0
 
 var hp: float
 var alive := true
-var is_dead := false
 ## Seconds left in an uppercut stagger; while it runs the enemy skips its AI.
 var stun_time := 0.0
 ## Footstep cadence clock, reset whenever the enemy is not actually walking.
@@ -210,28 +209,9 @@ func _fall_out() -> void:
 
 
 func die() -> void:
-	if is_dead:
+	if not alive:
 		return
-	is_dead = true
 	alive = false
-	# 2. Make harmless immediately.
-	for c in get_children():
-		if c is CollisionShape2D or c is CollisionPolygon2D:
-			c.set_deferred("disabled", true)
-		if c is Area2D:
-			c.monitoring = false
-			c.monitorable = false
-	collision_layer = 0
-	collision_mask = 0
-	set_physics_process(false)
-	velocity = Vector2.ZERO
-	remove_from_group("enemy")
-	# 5. Drop coin into the level root, not as a child of the enemy.
-	# _spawn_coins adds coins synchronously then sets global_position after
-	# add_child, so coins land at the correct world position.
-	_spawn_coins(COIN_DROP, COIN_SPLIT)
-	var spawned_coin := COIN_DROP > 0
-	# 6. Rewards, wrapped so they can't skip earlier steps.
 	if not death_sound.is_empty():
 		Sfx.play(death_sound, -3.0, randf_range(0.94, 1.06))
 	GameState.add_exp(exp_reward)
@@ -241,37 +221,16 @@ func die() -> void:
 		GameState.add_clock(10.0)
 	else:
 		GameState.add_clock(5.0)
-	if OS.is_debug_build():
-		var _t := 10.0 if GameState.negative_mode else 5.0
-		print("KILL REWARD: ", name, " +", _t, "s clock=", GameState.clock_seconds)
 	GameState.register_kill()
 	if GameState.negative_mode:
 		GameState.negative_kills += 1
+	_spawn_coin()
+	collision_layer = 0
+	collision_mask = 0
+	velocity = Vector2.ZERO
 	body.color = Color(0.35, 0.35, 0.35)
-	# 7. Play death anim (force non-looping), free after anim or 1.5s fallback.
-	var sprite_node := get_node_or_null("Sprite") as AnimatedSprite2D
-	if sprite_node and sprite_node.sprite_frames and sprite_node.sprite_frames.has_animation("death"):
-		sprite_node.sprite_frames.set_animation_loop("death", false)
-		if sprite_node.animation != "death":
-			sprite_node.play("death")
-	# Capture name before queue_free so the debug print is safe.
-	var _debug_name := name
-	var finished := false
-	if sprite_node:
-		sprite_node.animation_finished.connect(func():
-			if not finished:
-				finished = true
-				if OS.is_debug_build():
-					print("ENEMY DEATH: ", _debug_name, " coin=", str(spawned_coin), " freed_by=anim")
-				queue_free()
-		, CONNECT_ONE_SHOT)
-	get_tree().create_timer(1.5).timeout.connect(func():
-		if not finished:
-			finished = true
-			if OS.is_debug_build():
-				print("ENEMY DEATH: ", _debug_name, " coin=", str(spawned_coin), " freed_by=timeout")
-			queue_free()
-	)
+	await get_tree().create_timer(death_delay).timeout
+	queue_free()
 
 
 func _spawn_coin() -> void:

@@ -6,8 +6,6 @@ signal level_changed(value: int)
 signal level_healed(amount: float)
 
 const SAVE_PATH := "user://save.json"
-const SLOT_COUNT := 3
-const SLOTS_DIR := "user://saves"
 const PERFECT_HEAL_RATIO := 0.5
 const MIN_REWARD_MULT := 0.25
 const BASE_MAX_HP := 100.0
@@ -15,6 +13,11 @@ const MAX_HP_PER_LEVEL := 10.0
 const DEATH_RATIO_PENALTY := 0.1
 const MIN_RHYTHM_WINDOW := 0.15
 const MIN_RHYTHM_NOTES := 8
+const WORLD_ENTRY_CLOCK_NORMAL := 60.0
+const WORLD_ENTRY_CLOCK_NEGATIVE := 25.0
+const STAGE_START_NORMAL := 60.0
+const STAGE_START_BOSS := 60.0
+const STAGE_START_NEGATIVE_CHAIN := 30.0
 
 ## How many things the player may buy on a single shop visit. One purchase per
 ## exit is the whole point: the run only offers five decisions, so each one has
@@ -61,11 +64,11 @@ var NEGATIVE_ENEMIES := {
 	"score_mult": 2.0,
 	"max_alive": 12,
 	"gray_actors": true,
-	"spawn_multiplier_by_level": {1: 2, 2: 2, 3: 3, 4: 3},
+	"spawn_multiplier_by_level": {1: 2, 2: 2, 3: 3},
 	"spawn_multiplier_default": 2,
 	"negative_time_gain_cap": 45.0,
 }
-## Run route: levels 1-4, boss 1, boss 2, finale.
+## Short roguelite run route: 3 levels, boss 1, finale.
 const RUN_ROUTE: Array[String] = [
 	"res://scenes/levels/level1.tscn",
 	"res://scenes/levels/level2.tscn",
@@ -80,7 +83,7 @@ const SHOP_HP_PER_RANK := 10.0
 const SHOP_HEAVY_PER_RANK := 3.0
 const SHOP_COOLDOWN_PER_RANK := 0.25
 const SHOP_WARCRY_PER_RANK := 6.0
-const BASE_SPECIAL_COOLDOWN := 7.0
+const BASE_SPECIAL_COOLDOWN := 2.0
 
 ## Aphrodite's Underworld Shop catalogue. `base` is the first purchase, `scale`
 ## multiplies the price on every repeat, and `max_ranks` caps it (`0` = forever).
@@ -216,6 +219,7 @@ var heartbreak := 0
 var perm_upgrades := {}
 var run_stage_index := 0
 var negative_mode := false
+var world_clock_applied := false
 var negative_visits := 0
 var negative_max_visits := 2
 var enemy_damage_scale := 1.0
@@ -225,19 +229,21 @@ var negative_total := 0
 var negative_time_gained := 0.0
 var negative_remaining_spawns := 0
 var in_boss_fight := false
-var seen_story := {}
-var active_slot := -1
-var sandbox := false
-var checkpoint_index := 0
-var story_played_this_run: Array = []
-var pending_completion := false
-var show_completion_panel := false
-var open_new_run_flow_pending := false
-var unlocked_moves := {"kick": false, "special": false}
-signal move_unlocked(move_name: String)
 var player_negative_damage_bonus := 1.0
 var return_stage := ""
 var clock_seconds := 60.0
+
+## Slot save state (ported from main).
+const SLOT_COUNT := 3
+const SLOTS_DIR := "user://saves"
+var active_slot := -1
+var sandbox := false
+var checkpoint_index := 0
+var seen_story := {}
+var story_played_this_run: Array = []
+var unlocked_moves := {"kick": false, "special": false}
+var banked_warcry := 0
+var second_chance := 0
 
 ## Aphrodite's Underworld Shop. Purchased ranks are permanent for the run; the
 ## scene holding the shop is `scenes/ui/shop.tscn`, which is entered from the
@@ -257,10 +263,8 @@ var blackout_subtitle := ""
 ## Warcry ranks bought but not yet spent. They convert to `warcry_active` the
 ## next time a stage opens, so the boost lasts exactly one stage.
 var warcry_charges := 0
-var banked_warcry := 0
 var warcry_active := 0
 var revives_left := 0
-var second_chance := 0
 
 var dialogue_lines: Array[Dictionary] = []
 var scene_after_dialogue := ""
@@ -276,7 +280,10 @@ var rhythm_streak_limit := 2
 
 
 func _ready() -> void:
-	load_game()
+	if FileAccess.file_exists(slot_path(0)):
+		load_slot(0)
+	else:
+		load_game()
 	# The cheats must answer while the tree is paused, because that is exactly
 	# when you want them: the death screen is up and you want to walk back out.
 	# This autoload has no per-frame logic, so running it while paused is free.
@@ -284,188 +291,7 @@ func _ready() -> void:
 	_register_dev_actions()
 
 
-func slot_path(i: int) -> String:
-	return "%s/slot_%d.json" % [SLOTS_DIR, i + 1]
-
-
-func _ensure_slots_dir() -> void:
-	if not DirAccess.dir_exists_absolute(SLOTS_DIR):
-		DirAccess.make_dir_recursive_absolute(SLOTS_DIR)
-
-
-func _sanitize_name(raw: String) -> String:
-	var out := ""
-	for ch in raw.strip_edges():
-		if ch.is_valid_identifier() or ch == " " or ch == "-" or ch == "_" or ch == "'":
-			out += ch
-		if out.length() >= 12:
-			break
-	if out.strip_edges().is_empty():
-		out = "Nate"
-	return out
-
-
-func _default_slot_data(name: String) -> Dictionary:
-	return {
-		"save_version": 1,
-		"name": name,
-		"created": Time.get_datetime_string_from_system(),
-		"last_played": Time.get_datetime_string_from_system(),
-		"checkpoint_index": 0,
-		"defeated_bosses": 0,
-		"completed": false,
-		"unlocked_moves": {"kick": false, "special": false},
-		"level": 1,
-		"xp": 0,
-		"coins": 0,
-		"shop_ranks": {},
-		"perm_upgrades": {},
-		"second_chance": 0,
-		"banked_warcry": 0,
-		"heartbreak": 0,
-		"best_score": 0,
-		"seen_story": {},
-	}
-
-
-func _atomic_write_slot(i: int, data: Dictionary) -> void:
-	_ensure_slots_dir()
-	var path := slot_path(i)
-	var tmp := path + ".tmp"
-	var bak := path + ".bak"
-	var file := FileAccess.open(tmp, FileAccess.WRITE)
-	if file == null:
-		return
-	file.store_string(JSON.stringify(data))
-	file.close()
-	# keep previous as .bak
-	if FileAccess.file_exists(path):
-		if FileAccess.file_exists(bak):
-			DirAccess.remove_absolute(bak)
-		DirAccess.rename_absolute(path, bak)
-	DirAccess.rename_absolute(tmp, path)
-
-
-func slot_summary(i: int) -> Dictionary:
-	var path := slot_path(i)
-	if not FileAccess.file_exists(path):
-		return {"state": "empty", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
-	var file := FileAccess.open(path, FileAccess.READ)
-	if file == null:
-		return {"state": "corrupted", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
-	var txt := file.get_as_text()
-	file.close()
-	var parsed = JSON.parse_string(txt)
-	if not (parsed is Dictionary):
-		return {"state": "corrupted", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
-	var d: Dictionary = parsed
-	var ci := int(d.get("checkpoint_index", 0))
-	var next_label := ""
-	if ci >= 0 and ci < RUN_ROUTE.size():
-		next_label = RUN_ROUTE[ci].get_file().get_basename()
-	var moves: Array = []
-	var um = d.get("unlocked_moves", {})
-	if um is Dictionary:
-		if bool(um.get("kick", false)):
-			moves.append("K")
-		if bool(um.get("special", false)):
-			moves.append("L")
-	return {
-		"state": "completed" if bool(d.get("completed", false)) else "ok",
-		"name": str(d.get("name", "")),
-		"next_stage_label": next_label,
-		"moves": moves,
-		"best_score": int(d.get("best_score", 0)),
-		"last_played": str(d.get("last_played", "")),
-		"completed": bool(d.get("completed", false)),
-	}
-
-
-func create_slot(i: int, raw_name: String) -> void:
-	var name := _sanitize_name(raw_name)
-	var data := _default_slot_data(name)
-	_atomic_write_slot(i, data)
-
-
-func load_slot(i: int) -> bool:
-	var path := slot_path(i)
-	if not FileAccess.file_exists(path):
-		return false
-	var file := FileAccess.open(path, FileAccess.READ)
-	if file == null:
-		return false
-	var txt := file.get_as_text()
-	file.close()
-	var parsed = JSON.parse_string(txt)
-	if not (parsed is Dictionary):
-		return false
-	var d: Dictionary = parsed
-	active_slot = i
-	sandbox = false
-	# apply saved data to live vars
-	checkpoint_index = int(d.get("checkpoint_index", 0))
-	defeated_exes = int(d.get("defeated_bosses", 0))
-	unlocked_moves = d.get("unlocked_moves", {"kick": false, "special": false})
-	level = int(d.get("level", 1))
-	exp = int(d.get("xp", 0))
-	money = int(d.get("coins", 0))
-	shop_ranks = d.get("shop_ranks", {})
-	perm_upgrades = d.get("perm_upgrades", {})
-	second_chance = int(d.get("second_chance", 0)) if false else int(d.get("second_chance", 0))
-	banked_warcry = int(d.get("banked_warcry", 0))
-	heartbreak = int(d.get("heartbreak", 0))
-	best_score = int(d.get("best_score", 0))
-	seen_story = d.get("seen_story", {})
-	return true
-
-
-func erase_slot(i: int) -> void:
-	var path := slot_path(i)
-	var bak := path + ".bak"
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(path)
-	if FileAccess.file_exists(bak):
-		DirAccess.remove_absolute(bak)
-
-
-func save_slot() -> void:
-	if sandbox or active_slot < 0:
-		return
-	var i := active_slot
-	var path := slot_path(i)
-	var data: Dictionary = {}
-	if FileAccess.file_exists(path):
-		var f := FileAccess.open(path, FileAccess.READ)
-		if f:
-			var t := f.get_as_text()
-			f.close()
-			var p = JSON.parse_string(t)
-			if p is Dictionary:
-				data = p
-	if data.is_empty():
-		data = _default_slot_data("Nate")
-	# update fields
-	data["save_version"] = 1
-	data["last_played"] = Time.get_datetime_string_from_system()
-	data["checkpoint_index"] = checkpoint_index
-	data["defeated_bosses"] = defeated_exes
-	data["completed"] = data.get("completed", false)
-	data["unlocked_moves"] = unlocked_moves
-	data["level"] = level
-	data["xp"] = exp
-	data["coins"] = money
-	data["shop_ranks"] = shop_ranks
-	data["perm_upgrades"] = perm_upgrades
-	data["second_chance"] = second_chance
-	data["banked_warcry"] = banked_warcry
-	data["heartbreak"] = heartbreak
-	data["best_score"] = best_score
-	data["seen_story"] = seen_story
-	_atomic_write_slot(i, data)
-
-
 func begin_attempt() -> String:
-	# reset per-attempt state
 	damage_taken = 0.0
 	run_damage_taken = 0.0
 	run_deaths = 0
@@ -482,27 +308,19 @@ func begin_attempt() -> String:
 	enemy_health_scale = 1.0
 	clock_seconds = 0.0
 	story_played_this_run.clear()
-	# apply saved abilities/stats
 	player_max_hp = float(CLOCK_CONFIG["start"]) + 5.0 * float(perm_upgrades.get("clock", 0))
 	player_health = player_max_hp
 	clock_seconds = player_health
 	clock_running = false
 	player_damage_mult = 1.0
-	# return stage to load
+	world_clock_applied = false
 	if checkpoint_index < 0 or checkpoint_index >= RUN_ROUTE.size():
 		checkpoint_index = 0
 	return RUN_ROUTE[checkpoint_index]
 
 
-func new_game() -> void:
-	start_new_run()
-
-
 func start_new_run() -> void:
-	if active_slot >= 0 and not sandbox:
-		begin_attempt()
-		return
-	# sandbox/legacy behavior
+	world_clock_applied = false
 	damage_taken = 0.0
 	run_damage_taken = 0.0
 	run_deaths = 0
@@ -519,14 +337,13 @@ func start_new_run() -> void:
 	purchases_this_visit = 0
 	shop_next_scene = ""
 	blackout_next_scene = ""
-	blackout_subtitle = ""
 	blackout_caption = ""
+	blackout_subtitle = ""
 	warcry_charges = 0
 	warcry_active = 0
 	revives_left = 0
 	player_max_hp = float(CLOCK_CONFIG["start"]) + 5.0 * float(perm_upgrades.get("clock", 0))
 	player_health = player_max_hp
-	clock_seconds = player_health
 	dialogue_lines = []
 	scene_after_dialogue = ""
 	rhythm_followup_lines = []
@@ -548,19 +365,20 @@ func start_new_run() -> void:
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
 	in_boss_fight = false
-	unlocked_moves = {"kick": false, "special": false}
+	player_negative_damage_bonus = 1.0
 	return_stage = ""
-	clock_seconds = player_health
+	clock_seconds = 60.0
 	player_damage_mult = 1.0
-	story_played_this_run.clear()
 	save_game()
 
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		save_slot()
+func new_game() -> void:
+	start_new_run()
+
 
 func _process(delta: float) -> void:
+	if not world_clock_applied:
+		return
 	if not clock_running:
 		return
 	if get_tree() != null and get_tree().paused:
@@ -607,7 +425,7 @@ func heavy_damage_bonus() -> float:
 func special_cooldown_value() -> float:
 	return maxf(
 		BASE_SPECIAL_COOLDOWN - SHOP_COOLDOWN_PER_RANK * float(shop_rank("cooldown")),
-		5.0
+		1.0
 	)
 
 
@@ -695,10 +513,6 @@ func shop_item_available(id: String) -> bool:
 		return false
 	if bool(entry.get("blocked_at_full_health", false)) and player_health >= player_max_hp - 0.01:
 		return false
-	if id == "cooldown" and not can_use("special"):
-		return false
-	if id == "heavy" and not can_use("kick"):
-		return false
 	return true
 
 
@@ -713,10 +527,12 @@ func buy_shop_item(id: String) -> bool:
 	var cost := 0
 	if id != "heal":
 		cost = shop_price(id)
-	if id != "heal" and player_health - cost < 10.0:
+	if id != "heal" and money < cost:
 		return false
 	if id != "heal":
-		player_health -= cost
+		money -= cost
+		save_game()
+		money_changed.emit(money)
 	shop_ranks[id] = shop_rank(id) + 1
 	purchases_this_visit += 1
 	match id:
@@ -761,15 +577,295 @@ func save_game() -> void:
 	if active_slot >= 0 and not sandbox:
 		save_slot()
 		return
-	# sandbox / no active slot: never touch the legacy save.json
-	return
+	var data := _load_save_data()
+	data["player_max_hp"] = player_max_hp
+	data["money"] = money
+	data["exp"] = exp
+	data["level"] = level
+	data["defeated_exes"] = defeated_exes
+	data["run_damage_taken"] = run_damage_taken
+	data["run_deaths"] = run_deaths
+	data["stage_damage"] = stage_damage
+	data["shop_ranks"] = shop_ranks
+	data["warcry_charges"] = warcry_charges
+	data["warcry_active"] = warcry_active
+	data["best_score"] = best_score
+	data["heartbreak"] = heartbreak
+	data["perm_upgrades"] = perm_upgrades
+	_save_data(data)
 
 
 func load_game() -> bool:
-	if active_slot >= 0 and not sandbox:
-		return load_slot(active_slot)
-	return false
+	var parsed := _load_save_data()
+	if parsed.is_empty() and not FileAccess.file_exists(SAVE_PATH):
+		return false
+	if not parsed is Dictionary:
+		return false
+	player_max_hp = parsed.get("player_max_hp", player_max_hp)
+	money = parsed.get("money", money)
+	exp = parsed.get("exp", exp)
+	level = parsed.get("level", level)
+	defeated_exes = parsed.get("defeated_exes", defeated_exes)
+	run_damage_taken = float(parsed.get("run_damage_taken", 0.0))
+	run_deaths = int(parsed.get("run_deaths", 0))
+	stage_damage.clear()
+	var saved_stages = parsed.get("stage_damage", [])
+	if saved_stages is Array:
+		for value in saved_stages:
+			stage_damage.append(float(value))
+	shop_ranks.clear()
+	var saved_ranks = parsed.get("shop_ranks", {})
+	if saved_ranks is Dictionary:
+		for key in saved_ranks:
+			shop_ranks[str(key)] = int(saved_ranks[key])
+	warcry_charges = int(parsed.get("warcry_charges", 0))
+	warcry_active = int(parsed.get("warcry_active", 0))
+	revives_left = int(parsed.get("revives_left", 0))
+	best_score = int(parsed.get("best_score", 0))
+	heartbreak = int(parsed.get("heartbreak", 0))
+	var pu = parsed.get("perm_upgrades", {})
+	if pu is Dictionary:
+		perm_upgrades = pu
+	# Max HP is recomputed from the level curve plus shop bonuses, so a purchase
+	# survives a reload instead of being clobbered by the authoritative curve.
+	player_max_hp = total_max_hp()
+	return true
 
+
+func slot_path(i: int) -> String:
+	return "%s/slot_%d.json" % [SLOTS_DIR, i + 1]
+
+
+func _ensure_slots_dir() -> void:
+	if not DirAccess.dir_exists_absolute(SLOTS_DIR):
+		DirAccess.make_dir_recursive_absolute(SLOTS_DIR)
+
+
+func _sanitize_name(raw: String) -> String:
+	var out := ""
+	for ch in raw.strip_edges():
+		if ch.is_valid_identifier() or ch == " " or ch == "-" or ch == "_" or ch == "'":
+			out += ch
+		if out.length() >= 12:
+			break
+	if out.strip_edges().is_empty():
+		out = "Nate"
+	return out
+
+
+func _default_slot_data(name: String) -> Dictionary:
+	return {
+		"save_version": 1,
+		"name": name,
+		"created": Time.get_datetime_string_from_system(),
+		"last_played": Time.get_datetime_string_from_system(),
+		"checkpoint_index": 0,
+		"defeated_bosses": defeated_exes,
+		"completed": false,
+		"unlocked_moves": unlocked_moves,
+		"level": level,
+		"xp": exp,
+		"coins": money,
+		"shop_ranks": shop_ranks,
+		"perm_upgrades": perm_upgrades,
+		"second_chance": second_chance,
+		"banked_warcry": banked_warcry,
+		"heartbreak": heartbreak,
+		"best_score": best_score,
+		"seen_story": seen_story,
+	}
+
+
+func _atomic_write_slot(i: int, data: Dictionary) -> void:
+	_ensure_slots_dir()
+	var path := slot_path(i)
+	var tmp := path + ".tmp"
+	var bak := path + ".bak"
+	var file := FileAccess.open(tmp, FileAccess.WRITE)
+	if file == null:
+		return
+	file.store_string(JSON.stringify(data))
+	file.close()
+	if FileAccess.file_exists(path):
+		if FileAccess.file_exists(bak):
+			DirAccess.remove_absolute(bak)
+		DirAccess.rename_absolute(path, bak)
+	DirAccess.rename_absolute(tmp, path)
+
+
+func slot_summary(i: int) -> Dictionary:
+	var path := slot_path(i)
+	if not FileAccess.file_exists(path):
+		return {"state": "empty", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {"state": "corrupted", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
+	var txt := file.get_as_text()
+	file.close()
+	var parsed = JSON.parse_string(txt)
+	if not (parsed is Dictionary):
+		return {"state": "corrupted", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
+	var d: Dictionary = parsed
+	return {
+		"state": "completed" if bool(d.get("completed", false)) else "ok",
+		"name": str(d.get("name", "")),
+		"next_stage_label": "",
+		"moves": [],
+		"best_score": int(d.get("best_score", 0)),
+		"last_played": str(d.get("last_played", "")),
+		"completed": bool(d.get("completed", false)),
+	}
+
+
+func create_slot(i: int, raw_name: String) -> void:
+	var name := _sanitize_name(raw_name)
+	var data := _default_slot_data(name)
+	_atomic_write_slot(i, data)
+
+
+func load_slot(i: int) -> bool:
+	var path := slot_path(i)
+	if not FileAccess.file_exists(path):
+		return false
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return false
+	var txt := file.get_as_text()
+	file.close()
+	var parsed = JSON.parse_string(txt)
+	if not (parsed is Dictionary):
+		return false
+	var d: Dictionary = parsed
+	active_slot = i
+	sandbox = false
+	checkpoint_index = int(d.get("checkpoint_index", 0))
+	defeated_exes = int(d.get("defeated_bosses", 0))
+	unlocked_moves = d.get("unlocked_moves", {"kick": false, "special": false})
+	level = int(d.get("level", 1))
+	exp = int(d.get("xp", 0))
+	money = int(d.get("coins", 0))
+	shop_ranks = d.get("shop_ranks", {})
+	perm_upgrades = d.get("perm_upgrades", {})
+	second_chance = int(d.get("second_chance", 0))
+	banked_warcry = int(d.get("banked_warcry", 0))
+	heartbreak = int(d.get("heartbreak", 0))
+	best_score = int(d.get("best_score", 0))
+	seen_story = d.get("seen_story", {})
+	player_max_hp = total_max_hp()
+	player_health = player_max_hp
+	return true
+
+
+func erase_slot(i: int) -> void:
+	var path := slot_path(i)
+	var bak := path + ".bak"
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+	if FileAccess.file_exists(bak):
+		DirAccess.remove_absolute(bak)
+
+
+func save_slot() -> void:
+	if sandbox or active_slot < 0:
+		return
+	var i := active_slot
+	var path := slot_path(i)
+	var data: Dictionary = {}
+	if FileAccess.file_exists(path):
+		var f := FileAccess.open(path, FileAccess.READ)
+		if f:
+			var t := f.get_as_text()
+			f.close()
+			var p = JSON.parse_string(t)
+			if p is Dictionary:
+				data = p
+	if data.is_empty():
+		data = _default_slot_data("Nate")
+	data["save_version"] = 1
+	data["last_played"] = Time.get_datetime_string_from_system()
+	data["checkpoint_index"] = checkpoint_index
+	data["defeated_bosses"] = defeated_exes
+	data["completed"] = data.get("completed", false)
+	data["unlocked_moves"] = unlocked_moves
+	data["level"] = level
+	data["xp"] = exp
+	data["coins"] = money
+	data["shop_ranks"] = shop_ranks
+	data["perm_upgrades"] = perm_upgrades
+	data["second_chance"] = second_chance
+	data["banked_warcry"] = banked_warcry
+	data["heartbreak"] = heartbreak
+	data["best_score"] = best_score
+	data["seen_story"] = seen_story
+	_atomic_write_slot(i, data)
+
+
+func add_money(value: int) -> void:
+	if negative_mode:
+		value = int(round(value * float(NEGATIVE_ENEMIES["score_mult"])))
+	money += value
+	save_game()
+	money_changed.emit(money)
+
+
+## Single entry point for the clock value on a world switch. `world` is "normal"
+## or "negative".
+func set_world_entry_clock(world: String) -> void:
+	if world == "negative":
+		player_health = WORLD_ENTRY_CLOCK_NEGATIVE
+	else:
+		player_health = WORLD_ENTRY_CLOCK_NORMAL
+	clock_seconds = player_health
+	world_clock_applied = true
+	print("WORLD_CLOCK", world, player_health)
+
+
+func set_stage_start_clock(kind: String) -> void:
+	if kind == "chain":
+		player_health = STAGE_START_NEGATIVE_CHAIN
+	else:
+		player_health = STAGE_START_NORMAL
+	clock_seconds = player_health
+	world_clock_applied = true
+	print("WORLD_CLOCK", kind, player_health)
+
+
+func add_clock(seconds: float) -> void:
+	if negative_mode:
+		var cap := float(NEGATIVE_ENEMIES["negative_time_gain_cap"])
+		var remaining := cap - negative_time_gained
+		if remaining <= 0.0:
+			seconds = 0.0
+		elif seconds > remaining:
+			seconds = remaining
+		negative_time_gained += seconds
+	player_health = minf(player_health + seconds, maxf(player_max_hp, 600.0))
+	GameState.clock_seconds = player_health
+
+
+func add_exp(value: int) -> void:
+	if negative_mode:
+		value = int(round(value * float(NEGATIVE_ENEMIES["xp_mult"])))
+	exp += value
+	while exp >= exp_to_next_level():
+		exp -= exp_to_next_level()
+		level += 1
+		player_health = minf(player_health + float(CLOCK_CONFIG["level_up_bonus"]), maxf(player_max_hp, 600.0))
+		player_damage_mult += float(CLOCK_CONFIG["level_up_damage_mult"])
+		level_changed.emit(level)
+		level_healed.emit(float(CLOCK_CONFIG["level_up_bonus"]))
+	exp_changed.emit(exp)
+	save_game()
+
+
+func begin_level() -> void:
+	clear_damage_penalty()
+	player_health = maxf(player_health, player_max_hp)
+
+
+## Called by every stage scene on entry. Closing is idempotent, so a door that
+## already closed the previous stage does not record a duplicate. Warcry bought
+## at the previous door goes live here, and `finish_stage()` retires it.
 func begin_stage() -> void:
 	clear_damage_penalty()
 	_stage_open = true
@@ -811,35 +907,6 @@ func finish_stage() -> void:
 func clear_damage_penalty() -> void:
 	close_stage()
 	damage_taken = 0.0
-
-
-func add_money(value: int) -> void:
-	money += value
-	save_game()
-	money_changed.emit(money)
-
-
-func add_exp(value: int) -> void:
-	exp += maxi(1, int(round(value * xp_multiplier())))
-	while exp >= exp_to_next_level():
-		exp -= exp_to_next_level()
-		level += 1
-		player_max_hp = total_max_hp()
-		var heal := player_max_hp * level_up_heal_ratio()
-		player_health = minf(player_health + heal, player_max_hp)
-		clock_seconds = player_health
-		level_changed.emit(level)
-		level_healed.emit(heal)
-	exp_changed.emit(exp)
-	save_game()
-
-
-## Adds `seconds` to the clock (player_health), capped at player_max_hp.
-## Works in both normal and negative world; the negative multiplier in
-## enemy_base already selects the right value before calling here.
-func add_clock(seconds: float) -> void:
-	player_health = minf(player_health + seconds, player_max_hp)
-	clock_seconds = player_health
 
 
 func register_damage(amount: float) -> void:
@@ -896,11 +963,11 @@ func enter_negative() -> void:
 	negative_time_gained = 0.0
 	negative_remaining_spawns = 0
 	in_boss_fight = false
-	unlocked_moves = {"kick": false, "special": false}
-	var ns := maxf(20.0, 35.0 - 5.0 * float(negative_visits))
+	var ns := 30.0
 	NEGATIVE_ENEMIES["negative_start"] = ns
 	player_max_hp = ns
-	player_health = player_max_hp
+	player_health = 0.0
+	world_clock_applied = false
 	player_damage_mult = float(NEGATIVE_ENEMIES["player_damage_mult"])
 	clock_running = false
 
@@ -1008,134 +1075,6 @@ func decorate_followup_lines(lines: Array[Dictionary]) -> Array[Dictionary]:
 	return out
 
 
-func should_play_story(id: String) -> bool:
-	if id in story_played_this_run:
-		return false
-	if sandbox:
-		return true
-	if STORY_CONFIG.get("repeat_each_run", false):
-		return true
-	return not seen_story.has(id)
-
-
-func story_lines(id: String) -> Array[Dictionary]:
-	match id:
-		"S1_INTRO":
-			return [
-				{"speaker": "Narrator", "text": "On the balcony of a mansion, a boy stands alone."},
-				{"speaker": "Narrator", "text": "Nate Hopkins has just finished his freshman year at university."},
-				{"speaker": "Narrator", "text": "The whole class is throwing a party before they become sophomores."},
-				{"speaker": "Narrator", "text": "As he heads inside, a flash catches his eye. A beauty has just walked past him."},
-				{"speaker": "Narrator", "text": "A boy... or maybe a man now. Never interested in this sort of thing. Yet he felt interested."},
-				{"speaker": "Nate", "text": "Hey! T! Who's that girl over there?"},
-				{"speaker": "Tracy", "text": "Her? Forget about it."},
-				{"speaker": "Nate", "text": "Why? Why?!"},
-				{"speaker": "Tracy", "text": "You never showed interest in anyone I introduced you to. You're still sulking over that ex of yours."},
-				{"speaker": "Nate", "text": "Hey, c'mon. Help your homeboy out."},
-				{"speaker": "Tracy", "text": "No. Go for it yourself. You're on your own."},
-				{"speaker": "Narrator", "text": "Nate walks up to her and tries a little small talk."},
-				{"speaker": "Nate", "text": "Hi, I'm Nate."},
-				{"speaker": "Hazel", "text": "Hi. I'm Hazel."},
-				{"speaker": "Nate", "text": "Nice name."},
-				{"speaker": "Hazel", "text": "Oh, thanks. My dad gave it to me. Hazel A. Frey."},
-				{"speaker": "Nate", "text": "What does the A stand for?"},
-				{"speaker": "Hazel", "text": "My mom's name. Anasta..."},
-				{"speaker": "", "text": "BIG EXPLOSION. Aphrodite appears out of nowhere."},
-				{"speaker": "Aphrodite", "text": "Nate Hopkins!"},
-				{"speaker": "Nate", "text": "Do I know you? How did you just explode out of nowhere?"},
-				{"speaker": "Aphrodite", "text": "Spare me your silly chat, mortal. You cursed love, and love is me."},
-				{"speaker": "Aphrodite", "text": "I will not let you bring a curse on my name again with another poor sweetheart. You're coming with me."},
-				{"speaker": "Aphrodite", "text": "Brother, lock him up."},
-				{"speaker": "Narrator", "text": "Hades sighs. He was right behind her."},
-			]
-		"S2_BEFORE_LEVEL_1":
-			return [
-				{"speaker": "Nate", "text": "Where am I?"},
-				{"speaker": "Hades", "text": "You're in the Underworld, boy. Fight your way through if you want to escape in time."},
-				{"speaker": "Hades", "text": "And don't tell Aphrodite I gave you the idea."},
-			]
-		"S3_FIRST_TIME_NEGATIVE_WORLD":
-			return [
-				{"speaker": "Nate", "text": "I didn't die?"},
-				{"speaker": "Hades", "text": "No, boy. This is the colourless world. It's harsh, and the demons are much stronger."},
-				{"speaker": "Hades", "text": "But you can get stronger too, by defeating them."},
-			]
-		"S4_FIRST_TIME_BACK_FROM_NEGATIVE":
-			return [
-				{"speaker": "Nate", "text": "I'm back! And wait... I still have my skills!"},
-				{"speaker": "Hades", "text": "Use them wisely. And use them in time."},
-			]
-		"S5_BEFORE_BOSS_1":
-			return [
-				{"speaker": "Hades", "text": "Your first real fight, boy. Press K to kick. You'll need it."},
-				{"speaker": "Nate", "text": "Whoa! Who are you?"},
-				{"speaker": "", "text": "The boss does not speak."},
-			]
-		"S7_BOSS_LOSS":
-			return [
-				{"speaker": "Nate", "text": "Oh nooo... Again from here?"},
-			]
-		"S8_BEFORE_LEVEL_3":
-			return [
-				{"speaker": "Hades", "text": "Listen, boy. You've learned a new trick: the uppercut."},
-				{"speaker": "Hades", "text": "Hit them from below and send them flying."},
-				{"speaker": "Nate", "text": "Hell yeah!"},
-			]
-		"S9_BEFORE_BOSS_2":
-			return [
-				{"speaker": "Nate", "text": "We meet again. Whatever the hell you are... demon."},
-				{"speaker": "???", "text": "So I'm a demon now? You can't even recognize me."},
-			]
-		"S11_FINALE_PLAYER_LOSES":
-			return [
-				{"speaker": "Aphrodite", "text": "Pathetic. Back to the beginning with you!"},
-			]
-	var _empty: Array[Dictionary] = []
-	return _empty
-
-
-func play_story(id: String, lines: Array[Dictionary], scene_after: String) -> bool:
-	if not should_play_story(id):
-		return false
-	if id not in story_played_this_run:
-		story_played_this_run.append(id)
-	if not sandbox and not STORY_CONFIG.get("repeat_each_run", false):
-		seen_story[id] = true
-		save_slot()
-	dialogue_lines = lines
-	scene_after_dialogue = scene_after
-	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
-	return true
-
-
-func can_use(move: String) -> bool:
-	return bool(unlocked_moves.get(move, false))
-
-
-func unlock_move(move: String) -> void:
-	if not unlocked_moves.has(move):
-		return
-	if unlocked_moves[move]:
-		return
-	unlocked_moves[move] = true
-	move_unlocked.emit(move)
-	if OS.is_debug_build():
-		print("UNLOCKED: %s" % move)
-	save_slot()
-
-
-func apply_unlocks_for_stage(stage_path: String) -> void:
-	unlocked_moves["kick"] = false
-	unlocked_moves["special"] = false
-	if stage_path.contains("level3") or stage_path.contains("level4") or stage_path.contains("final_rhythm"):
-		unlocked_moves["kick"] = true
-		unlocked_moves["special"] = true
-	elif stage_path.contains("boss_arena"):
-		unlocked_moves["kick"] = true
-		if defeated_exes >= 1:
-			unlocked_moves["special"] = true
-
-
 func xp_multiplier() -> float:
 	if player_max_hp <= 0.0:
 		return 1.0
@@ -1181,7 +1120,6 @@ static func dev_cheats_available() -> bool:
 ## F9 mirrors the command line for testing in an exported build, where the
 ## engine console does not exist at all.
 const DEV_CHEAT_ACTION := &"dev_cheat"
-const STORY_CONFIG := {"repeat_each_run": false}
 ## Enough to buy anything in the shop several times over, for price testing.
 const DEV_MONEY_REFILL := 5000
 
@@ -1203,20 +1141,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		cheat("health")
 		clock_running = not clock_running
 		get_viewport().set_input_as_handled()
-	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F4:
-		for i in range(SLOT_COUNT):
-			print("SLOT %d: %s" % [i + 1, str(slot_summary(i))])
-		if active_slot >= 0:
-			var f := FileAccess.open(slot_path(active_slot), FileAccess.READ)
-			if f:
-				print("ACTIVE SLOT DATA: ", f.get_as_text())
-				f.close()
-		get_viewport().set_input_as_handled()
-	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F6:
-		seen_story.clear()
-		save_game()
-		print("STORY RESET")
-		get_viewport().set_input_as_handled()
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and event.physical_keycode == KEY_F8:
 		if not negative_mode:
 			enter_negative()
@@ -1229,20 +1153,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			if door and door.has_method("_go"):
 				door._go()
 		get_viewport().set_input_as_handled()
-	if OS.is_debug_build() and event is InputEventKey and event.pressed:
-		match event.physical_keycode:
-			KEY_1:
-				unlocked_moves = {"kick": false, "special": false}
-				print("UNLOCKS: none")
-				get_viewport().set_input_as_handled()
-			KEY_2:
-				unlocked_moves = {"kick": true, "special": false}
-				print("UNLOCKS: kick")
-				get_viewport().set_input_as_handled()
-			KEY_3:
-				unlocked_moves = {"kick": true, "special": true}
-				print("UNLOCKS: kick + special")
-				get_viewport().set_input_as_handled()
 
 
 ## Handles every dev command. An unknown argument reports the usage instead of

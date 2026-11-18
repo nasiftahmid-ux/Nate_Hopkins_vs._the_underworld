@@ -6,6 +6,7 @@ extends Control
 @onready var title: Label = $TitleGroup/Title
 @onready var start_button: Button = $Center/VBox/StartButton
 @onready var quit_button: Button = $Center/VBox/QuitButton
+@onready var level_row: HBoxContainer = $DevPanel/LevelRow
 
 const PIXEL_FONT := "res://assets/fonts/PressStart2P-Regular.ttf"
 const ACCENT := Color("ff7a2f")
@@ -23,6 +24,17 @@ const SLIDE_FADE := 1.2
 
 var _bg_index := 0
 
+var level_select: Array[Dictionary] = [
+	{"label": "L1", "scene": "res://scenes/levels/level1.tscn"},
+	{"label": "L2", "scene": "res://scenes/levels/level2.tscn"},
+	{"label": "L3", "scene": "res://scenes/levels/level3.tscn"},
+	{"label": "L4", "scene": "res://scenes/levels/level4.tscn"},
+	{"label": "L5", "scene": "res://scenes/levels/level5.tscn"},
+	{"label": "BOSS 1", "scene": "res://scenes/bosses/boss_arena.tscn", "exes": 0},
+	{"label": "BOSS 2", "scene": "res://scenes/bosses/boss_arena.tscn", "exes": 1},
+]
+
+
 func _ready() -> void:
 	_apply_pixel_theme()
 	Music.play_menu()
@@ -31,39 +43,91 @@ func _ready() -> void:
 	_animate_backdrop()
 	_animate_title()
 	_style_text_button(start_button, 24)
-	start_button.text = "CONTINUE"
-	start_button.grab_focus()
-	start_button.pressed.connect(_on_continue)
-	var start_over := Button.new()
-	start_over.text = "START OVER"
-	_style_text_button(start_over, 24)
-	start_over.pressed.connect(_on_start_over)
-	$Center/VBox.add_child(start_over)
-	# move quit button after
-	quit_button.get_parent().move_child(quit_button, quit_button.get_parent().get_child_count() - 1)
 	_style_text_button(quit_button, 24)
+	start_button.grab_focus()
+	start_button.pressed.connect(_on_start)
+	if GameState.active_slot >= 0:
+		start_button.text = "Continue"
+		start_button.pressed.disconnect(_on_start)
+		start_button.pressed.connect(_on_continue)
+		var new_run_btn := Button.new()
+		new_run_btn.text = "New Run"
+		_style_text_button(new_run_btn, 24)
+		new_run_btn.pressed.connect(_on_start)
+		start_button.get_parent().add_child(new_run_btn)
+		start_button.get_parent().move_child(new_run_btn, start_button.get_index() + 1)
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
+	_build_level_select()
 	_run_slideshow()
-	if GameState.show_completion_panel:
-		GameState.show_completion_panel = false
-		_show_completion_panel()
+
+
+func _build_level_select() -> void:
+	for entry in level_select:
+		var button := Button.new()
+		button.text = entry["label"]
+		button.custom_minimum_size = Vector2(0, 30)
+		_style_dev_button(button)
+		button.pressed.connect(_on_level_selected.bind(entry))
+		level_row.add_child(button)
+
+
+func _on_level_selected(entry: Dictionary) -> void:
+	Music.stop()
+	if entry.has("rhythm"):
+		_setup_rhythm(entry["rhythm"])
+	elif entry.has("exes"):
+		GameState.defeated_exes = entry["exes"]
+	GameState.begin_level()
+	GameState.world_clock_applied = false
+	get_tree().change_scene_to_file(entry["scene"])
 
 
 func _on_continue() -> void:
 	Music.stop()
-	if GameState.active_slot >= 0 and not GameState.sandbox:
-		if GameState.load_slot(GameState.active_slot):
-			var stage := GameState.begin_attempt()
-			get_tree().change_scene_to_file(stage)
-			return
-	GameState.open_new_run_flow_pending = false
-	get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
+	if GameState.active_slot >= 0 and GameState.load_slot(GameState.active_slot):
+		var stage := GameState.begin_attempt()
+		get_tree().change_scene_to_file(stage)
+	else:
+		_on_start()
 
 
-func _on_start_over() -> void:
+func _setup_rhythm(phase: int) -> void:
+	GameState.defeated_exes = phase
+	GameState.forced_grade = ""
+	if phase == 1:
+		GameState.set_rhythm_difficulty(1.0, 20)
+		GameState.rhythm_followup_lines = []
+		GameState.rhythm_followup_scene = "res://scenes/levels/level5.tscn"
+	else:
+		GameState.set_rhythm_difficulty(1.0, 30)
+		GameState.rhythm_followup_lines = GameState.decorate_followup_lines([
+			{"speaker": "Nate", "text": "Hazel... I clawed my way out of the actual Underworld for this."},
+			{"speaker": "Hazel", "text": "...That's the weirdest pickup line I've ever heard."},
+			{"speaker": "Hazel", "text": "But I guess anyone who fights through Hell deserves a first date. Dinner?"},
+			{"speaker": "Narrator", "text": "Nate became a master of the Underworld dating circuit. 10/10 no notes."},
+		])
+		GameState.rhythm_followup_scene = "res://scenes/ui/main.tscn"
+
+
+func _on_start() -> void:
 	Music.stop()
-	GameState.open_new_run_flow_pending = true
-	get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
+	GameState.start_new_run()
+	GameState.dialogue_lines = [
+		{"speaker": "Narrator", "text": "A Friday night. Another party. Another chance for Nate Hopkins to make questionable life decisions."},
+		{"speaker": "Nate", "text": "Hey Tracy, who's that girl? The one by the punch bowl."},
+		{"speaker": "Tracy", "text": "Absolutely not. Last girl I set you up with? You broke her heart in the most brutal way possible."},
+		{"speaker": "Tracy", "text": "I'm done playing matchmaker. You can figure this one out yourself."},
+		{"speaker": "Nate", "text": "Fine. I'll find out myself."},
+		{"speaker": "Hazel", "text": "Hi, I'm Hazel Abegnile Frye. You look like you just lost an argument."},
+		{"speaker": "Nate", "text": "Nate Hopkins. And I never lose. Usually."},
+		{"speaker": "Nate", "text": "So what brings you here, Hazel?"},
+		{"speaker": "Aphrodite", "text": "NATE HOPKINS."},
+		{"speaker": "Aphrodite", "text": "Last time, your heart was broken and you swore you'd never fall in love again. And now? Already chasing another?"},
+		{"speaker": "Aphrodite", "text": "My brother Hades is expecting you. You're going DOWN - to the Underworld."},
+		{"speaker": "Aphrodite", "text": "Survive. Fight your way back up. Prove you deserve another chance at love. Or don't come back at all."},
+	]
+	GameState.scene_after_dialogue = "res://scenes/levels/level1.tscn"
+	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue.tscn")
 
 
 # --- Presentation -----------------------------------------------------------
@@ -229,31 +293,12 @@ func _focus_marker(btn: Button) -> void:
 	btn.focus_exited.connect(func() -> void: btn.text = base)
 
 
-func _show_completion_panel() -> void:
-	var panel := PanelContainer.new()
-	panel.set_anchors_preset(Control.PRESET_CENTER)
-	add_child(panel)
-	var vbox := VBoxContainer.new()
-	panel.add_child(vbox)
-	var lbl := Label.new()
-	lbl.text = "CARE FOR ANOTHER UNDERWORLD RUN? SEE WHAT YOU COULD HAVE DONE BETTER."
-	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	vbox.add_child(lbl)
-	var score_lbl := Label.new()
-	score_lbl.text = "FINAL SCORE: %d  BEST: %d  GRADE: %s" % [GameState.calculate_run_score(), GameState.best_score, GameState.grade_id()]
-	vbox.add_child(score_lbl)
-	var btns := HBoxContainer.new()
-	vbox.add_child(btns)
-	var yes := Button.new()
-	yes.text = "YES"
-	yes.pressed.connect(func():
-		panel.queue_free()
-		GameState.open_new_run_flow_pending = true
-		get_tree().change_scene_to_file("res://scenes/ui/run_select.tscn")
-	)
-	btns.add_child(yes)
-	var no := Button.new()
-	no.text = "NO"
-	no.pressed.connect(func(): panel.queue_free())
-	btns.add_child(no)
-	no.grab_focus()
+func _style_dev_button(btn: Button) -> void:
+	_style_button(btn, 10)
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var box: StyleBoxFlat = btn.get_theme_stylebox(state)
+		box.content_margin_left = 12.0
+		box.content_margin_right = 12.0
+		box.content_margin_top = 3.0
+		box.content_margin_bottom = 3.0
+		box.set_corner_radius_all(6)

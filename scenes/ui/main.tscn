@@ -125,6 +125,31 @@ custom_minimum_size = Vector2(220, 40)
 layout_mode = 2
 text = "QUIT"
 
+[node name="DevPanel" type="VBoxContainer" parent="." unique_id=508513745]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -66.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="DevLabel" type="Label" parent="DevPanel" unique_id=1342758188]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.4, 1)
+theme_override_font_sizes/font_size = 12
+text = "DEV LEVEL SELECT"
+horizontal_alignment = 1
+
+[node name="LevelRow" type="HBoxContainer" parent="DevPanel" unique_id=1353315487]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
 [node name="Version" type="Label" parent="." unique_id=292880526]
 layout_mode = 1
 anchors_preset = 1
@@ -137,5 +162,5 @@ offset_bottom = 30.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(0.5, 0.5, 0.56, 1)
 theme_override_font_sizes/font_size = 9
-text = "v1.0"
+text = "DEV BUILD"
 horizontal_alignment = 2

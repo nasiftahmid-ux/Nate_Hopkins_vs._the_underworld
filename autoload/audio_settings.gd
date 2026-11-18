@@ -3,7 +3,6 @@ extends Node
 ## Handles volume levels for all buses and persists to save file.
 
 const SAVE_SECTION := "audio"
-const SETTINGS_PATH := "user://settings.json"
 const DEFAULT_MASTER := 1.0
 const DEFAULT_MUSIC := 0.8
 const DEFAULT_SFX := 1.0
@@ -107,14 +106,9 @@ func linear_to_db(linear: float) -> float:
 
 
 func save_settings() -> void:
-	var data := {}
-	if FileAccess.file_exists(SETTINGS_PATH):
-		var f := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
-		if f:
-			var p = JSON.parse_string(f.get_as_text())
-			f.close()
-			if p is Dictionary:
-				data = p
+	var data := GameState._load_save_data()
+	if not data is Dictionary:
+		data = {}
 	data[SAVE_SECTION] = {
 		"master": master_volume,
 		"music": music_volume,
@@ -122,21 +116,11 @@ func save_settings() -> void:
 		"ui": ui_volume,
 		"ambience": ambience_volume,
 	}
-	var out := FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
-	if out:
-		out.store_string(JSON.stringify(data))
-		out.close()
+	GameState._save_data(data)
 
 
 func load_settings() -> void:
-	var data := {}
-	if FileAccess.file_exists(SETTINGS_PATH):
-		var f := FileAccess.open(SETTINGS_PATH, FileAccess.READ)
-		if f:
-			var p = JSON.parse_string(f.get_as_text())
-			f.close()
-			if p is Dictionary:
-				data = p
+	var data := GameState._load_save_data()
 	if not data is Dictionary:
 		return
 	if not data.has(SAVE_SECTION):

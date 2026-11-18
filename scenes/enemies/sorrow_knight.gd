@@ -342,7 +342,7 @@ func on_uppercut(duration: float = STUN_DURATION) -> void:
 
 
 func die() -> void:
-	if is_dead:
+	if not alive:
 		return
 	_hold = "death"
 	_play("death")

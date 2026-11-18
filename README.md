@@ -74,7 +74,7 @@ Controls are registered programmatically at startup (see `autoload/input_setup.g
   - `scenes/enemies/` — enemy AI and combat behavior, all sharing the `EnemyBase` class, plus one generated `*_frames.tres` per enemy so each one's animation set is a data asset rather than hand-authored.
   - `scenes/bosses/` — boss fight state machine, boss arena, boss projectiles, and the rhythm-game finale.
   - `scenes/items/` — pickups and environmental hazards (coins, lava, spikes, falling rocks).
-  - `scenes/levels/` — level scenes built on a shared parameterized `level_base.gd`, plus moving platforms and doors.
+  - `scenes/levels/` — level scenes built on a shared parameterized `level_base.gd`, plus moving platforms, doors, hazard scripts, and hint zones.
   - `scenes/ui/` — main menu, HUD, pause menu, and death screen.
   - `scenes/dialogue/` — a lightweight line-by-line dialogue/cutscene system.
   - `_slice.gd` — a headless atlas builder that turns the raw sprite sheets into lossless square-grid atlases plus `SpriteFrames` resources. It locates the labelled animation bands, strips the caption text (including captions fused to the first frame), and cuts frames on the widest internal gaps so particle trails and projectiles don't split a single pose in half. Every cell is then centred horizontally and bottom-aligned to one baseline, which is what makes flipping safe. Re-cut every enemy atlas from source with `godot --headless --script res://_slice.gd`.
@@ -94,6 +94,7 @@ end
 subgraph group_stages["Stages"]
   node_levels["Five stages"]
   node_doors["Stage doors<br/>[door.gd]"]
+  node_hints["Level hints<br/>[hint_zone.gd]"]
   node_platforms["Moving platforms<br/>[moving_platform.gd]"]
 end
 
@@ -124,6 +125,7 @@ node_enemies -->|"pays rewards"| node_game_state
 node_levels -->|"offers exit"| node_doors
 node_doors -->|"routes through"| node_shop
 node_shop -->|"stores purchases"| node_game_state
+node_levels -->|"scatters hints"| node_hints
 node_levels -.->|"includes"| node_platforms
 node_items -.->|"damages"| node_player
 node_levels -->|"records damage"| node_game_state
@@ -143,6 +145,7 @@ click node_bosses "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underw
 click node_items "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/tree/main/scenes/items"
 click node_levels "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/tree/main/scenes/levels"
 click node_doors "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/levels/door.gd"
+click node_hints "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/levels/hint_zone.gd"
 click node_platforms "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/levels/moving_platform.gd"
 click node_game_state "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/autoload/game_state.gd"
 click node_shop "https://github.com/nasiftahmid-ux/nate_hopkins_vs._the_underworld/blob/main/scenes/ui/shop.gd"
@@ -162,17 +165,12 @@ classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
 classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
 classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
 class node_player,node_enemies,node_bosses,node_items toneBlue
-class node_levels,node_doors,node_platforms toneAmber
+class node_levels,node_doors,node_hints,node_platforms toneAmber
 class node_game_state,node_shop toneMint
 class node_grade,node_rhythm toneRose
 class node_hud,node_main_menu,node_death,node_pause,node_dialogue,node_player_actor toneIndigo
 ```
 
-## Download & Play
-
-Pre-built Windows release: download the zip from the [Releases page](https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases), extract, and run Nate Hopkins vs the Underworld.exe. No Godot install required.
-
-Direct link (v1.0.0): https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_underworld/releases/download/v1.0.0/Nate.Hopkins.vs.the.Underworld.zip
 ## Running the Project
 
 1. Install [Godot 4.7](https://godotengine.org/download) or later.
@@ -183,6 +181,7 @@ Direct link (v1.0.0): https://github.com/nasiftahmid-ux/Nate_Hopkins_vs._the_und
 3. Open Godot, choose **Import**, and select the `project.godot` file in the cloned folder.
 4. Press **Play** (or `F5`) to run the game.
 
+There's also a level-select screen on the title menu for jumping straight into any level, either boss fight, or either phase of the rhythm finale for testing purposes.
 
 ## Project Status
 
