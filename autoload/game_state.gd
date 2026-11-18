@@ -233,6 +233,18 @@ var player_negative_damage_bonus := 1.0
 var return_stage := ""
 var clock_seconds := 60.0
 
+## Slot save state (ported from main).
+const SLOT_COUNT := 3
+const SLOTS_DIR := "user://saves"
+var active_slot := -1
+var sandbox := false
+var checkpoint_index := 0
+var seen_story := {}
+var story_played_this_run: Array = []
+var unlocked_moves := {"kick": false, "special": false}
+var banked_warcry := 0
+var second_chance := 0
+
 ## Aphrodite's Underworld Shop. Purchased ranks are permanent for the run; the
 ## scene holding the shop is `scenes/ui/shop.tscn`, which is entered from the
 ## level door and charges this state.
@@ -268,7 +280,10 @@ var rhythm_streak_limit := 2
 
 
 func _ready() -> void:
-	load_game()
+	if FileAccess.file_exists(slot_path(0)):
+		load_slot(0)
+	else:
+		load_game()
 	# The cheats must answer while the tree is paused, because that is exactly
 	# when you want them: the death screen is up and you want to walk back out.
 	# This autoload has no per-frame logic, so running it while paused is free.
@@ -531,6 +546,9 @@ func _save_data(data: Dictionary) -> void:
 
 
 func save_game() -> void:
+	if active_slot >= 0 and not sandbox:
+		save_slot()
+		return
 	var data := _load_save_data()
 	data["player_max_hp"] = player_max_hp
 	data["money"] = money
@@ -584,6 +602,174 @@ func load_game() -> bool:
 	# survives a reload instead of being clobbered by the authoritative curve.
 	player_max_hp = total_max_hp()
 	return true
+
+
+func slot_path(i: int) -> String:
+	return "%s/slot_%d.json" % [SLOTS_DIR, i + 1]
+
+
+func _ensure_slots_dir() -> void:
+	if not DirAccess.dir_exists_absolute(SLOTS_DIR):
+		DirAccess.make_dir_recursive_absolute(SLOTS_DIR)
+
+
+func _sanitize_name(raw: String) -> String:
+	var out := ""
+	for ch in raw.strip_edges():
+		if ch.is_valid_identifier() or ch == " " or ch == "-" or ch == "_" or ch == "'":
+			out += ch
+		if out.length() >= 12:
+			break
+	if out.strip_edges().is_empty():
+		out = "Nate"
+	return out
+
+
+func _default_slot_data(name: String) -> Dictionary:
+	return {
+		"save_version": 1,
+		"name": name,
+		"created": Time.get_datetime_string_from_system(),
+		"last_played": Time.get_datetime_string_from_system(),
+		"checkpoint_index": 0,
+		"defeated_bosses": defeated_exes,
+		"completed": false,
+		"unlocked_moves": unlocked_moves,
+		"level": level,
+		"xp": exp,
+		"coins": money,
+		"shop_ranks": shop_ranks,
+		"perm_upgrades": perm_upgrades,
+		"second_chance": second_chance,
+		"banked_warcry": banked_warcry,
+		"heartbreak": heartbreak,
+		"best_score": best_score,
+		"seen_story": seen_story,
+	}
+
+
+func _atomic_write_slot(i: int, data: Dictionary) -> void:
+	_ensure_slots_dir()
+	var path := slot_path(i)
+	var tmp := path + ".tmp"
+	var bak := path + ".bak"
+	var file := FileAccess.open(tmp, FileAccess.WRITE)
+	if file == null:
+		return
+	file.store_string(JSON.stringify(data))
+	file.close()
+	if FileAccess.file_exists(path):
+		if FileAccess.file_exists(bak):
+			DirAccess.remove_absolute(bak)
+		DirAccess.rename_absolute(path, bak)
+	DirAccess.rename_absolute(tmp, path)
+
+
+func slot_summary(i: int) -> Dictionary:
+	var path := slot_path(i)
+	if not FileAccess.file_exists(path):
+		return {"state": "empty", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return {"state": "corrupted", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
+	var txt := file.get_as_text()
+	file.close()
+	var parsed = JSON.parse_string(txt)
+	if not (parsed is Dictionary):
+		return {"state": "corrupted", "name": "", "next_stage_label": "", "moves": [], "best_score": 0, "last_played": "", "completed": false}
+	var d: Dictionary = parsed
+	return {
+		"state": "completed" if bool(d.get("completed", false)) else "ok",
+		"name": str(d.get("name", "")),
+		"next_stage_label": "",
+		"moves": [],
+		"best_score": int(d.get("best_score", 0)),
+		"last_played": str(d.get("last_played", "")),
+		"completed": bool(d.get("completed", false)),
+	}
+
+
+func create_slot(i: int, raw_name: String) -> void:
+	var name := _sanitize_name(raw_name)
+	var data := _default_slot_data(name)
+	_atomic_write_slot(i, data)
+
+
+func load_slot(i: int) -> bool:
+	var path := slot_path(i)
+	if not FileAccess.file_exists(path):
+		return false
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return false
+	var txt := file.get_as_text()
+	file.close()
+	var parsed = JSON.parse_string(txt)
+	if not (parsed is Dictionary):
+		return false
+	var d: Dictionary = parsed
+	active_slot = i
+	sandbox = false
+	checkpoint_index = int(d.get("checkpoint_index", 0))
+	defeated_exes = int(d.get("defeated_bosses", 0))
+	unlocked_moves = d.get("unlocked_moves", {"kick": false, "special": false})
+	level = int(d.get("level", 1))
+	exp = int(d.get("xp", 0))
+	money = int(d.get("coins", 0))
+	shop_ranks = d.get("shop_ranks", {})
+	perm_upgrades = d.get("perm_upgrades", {})
+	second_chance = int(d.get("second_chance", 0))
+	banked_warcry = int(d.get("banked_warcry", 0))
+	heartbreak = int(d.get("heartbreak", 0))
+	best_score = int(d.get("best_score", 0))
+	seen_story = d.get("seen_story", {})
+	player_max_hp = total_max_hp()
+	player_health = player_max_hp
+	return true
+
+
+func erase_slot(i: int) -> void:
+	var path := slot_path(i)
+	var bak := path + ".bak"
+	if FileAccess.file_exists(path):
+		DirAccess.remove_absolute(path)
+	if FileAccess.file_exists(bak):
+		DirAccess.remove_absolute(bak)
+
+
+func save_slot() -> void:
+	if sandbox or active_slot < 0:
+		return
+	var i := active_slot
+	var path := slot_path(i)
+	var data: Dictionary = {}
+	if FileAccess.file_exists(path):
+		var f := FileAccess.open(path, FileAccess.READ)
+		if f:
+			var t := f.get_as_text()
+			f.close()
+			var p = JSON.parse_string(t)
+			if p is Dictionary:
+				data = p
+	if data.is_empty():
+		data = _default_slot_data("Nate")
+	data["save_version"] = 1
+	data["last_played"] = Time.get_datetime_string_from_system()
+	data["checkpoint_index"] = checkpoint_index
+	data["defeated_bosses"] = defeated_exes
+	data["completed"] = data.get("completed", false)
+	data["unlocked_moves"] = unlocked_moves
+	data["level"] = level
+	data["xp"] = exp
+	data["coins"] = money
+	data["shop_ranks"] = shop_ranks
+	data["perm_upgrades"] = perm_upgrades
+	data["second_chance"] = second_chance
+	data["banked_warcry"] = banked_warcry
+	data["heartbreak"] = heartbreak
+	data["best_score"] = best_score
+	data["seen_story"] = seen_story
+	_atomic_write_slot(i, data)
 
 
 func add_money(value: int) -> void:
