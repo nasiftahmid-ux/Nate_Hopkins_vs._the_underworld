@@ -48,6 +48,16 @@ func _ready() -> void:
 	_style_text_button(quit_button, 24)
 	start_button.grab_focus()
 	start_button.pressed.connect(_on_start)
+	if GameState.active_slot >= 0:
+		start_button.text = "Continue"
+		start_button.pressed.disconnect(_on_start)
+		start_button.pressed.connect(_on_continue)
+		var new_run_btn := Button.new()
+		new_run_btn.text = "New Run"
+		_style_text_button(new_run_btn, 24)
+		new_run_btn.pressed.connect(_on_start)
+		start_button.get_parent().add_child(new_run_btn)
+		start_button.get_parent().move_child(new_run_btn, start_button.get_index() + 1)
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
 	_build_level_select()
 	_run_slideshow()
@@ -72,6 +82,15 @@ func _on_level_selected(entry: Dictionary) -> void:
 	GameState.begin_level()
 	GameState.world_clock_applied = false
 	get_tree().change_scene_to_file(entry["scene"])
+
+
+func _on_continue() -> void:
+	Music.stop()
+	if GameState.active_slot >= 0 and GameState.load_slot(GameState.active_slot):
+		var stage := GameState.begin_attempt()
+		get_tree().change_scene_to_file(stage)
+	else:
+		_on_start()
 
 
 func _setup_rhythm(phase: int) -> void:

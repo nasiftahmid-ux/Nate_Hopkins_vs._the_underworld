@@ -291,6 +291,34 @@ func _ready() -> void:
 	_register_dev_actions()
 
 
+func begin_attempt() -> String:
+	damage_taken = 0.0
+	run_damage_taken = 0.0
+	run_deaths = 0
+	stage_damage.clear()
+	forced_grade = ""
+	_stage_open = false
+	negative_mode = false
+	negative_visits = 0
+	negative_time_gained = 0.0
+	negative_remaining_spawns = 0
+	in_boss_fight = false
+	return_stage = ""
+	enemy_damage_scale = 1.0
+	enemy_health_scale = 1.0
+	clock_seconds = 0.0
+	story_played_this_run.clear()
+	player_max_hp = float(CLOCK_CONFIG["start"]) + 5.0 * float(perm_upgrades.get("clock", 0))
+	player_health = player_max_hp
+	clock_seconds = player_health
+	clock_running = false
+	player_damage_mult = 1.0
+	world_clock_applied = false
+	if checkpoint_index < 0 or checkpoint_index >= RUN_ROUTE.size():
+		checkpoint_index = 0
+	return RUN_ROUTE[checkpoint_index]
+
+
 func start_new_run() -> void:
 	world_clock_applied = false
 	damage_taken = 0.0
