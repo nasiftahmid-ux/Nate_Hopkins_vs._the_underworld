@@ -484,10 +484,12 @@ func buy_shop_item(id: String) -> bool:
 	var cost := 0
 	if id != "heal":
 		cost = shop_price(id)
-	if id != "heal" and player_health - cost < 10.0:
+	if id != "heal" and money < cost:
 		return false
 	if id != "heal":
-		player_health -= cost
+		money -= cost
+		save_game()
+		money_changed.emit(money)
 	shop_ranks[id] = shop_rank(id) + 1
 	purchases_this_visit += 1
 	match id:

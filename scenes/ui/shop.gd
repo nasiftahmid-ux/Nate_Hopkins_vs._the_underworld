@@ -110,7 +110,7 @@ func _refresh() -> void:
 			button.text = "NEED %d" % price
 			button.disabled = true
 		else:
-			button.text = "BUY  %d" % price
+			button.text = "BUY  %d coins" % price
 			button.disabled = false
 
 	# Keep focus on something actionable so controller players are never stranded.
