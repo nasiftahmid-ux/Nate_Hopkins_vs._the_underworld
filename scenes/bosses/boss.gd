@@ -36,6 +36,8 @@ const PARRY_WINDOW := 0.5
 const STUN_DURATION := 2.0
 const STUN_DAMAGE_MULT := 2.0
 const STUN_COLOR := Color(0.65, 0.8, 1.0)
+const BOSS_HIT_CLOCK_REWARD := 5.0
+const BOSS_HIT_REWARD_COOLDOWN := 1.0
 ## Dizzy spiral drawn over the boss's head while it is staggered.
 const SPIRAL_COLOR := Color(1.0, 0.95, 0.55)
 ## Footstep cadence, kept identical to Nate's so the boss walks to the same beat.
@@ -76,6 +78,7 @@ var vulnerable_time := 0.0
 var block_wait := 0.0
 ## Counts down while staggered by an uppercut; hits are doubled until it hits 0.
 var stun_time := 0.0
+var _boss_hit_reward_timer := 0.0
 ## Angle of the dizzy spiral above the head while stunned.
 var _spiral_phase := 0.0
 var _spiral_shown := false
@@ -175,6 +178,7 @@ func _physics_process(delta: float) -> void:
 		boss_bar.value = hp
 	state_time += delta
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
+	_boss_hit_reward_timer = maxf(_boss_hit_reward_timer - delta, 0.0)
 	teleport_cooldown = maxf(teleport_cooldown - delta, 0.0)
 	vulnerable_time = maxf(vulnerable_time - delta, 0.0)
 	block_wait = maxf(block_wait - delta, 0.0)
@@ -996,6 +1000,10 @@ func take_hit(dmg: float, dir: float) -> void:
 		mult = maxf(mult, STUN_DAMAGE_MULT)
 	var dealt := dmg * mult
 	hp -= dealt
+	if _boss_hit_reward_timer <= 0.0:
+		GameState.add_clock(BOSS_HIT_CLOCK_REWARD)
+		_boss_hit_reward_timer = BOSS_HIT_REWARD_COOLDOWN
+		print("BOSS_HIT_REWARD", GameState.player_health)
 	velocity.x = dir * 140.0
 	velocity.y = -110.0
 	hit_flash = 0.12
