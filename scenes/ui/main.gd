@@ -29,7 +29,6 @@ var level_select: Array[Dictionary] = [
 	{"label": "L2", "scene": "res://scenes/levels/level2.tscn"},
 	{"label": "L3", "scene": "res://scenes/levels/level3.tscn"},
 	{"label": "L4", "scene": "res://scenes/levels/level4.tscn"},
-	{"label": "L5", "scene": "res://scenes/levels/level5.tscn"},
 	{"label": "BOSS 1", "scene": "res://scenes/bosses/boss_arena.tscn", "exes": 0},
 	{"label": "BOSS 2", "scene": "res://scenes/bosses/boss_arena.tscn", "exes": 1},
 ]
@@ -56,19 +55,10 @@ func _ready() -> void:
 		new_run_btn.pressed.connect(_on_start)
 		start_button.get_parent().add_child(new_run_btn)
 		start_button.get_parent().move_child(new_run_btn, start_button.get_index() + 1)
+	if has_node("DevPanel"):
+		$DevPanel.visible = false
 	quit_button.pressed.connect(func() -> void: get_tree().quit())
-	_build_level_select()
 	_run_slideshow()
-
-
-func _build_level_select() -> void:
-	for entry in level_select:
-		var button := Button.new()
-		button.text = entry["label"]
-		button.custom_minimum_size = Vector2(0, 30)
-		_style_dev_button(button)
-		button.pressed.connect(_on_level_selected.bind(entry))
-		level_row.add_child(button)
 
 
 func _on_level_selected(entry: Dictionary) -> void:
